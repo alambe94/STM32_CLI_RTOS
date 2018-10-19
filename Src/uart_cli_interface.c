@@ -5,7 +5,7 @@
  *      Author: medprime
  */
 
-#include <uart_cli_interface.h>
+#include "uart_cli_interface.h"
 
 
 extern UART_HandleTypeDef huart2;
@@ -16,8 +16,11 @@ extern UART_HandleTypeDef huart2;
 
 const char* pcNewLine = "\n";
 
-const char* pcWelcomeMessage = "FREERTOS CLI Without FREERTOS Kernel.\r\n\r\nEnter 'help' to view a list of available commands.\r\n\r\n>";
+const char* pcWelcomeMessage = "Enter 'help' to view a list of available commands.\r\n\r\n>";
 const char* pcEndOfOutputMessage = "\r\n[Press ENTER to execute the previous command again]\r\n\r\n>";
+
+uint32_t   millis1 = 0;
+
 
 /* DEL acts as a backspace. */
 #define cmdASCII_DEL		( 0x7F )
@@ -56,8 +59,7 @@ void UARTCommandConsoleLoop()
 	{
 	pcOutputString = FreeRTOS_CLIGetOutputBuffer();
 	first_flag = 1;
-	vSerialPutString(&huart2, (uint8_t* ) pcWelcomeMessage,
-		(unsigned short ) strlen(pcWelcomeMessage));
+	vSerialPutString(&huart2, (uint8_t* ) pcWelcomeMessage, (unsigned short ) strlen(pcWelcomeMessage));
 	}
 
     if (Ring_Buffer_Get_Count() > 0)
@@ -68,6 +70,8 @@ void UARTCommandConsoleLoop()
 	/* Was it the end of the line? */
 	if (cRxedChar == '\n')
 	    {
+
+	    millis1 = HAL_GetTick(); //time stamp
 	    /* Just to space the output from the input. */
 	    //vSerialPutString(&huart2, (uint8_t * ) pcNewLine, (unsigned short ) strlen(pcNewLine));
 	    /* See if the command is empty, indicating that the last command
@@ -86,11 +90,10 @@ void UARTCommandConsoleLoop()
 		{
 		/* Get the next output string from the command interpreter. */
 		xReturned = FreeRTOS_CLIProcessCommand(cInputString,
-			pcOutputString, 256);
+			pcOutputString, configCOMMAND_INT_MAX_OUTPUT_SIZE);
 
 		/* Write the generated string to the UART. */
-		vSerialPutString(&huart2, (uint8_t *) pcOutputString,
-			(unsigned short) strlen(pcOutputString));
+		   vSerialPutString(&huart2, (uint8_t *) pcOutputString,(unsigned short) strlen(pcOutputString));
 
 		}
 	    while (xReturned != pdFALSE);
@@ -103,8 +106,7 @@ void UARTCommandConsoleLoop()
 	    ucInputIndex = 0;
 	    memset(cInputString, 0x00, cmdMAX_INPUT_SIZE);
 
-	    vSerialPutString(&huart2, (uint8_t *) pcEndOfOutputMessage,
-		    (unsigned short) strlen(pcEndOfOutputMessage));
+	          vSerialPutString(&huart2, (uint8_t *) pcEndOfOutputMessage, (unsigned short) strlen(pcEndOfOutputMessage));
 	    }
 	else
 	    {

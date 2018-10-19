@@ -14,6 +14,10 @@
 #include "string.h"
 #include "ring_buffer.h"
 
+void xSerialPutChar(UART_HandleTypeDef *huart, uint8_t pData);
+
+void vSerialPutString(UART_HandleTypeDef *huart, uint8_t* pData, uint16_t Size);
+
 void UARTCommandConsoleLoop(void);
 
 
