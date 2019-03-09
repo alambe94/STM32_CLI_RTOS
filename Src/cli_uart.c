@@ -76,7 +76,7 @@ uint8_t Help_Callback(char* cli_rx_command, char* cli_tx_out_buffer, uint16_t cm
 
     static uint16_t count = 0;
 
-    CLI_Command_t* command_list_ptr = command_list_ptr = Cammand_List[count];;
+    CLI_Command_t* command_list_ptr = Cammand_List[count];;
 
     strncpy(cli_tx_out_buffer,
 	    command_list_ptr->CLI_Command_Description,
@@ -159,9 +159,16 @@ void CLI_UART_Loop()
 		{
 
 		command_list_ptr = Cammand_List[i];
+		uint16_t cmd_len = command_list_ptr->CLI_Command_Length;
 
-		if (strncmp(CLI_CMD_Buffer, command_list_ptr->CLI_Command,
-			command_list_ptr->CLI_Command_Length+1) == 0)
+		/* To ensure the string lengths match exactly, so as not to pick up
+		a sub-string of a longer command, check the byte after the expected
+		end of the string is either the end of the string or a space before
+		a parameter. */
+		if( ( CLI_CMD_Buffer[cmd_len] == ' ' ) || ( CLI_CMD_Buffer[cmd_len] == 0x00 ) )
+		{
+
+		if (strncmp(CLI_CMD_Buffer, command_list_ptr->CLI_Command, cmd_len) == 0)
 		    {
 
 		    is_command_valid = 1;
@@ -190,7 +197,7 @@ void CLI_UART_Loop()
 		    break; // command found break the loop
 
 		    }
-
+		}
 		}
 
 	    if (!is_command_valid)

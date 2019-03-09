@@ -14941,7 +14941,7 @@ uint8_t Help_Callback(char* cli_rx_command, char* cli_tx_out_buffer, uint16_t cm
 
     static uint16_t count = 0;
 
-    CLI_Command_t* command_list_ptr = command_list_ptr = Cammand_List[count];;
+    CLI_Command_t* command_list_ptr = Cammand_List[count];;
  8006716:	4b13      	ldr	r3, [pc, #76]	; (8006764 <Help_Callback+0x5c>)
  8006718:	881b      	ldrh	r3, [r3, #0]
  800671a:	461a      	mov	r2, r3
