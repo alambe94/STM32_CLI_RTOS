@@ -17,7 +17,7 @@
 
 #include "ring_buffer.h"
 
-#define BUFFER_SIZE       64  /* must be power of two */
+#define BUFFER_SIZE       128  /* must be power of two */
 
 static uint8_t RX_DMA_Buffer[BUFFER_SIZE]={0};
 static UART_HandleTypeDef *huart;
