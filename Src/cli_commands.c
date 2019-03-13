@@ -34,6 +34,39 @@ void Prepare_Move_Cammand(uint8_t axis_index)
     }
 
 
+void Prepare_Run_Cammand(uint8_t axis_index)
+    {
+
+    uint16_t speed = 0;
+
+    if (Motor_Current_Steps[axis_index] > Motor_MAX_Steps[axis_index])
+	{
+	//Motor_Parameter[axis_index] = 0;
+	}
+    if (Motor_Current_Steps[axis_index] < 0)
+	{
+	//Motor_Parameter[axis_index] = 0;
+	}
+    speed = Step_s_2_Speed(Motor_Parameter[axis_index]);
+    L6470_PrepareRun(axis_index, Motor_Direction[axis_index], speed);
+    }
+
+
+void Prepare_Speed_Cammand(uint8_t axis_index)
+    {
+
+    uint16_t speed = 0;
+
+    if (Motor_Parameter[axis_index] > 15000)
+	{
+	Motor_Parameter[axis_index] = 15000;
+	}
+
+    speed = Step_s_2_Speed(Motor_Parameter[axis_index]);
+    L6470_PrepareSetParam(axis_index, L6470_MAX_SPEED_ID, speed);
+    }
+
+
 void Print_Command_Ok(char* cli_tx_out_buffer, char* cli_rx_command)
     {
     strncat(cli_tx_out_buffer, "\r\nOk->", 50);
@@ -98,10 +131,11 @@ uint8_t Move_Callback(char* cli_rx_command, char* cli_tx_out_buffer,
 	uint16_t cmd_len)
     {
 
-    uint8_t is_command_valid = 1;
+    uint8_t  is_command_valid = 1;
     uint16_t param_len = 0;
-    char* param_ptr = NULL;
-    uint8_t param_number = 1;
+    uint8_t  param_number = 1;//param number, starting from first
+    uint8_t  param_counts = 0;//received param count
+    char*    param_ptr = NULL;
 
     if(Control_Mode)
 	{
@@ -133,6 +167,8 @@ uint8_t Move_Callback(char* cli_rx_command, char* cli_tx_out_buffer,
 
 	if (param_ptr != NULL)
 	    {
+
+	    param_counts++;
 
 	    switch (*param_ptr)
 		{
@@ -189,6 +225,11 @@ uint8_t Move_Callback(char* cli_rx_command, char* cli_tx_out_buffer,
 	}
     while (param_ptr != NULL);
 
+    if (!param_counts)// no param received
+	{
+	is_command_valid = 0;
+	}
+
     if (is_command_valid)
 	{
 	Print_Command_Ok(cli_tx_out_buffer, cli_rx_command);
@@ -220,86 +261,95 @@ uint8_t Speed_Callback(char* cli_rx_command, char* cli_tx_out_buffer,
 	uint16_t cmd_len)
     {
 
-    uint8_t is_command_valid[NO_OF_MOTORS] = {0,0,0,0};
+    uint8_t is_command_valid = 1;
     uint16_t param_len = 0;
     uint8_t param_number = 1;
     char* param_ptr = NULL;
 
-
-    do
+    if (Control_Mode)
 	{
 
-	param_ptr = CLI_UART_Get_Parameter(cli_rx_command,
-		                           param_number++,
-		                           &param_len);
-
-	if (param_ptr != NULL)
+	do
 	    {
 
-	    switch (*param_ptr)
+	    param_ptr = CLI_UART_Get_Parameter(cli_rx_command, param_number++,
+		    &param_len);
+
+	    if (param_ptr != NULL)
 		{
-	    case 'x':
-		if (Parse_Parameters(X_AXIS_INDEX, (param_ptr+1), param_len))
+
+		switch (*param_ptr)
 		    {
-		        is_command_valid[X_AXIS_INDEX] = 1;
-		        L6470_PrepareSetParam(X_AXIS_INDEX,
-		        	L6470_MAX_SPEED_ID,
-		        	Motor_Parameter[X_AXIS_INDEX]);
+		case 'x':
+		    if (Parse_Parameters(X_AXIS_INDEX, (param_ptr + 1),
+			    param_len))
+			{
+			Prepare_Speed_Cammand(X_AXIS_INDEX);
+			}
+		    else
+			{
+			is_command_valid = 0;
+			}
+		    break;
+
+		case 'y':
+		    if (Parse_Parameters(Y_AXIS_INDEX, (param_ptr + 1),
+			    param_len))
+			{
+			Prepare_Speed_Cammand(Y_AXIS_INDEX);
+			}
+		    else
+			{
+			is_command_valid = 0;
+			}
+		    break;
+
+		case 'z':
+		    if (Parse_Parameters(Z_AXIS_INDEX, (param_ptr + 1),
+			    param_len))
+			{
+			Prepare_Speed_Cammand(Z_AXIS_INDEX);
+			}
+		    else
+			{
+			is_command_valid = 0;
+			}
+		    break;
+
+		case 'm':
+		    if (Parse_Parameters(M_AXIS_INDEX, (param_ptr + 1),
+			    param_len))
+			{
+			Prepare_Speed_Cammand(M_AXIS_INDEX);
+			}
+		    else
+			{
+			is_command_valid = 0;
+			}
+		    break;
+		default:
+		    is_command_valid = 0;
+		    break;
 
 		    }
-		break;
-	    case 'y':
-		if (Parse_Parameters(Y_AXIS_INDEX, (param_ptr+1), param_len))
-		    {
-		        is_command_valid[X_AXIS_INDEX] = 1;
-		        L6470_PrepareSetParam(Y_AXIS_INDEX,
-		        	L6470_MAX_SPEED_ID,
-		        	Motor_Parameter[Y_AXIS_INDEX]);
-		    }
-		break;
-	    case 'z':
-		if (Parse_Parameters(Z_AXIS_INDEX, (param_ptr+1), param_len))
-		    {
-		        is_command_valid[X_AXIS_INDEX] = 1;
-		        L6470_PrepareSetParam(Z_AXIS_INDEX,
-		        	L6470_MAX_SPEED_ID,
-		        	Motor_Parameter[Z_AXIS_INDEX]);
-		    }
-		break;
-	    case 'm':
-		if (Parse_Parameters(M_AXIS_INDEX, (param_ptr+1), param_len))
-		    {
-		        is_command_valid[X_AXIS_INDEX] = 1;
-		        L6470_PrepareSetParam(M_AXIS_INDEX,
-		        	L6470_MAX_SPEED_ID,
-		        	Motor_Parameter[M_AXIS_INDEX]);
-		    }
-		break;
-	    default:
-		is_command_valid[X_AXIS_INDEX] = 0;
-		is_command_valid[Y_AXIS_INDEX] = 0;
-		is_command_valid[Z_AXIS_INDEX] = 0;
-		is_command_valid[M_AXIS_INDEX] = 0;
-		break;
-
 		}
+
+	    }
+	while (param_ptr != NULL);
+
+	if (is_command_valid)
+	    {
+	    Print_Command_Ok(cli_tx_out_buffer, cli_rx_command);
+	    L6470_PerformPreparedApplicationCommand();
+	    }
+	else
+	    {
+	    Print_Command_Err(cli_tx_out_buffer, cli_rx_command);
 	    }
 
 	}
-    while (param_ptr != NULL);
 
-    if (is_command_valid[0] || is_command_valid[1] || is_command_valid[2] || is_command_valid[3])
-	{
-	Print_Command_Ok(cli_tx_out_buffer, cli_rx_command);
-	L6470_PerformPreparedApplicationCommand();
-	}
-    else
-	{
-	Print_Command_Err(cli_tx_out_buffer, cli_rx_command);
-	}
-
-    return 0;// operation complete do not call again
-
+    return 0; // operation complete do not call again
     }
 
 
@@ -317,10 +367,30 @@ uint8_t Run_Callback(char* cli_rx_command, char* cli_tx_out_buffer,
 	uint16_t cmd_len)
     {
 
-    uint8_t is_command_valid[NO_OF_MOTORS] = {0,0,0,0};
+    uint8_t is_command_valid = 1;
     uint16_t param_len = 0;
     char* param_ptr = NULL;
     uint8_t param_number = 1;
+
+    if(Control_Mode)
+	{
+
+    L6470_PrepareGetParam(X_AXIS_INDEX,L6470_ABS_POS_ID);
+    L6470_PrepareGetParam(Y_AXIS_INDEX,L6470_ABS_POS_ID);
+    L6470_PrepareGetParam(Z_AXIS_INDEX,L6470_ABS_POS_ID);
+    L6470_PrepareGetParam(M_AXIS_INDEX,L6470_ABS_POS_ID);
+    L6470_PerformPreparedApplicationCommand();
+
+    Motor_Current_Steps[X_AXIS_INDEX] = L6470_ExtractReturnedData(X_AXIS_INDEX, (uint8_t*)L6470_DaisyChainSpiRxStruct, 3);
+    Motor_Current_Steps[Y_AXIS_INDEX] = L6470_ExtractReturnedData(Y_AXIS_INDEX, (uint8_t*)L6470_DaisyChainSpiRxStruct, 3);
+    Motor_Current_Steps[Z_AXIS_INDEX] = L6470_ExtractReturnedData(Z_AXIS_INDEX, (uint8_t*)L6470_DaisyChainSpiRxStruct, 3);
+    Motor_Current_Steps[M_AXIS_INDEX] = L6470_ExtractReturnedData(M_AXIS_INDEX, (uint8_t*)L6470_DaisyChainSpiRxStruct, 3);
+
+    Motor_Current_Steps[X_AXIS_INDEX] = AbsPos_2_Position(Motor_Current_Steps[X_AXIS_INDEX]);
+    Motor_Current_Steps[Y_AXIS_INDEX] = AbsPos_2_Position(Motor_Current_Steps[Y_AXIS_INDEX]);
+    Motor_Current_Steps[Z_AXIS_INDEX] = AbsPos_2_Position(Motor_Current_Steps[Z_AXIS_INDEX]);
+    Motor_Current_Steps[M_AXIS_INDEX] = AbsPos_2_Position(Motor_Current_Steps[M_AXIS_INDEX]);
+
 
     do
 	{
@@ -337,40 +407,48 @@ uint8_t Run_Callback(char* cli_rx_command, char* cli_tx_out_buffer,
 	    case 'x':
 		if (Parse_Parameters(X_AXIS_INDEX, (param_ptr+1), param_len))
 		    {
-		        is_command_valid[X_AXIS_INDEX] = 1;
-		        L6470_PrepareRun(X_AXIS_INDEX, Motor_Direction[X_AXIS_INDEX],
-				Motor_Parameter[X_AXIS_INDEX]);
+		    Prepare_Run_Cammand(X_AXIS_INDEX);
+		    }
+		else
+		    {
+		    is_command_valid = 0;
 		    }
 		break;
+
 	    case 'y':
 		if (Parse_Parameters(Y_AXIS_INDEX, (param_ptr+1), param_len))
 		    {
-		        is_command_valid[X_AXIS_INDEX] = 1;
-		        L6470_PrepareRun(Y_AXIS_INDEX, Motor_Direction[Y_AXIS_INDEX],
-				Motor_Parameter[Y_AXIS_INDEX]);
+		    Prepare_Run_Cammand(Y_AXIS_INDEX);
+		    }
+		else
+		    {
+		    is_command_valid = 0;
 		    }
 		break;
+
 	    case 'z':
 		if (Parse_Parameters(Z_AXIS_INDEX, (param_ptr+1), param_len))
 		    {
-		        is_command_valid[X_AXIS_INDEX] = 1;
-		        L6470_PrepareRun(Z_AXIS_INDEX, Motor_Direction[Z_AXIS_INDEX],
-				Motor_Parameter[Z_AXIS_INDEX]);
+		    Prepare_Run_Cammand(Z_AXIS_INDEX);
+		    }
+		else
+		    {
+		    is_command_valid = 0;
 		    }
 		break;
+
 	    case 'm':
 		if (Parse_Parameters(M_AXIS_INDEX, (param_ptr+1), param_len))
 		    {
-		        is_command_valid[X_AXIS_INDEX] = 1;
-		        L6470_PrepareRun(M_AXIS_INDEX, Motor_Direction[M_AXIS_INDEX],
-				Motor_Parameter[M_AXIS_INDEX]);
+		    Prepare_Run_Cammand(M_AXIS_INDEX);
+		    }
+		else
+		    {
+		    is_command_valid = 0;
 		    }
 		break;
 	    default:
-		is_command_valid[X_AXIS_INDEX] = 0;
-		is_command_valid[Y_AXIS_INDEX] = 0;
-		is_command_valid[Z_AXIS_INDEX] = 0;
-		is_command_valid[M_AXIS_INDEX] = 0;
+		is_command_valid = 0;
 		break;
 
 		}
@@ -379,7 +457,7 @@ uint8_t Run_Callback(char* cli_rx_command, char* cli_tx_out_buffer,
 	}
     while (param_ptr != NULL);
 
-    if (is_command_valid[0] || is_command_valid[1] || is_command_valid[2] || is_command_valid[3])
+    if (is_command_valid)
 	{
 	Print_Command_Ok(cli_tx_out_buffer, cli_rx_command);
 	L6470_PerformPreparedApplicationCommand();
@@ -387,6 +465,7 @@ uint8_t Run_Callback(char* cli_rx_command, char* cli_tx_out_buffer,
     else
 	{
 	Print_Command_Err(cli_tx_out_buffer, cli_rx_command);
+	}
 	}
 
     return 0;// operation complete do not call again
@@ -413,6 +492,7 @@ uint8_t Home_Callback(char* cli_rx_command, char* cli_tx_out_buffer, uint16_t cm
 
     char* param_ptr = NULL;
 
+    uint16_t speed = Step_s_2_Speed(6000);
 
     do
 	{
@@ -432,7 +512,7 @@ uint8_t Home_Callback(char* cli_rx_command, char* cli_tx_out_buffer, uint16_t cm
 		    L6470_PrepareGoUntil(X_AXIS_INDEX,
 			    L6470_ACT_RST_ID,
 			    L6470_DIR_REV_ID,
-			    6000);
+			    speed);
 		    }
 		else
 		    {
@@ -446,7 +526,7 @@ uint8_t Home_Callback(char* cli_rx_command, char* cli_tx_out_buffer, uint16_t cm
 		    L6470_PrepareGoUntil(Y_AXIS_INDEX,
 			    L6470_ACT_RST_ID,
 			    L6470_DIR_REV_ID,
-			    6000);
+			    speed);
 		    }
 		else
 		    {
@@ -460,7 +540,7 @@ uint8_t Home_Callback(char* cli_rx_command, char* cli_tx_out_buffer, uint16_t cm
 		    L6470_PrepareGoUntil(Z_AXIS_INDEX,
 			    L6470_ACT_RST_ID,
 			    L6470_DIR_REV_ID,
-			    6000);
+			    speed);
 		    }
 		else
 		    {
@@ -474,7 +554,7 @@ uint8_t Home_Callback(char* cli_rx_command, char* cli_tx_out_buffer, uint16_t cm
 		    L6470_PrepareGoUntil(M_AXIS_INDEX,
 			    L6470_ACT_RST_ID,
 			    L6470_DIR_REV_ID,
-			    6000);
+			    speed);
 		    }
 		else
 		    {

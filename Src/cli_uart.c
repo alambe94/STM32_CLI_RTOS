@@ -43,6 +43,9 @@ static char CLI_Output_Buffer[OUTPUT_BUFFER_SIZE]; //cli output
 static char CLI_Input_Buffer[INPUT_BUFFER_SIZE];
 static char CLI_CMD_Buffer[INPUT_BUFFER_SIZE];
 
+static const char* const CMD_Not_Recognized_Sring = ":Command not recognized.  Enter 'help' to view a list of available commands.\r\n\r\n";
+
+
 extern UART_HandleTypeDef huart2;
 UART_HandleTypeDef* CLI_UART = &huart2;
 
@@ -76,11 +79,11 @@ uint8_t Help_Callback(char* cli_rx_command, char* cli_tx_out_buffer, uint16_t cm
 
     static uint16_t count = 0;
 
-    CLI_Command_t* command_list_ptr = Cammand_List[count];;
+    CLI_Command_t* command_list_ptr = Cammand_List[count];
 
     strncpy(cli_tx_out_buffer,
 	    command_list_ptr->CLI_Command_Description,
-	    command_list_ptr->CLI_Description_Length+1);// add null char at end
+	    command_list_ptr->CLI_Description_Length);// add null char at end
 
     count++;
     if (count < Command_Count)
@@ -139,7 +142,7 @@ void CLI_UART_Loop()
 
     CLI_Command_t* command_list_ptr = NULL;
 
-    if (Ring_Buffer_Get_Count() > 0)
+    if (Ring_Buffer_Get_Count())
 	{
 
 	Ring_Buffer_Get_Char(&rx_char);
@@ -147,7 +150,7 @@ void CLI_UART_Loop()
 	if (rx_char == '\n') // end of command
 	    {
 
-	    if (rx_char_count != 0) // new commnad
+	    if (rx_char_count) // new command received
 		{
 		strncpy(CLI_CMD_Buffer, CLI_Input_Buffer, INPUT_BUFFER_SIZE); // copy command
 		memset(CLI_Input_Buffer, 0x00, INPUT_BUFFER_SIZE); //reset input buffer
@@ -187,7 +190,7 @@ void CLI_UART_Loop()
 			    call_again = command_list_ptr->CLI_Callback(
 				    CLI_CMD_Buffer,
 				    CLI_Output_Buffer,
-				    command_list_ptr->CLI_Command_Length);
+				    cmd_len);
 
 			    //send output to console
 			    CLI_UART_Send_String(CLI_Output_Buffer);
@@ -203,11 +206,10 @@ void CLI_UART_Loop()
 	    if (!is_command_valid)
 		{
 
-	       // memset(CLI_Output_Buffer, 0x00, OUTPUT_BUFFER_SIZE); //reset output buffer
-
+	        //memset(CLI_Output_Buffer, 0x00, OUTPUT_BUFFER_SIZE); //reset output buffer
 		strncpy(CLI_Output_Buffer, CLI_CMD_Buffer, INPUT_BUFFER_SIZE);
 		strncat(CLI_Output_Buffer,
-			":Command not recognized.  Enter 'help' to view a list of available commands.\r\n\r\n",
+			CMD_Not_Recognized_Sring,
 			OUTPUT_BUFFER_SIZE);
 		//send output to console
 		CLI_UART_Send_String(CLI_Output_Buffer);
@@ -245,7 +247,6 @@ void CLI_UART_Loop()
 			}
 		    }
 		}
-
 	    }
 	}
     }

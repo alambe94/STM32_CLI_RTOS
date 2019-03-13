@@ -43,8 +43,8 @@
 
 typedef struct
     {
-	const char* const CLI_Command;
-	const char* const CLI_Command_Description;
+	const char* CLI_Command;
+	const char* CLI_Command_Description;
 	uint16_t CLI_Command_Length;
 	uint16_t CLI_Description_Length;
 	uint8_t (*CLI_Callback)(char* cli_rx_command, char* cli_tx_out_buffer, uint16_t cmd_len);

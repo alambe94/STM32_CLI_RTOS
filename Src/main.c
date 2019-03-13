@@ -121,11 +121,7 @@ int main(void)
 
   CLI_Add_All_Commands();
 
-  HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_1);
-  HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_1);
-  HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_1);
-
-
+  Encoder_Interface_Config();
 
   /* USER CODE END 2 */
 

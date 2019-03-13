@@ -12,12 +12,11 @@
 #include "stm32f4xx_hal.h"
 #include "motor_config.h"
 #include "cli_uart.h"
-#include "string.h"
 #include "math.h"
 #include "stdlib.h"
 #include "L6470.h"
 
-
+void Encoder_Interface_Config();
 void Encoder_Loop();
 
 #endif /* ENCODER_INTERFACE_H_ */
