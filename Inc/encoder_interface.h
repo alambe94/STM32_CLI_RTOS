@@ -9,9 +9,9 @@
 #define ENCODER_INTERFACE_H_
 
 
+#include "cli_uart_interface.h"
 #include "stm32f4xx_hal.h"
 #include "motor_config.h"
-#include "cli_uart.h"
 #include "math.h"
 #include "stdlib.h"
 #include "L6470.h"

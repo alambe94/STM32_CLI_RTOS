@@ -36,28 +36,17 @@
 #define UART_CLI_H_
 
 #include "stm32f4xx_hal.h"
+#include "freeRTOS_cli.h"
 #include "stdlib.h"
 #include "ring_buffer.h"
 #include "string.h"
 
 
-typedef struct
-    {
-	const char* CLI_Command;
-	const char* CLI_Command_Description;
-	uint16_t CLI_Command_Length;
-	uint16_t CLI_Description_Length;
-	uint8_t (*CLI_Callback)(char* cli_rx_command, char* cli_tx_out_buffer, uint16_t cmd_len);
-    } CLI_Command_t;
-
 
 void CLI_UART_Init();
 void CLI_UART_Loop();
 void CLI_UART_Send_String(char* data);
-uint8_t CLI_Add_Cammand(CLI_Command_t* command_def);
-char* CLI_UART_Get_Parameter(char *pcCommandString,
-	uint16_t uxWantedParameter,
-	uint16_t *pxParameterStringLength);
+
 
 
 

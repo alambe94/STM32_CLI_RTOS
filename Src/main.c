@@ -19,8 +19,10 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
+#include <cli_uart_interface.h>
 #include "main.h"
 #include "dma.h"
+#include "i2c.h"
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
@@ -31,7 +33,6 @@
 #include "motor_config.h"
 #include "cli_commands.h"
 #include "encoder_interface.h"
-#include "cli_uart.h"
 #include "L6470.h"
 
 /* USER CODE END Includes */
@@ -98,30 +99,21 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_SPI1_Init();
-  MX_TIM4_Init();
   MX_TIM1_Init();
   MX_USART2_UART_Init();
   MX_TIM2_Init();
+  MX_I2C1_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
   Motor_Config();
-
-  //L6470_PrepareMove(0, 1, 200*16*100);
-
-  //L6470_PrepareMove(1, 1, 100000);
-
-  //L6470_PrepareMove(2, 1, 200);
-
-  //L6470_PrepareMove(3, 1, 100000);
-
-
-  L6470_PerformPreparedApplicationCommand();
 
   CLI_UART_Init();
 
   CLI_Add_All_Commands();
 
   Encoder_Interface_Config();
+
 
   /* USER CODE END 2 */
 
@@ -135,6 +127,7 @@ int main(void)
       CLI_UART_Loop();
 
       Encoder_Loop();
+
   }
   /* USER CODE END 3 */
 }

@@ -11,7 +11,7 @@
 
 #define MAX_X_AXIS_STEPS (1.875*200*128)
 #define MAX_Y_AXIS_STEPS (0.65625*200*128)
-#define MAX_Z_AXIS_STEPS (37.5*200*16)
+#define MAX_Z_AXIS_STEPS (12*200*128)
 #define MAX_M_AXIS_STEPS (1.875*200*128)
 
 
@@ -46,7 +46,7 @@ void Motor_Config()
     Motor_X_Data.speed = 200.0;
     Motor_X_Data.acc = 100.0;
     Motor_X_Data.dec = 50.0;
-    Motor_X_Data.maxspeed = 3000.0;
+    Motor_X_Data.maxspeed = 1200.0;
     Motor_X_Data.minspeed = 0.0;
     Motor_X_Data.fsspd = 1000.0;
     Motor_X_Data.kvalhold = 3.06;
@@ -72,7 +72,7 @@ void Motor_Config()
     Motor_Y_Data.speed = 100.0;
     Motor_Y_Data.acc = 100.0;
     Motor_Y_Data.dec = 50.0;
-    Motor_Y_Data.maxspeed = 3000.0;
+    Motor_Y_Data.maxspeed = 1200.0;
     Motor_Y_Data.minspeed = 0.0;
     Motor_Y_Data.fsspd = 602.7;
     Motor_Y_Data.kvalhold = 3.06;
@@ -97,7 +97,7 @@ void Motor_Config()
     Motor_Z_Data.speed = 100.0;
     Motor_Z_Data.acc = 100.0;
     Motor_Z_Data.dec = 50.0;
-    Motor_Z_Data.maxspeed = 3000.0;
+    Motor_Z_Data.maxspeed = 1200.0;
     Motor_Z_Data.minspeed = 100.0;
     Motor_Z_Data.fsspd = 602.7;
     Motor_Z_Data.kvalhold = 3.06;
@@ -111,19 +111,19 @@ void Motor_Config()
     Motor_Z_Data.kterm = 0;
     Motor_Z_Data.ocdth = 1 * 1500 * 1.00;
     Motor_Z_Data.stallth = 1000 * 1.00;
-    Motor_Z_Data.step_sel = MICROSTEP_1_16;
+    Motor_Z_Data.step_sel = MICROSTEP_1_128;
     Motor_Z_Data.alarmen = 0xFF;
     Motor_Z_Data.config = 0x2E88;
 
-    Motor_M_Data.motorvoltage = 12.0;
+    Motor_M_Data.motorvoltage = 9.0;
     Motor_M_Data.fullstepsperrevolution = 200;
     Motor_M_Data.phasecurrent = 1.5;
     Motor_M_Data.phasevoltage = 3.0;
     Motor_M_Data.speed = 100.0;
-    Motor_M_Data.acc = 100.0;
-    Motor_M_Data.dec = 50.0;
-    Motor_M_Data.maxspeed = 3000.0;
-    Motor_M_Data.minspeed = 100.0;
+    Motor_M_Data.acc = 1000.0;
+    Motor_M_Data.dec = 500.0;
+    Motor_M_Data.maxspeed = 1200.0;
+    Motor_M_Data.minspeed = 0.0;
     Motor_M_Data.fsspd = 602.7;
     Motor_M_Data.kvalhold = 3.06;
     Motor_M_Data.kvalrun = 3.06;
@@ -134,8 +134,8 @@ void Motor_Config()
     Motor_M_Data.fnslpacc = 643.1372e-6;
     Motor_M_Data.fnslpdec = 643.1372e-6;
     Motor_M_Data.kterm = 0;
-    Motor_M_Data.ocdth = 1 * 1500 * 1.00;
-    Motor_M_Data.stallth = 1000 * 1.00;
+    Motor_M_Data.ocdth = 2000 * 1.00;
+    Motor_M_Data.stallth = 1500 * 1.00;
     Motor_M_Data.step_sel = MICROSTEP_1_128;
     Motor_M_Data.alarmen = 0xFF;
     Motor_M_Data.config = 0x2E88;
