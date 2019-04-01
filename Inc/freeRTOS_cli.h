@@ -42,13 +42,13 @@ typedef struct
 	const char* CLI_Command;
 	const char* CLI_Command_Description;
 	uint16_t    CLI_Command_Length;
-	uint8_t   (*CLI_Callback)(char* cli_rx_command, char* cli_tx_out_buffer);
+	uint8_t   (*CLI_Callback)(const char* cli_rx_command, char* cli_tx_out_buffer, uint16_t max_buffer_len);
     } CLI_Command_t;
 
 void    CLI_Add_Help_Cammand();
 uint8_t CLI_Add_Cammand(CLI_Command_t* command_def);
-uint8_t CLI_Process_Cammand(char* cli_in_buffer, char* cli_tx_out_buffer);
-char*   CLI_Get_Parameter(char *cli_in_buffer,
+uint8_t CLI_Process_Cammand(const char* cli_in_buffer, char* cli_tx_out_buffer, uint16_t max_buffer_len);
+char*   CLI_Get_Parameter(const char *cli_in_buffer,
 	uint16_t  param_number,
 	uint16_t *param_number_len);
 

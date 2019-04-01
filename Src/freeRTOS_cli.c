@@ -58,7 +58,7 @@ uint8_t CLI_Add_Cammand(CLI_Command_t* command_def)
 
     }
 
-uint8_t CLI_Process_Cammand(char* cli_in_buffer, char* cli_tx_out_buffer)
+uint8_t CLI_Process_Cammand(const char* cli_in_buffer, char* cli_tx_out_buffer, uint16_t max_buffer_len)
     {
 
     uint8_t is_command_valid = 0;
@@ -69,6 +69,7 @@ uint8_t CLI_Process_Cammand(char* cli_in_buffer, char* cli_tx_out_buffer)
     /* Search for the command string in the list of registered commands. */
     for (uint16_t i = 0; i < Command_Count; i++)
 	{
+
 	command_list_ptr = Cammand_List[i];
 	uint16_t cmd_len = command_list_ptr->CLI_Command_Length;
 
@@ -94,7 +95,7 @@ uint8_t CLI_Process_Cammand(char* cli_in_buffer, char* cli_tx_out_buffer)
 	if (command_list_ptr->CLI_Callback != NULL)
 	    {
 		xreturn = command_list_ptr->CLI_Callback(
-			cli_in_buffer, cli_tx_out_buffer);
+			cli_in_buffer, cli_tx_out_buffer, max_buffer_len);
 	    }
 	}
     else
@@ -108,14 +109,14 @@ uint8_t CLI_Process_Cammand(char* cli_in_buffer, char* cli_tx_out_buffer)
     }
 
 
-char* CLI_Get_Parameter(char *cli_in_buffer, uint16_t param_number,
-	uint16_t *paran_number_len)
+char* CLI_Get_Parameter(const char *cli_in_buffer, uint16_t param_number,
+	uint16_t *param_number_len)
     {
 
     uint16_t uxParametersFound = 0;
     char *pcReturn = NULL;
 
-    *paran_number_len = 0;
+    *param_number_len = 0;
 
     while (uxParametersFound < param_number)
 	{
@@ -141,15 +142,15 @@ char* CLI_Get_Parameter(char *cli_in_buffer, uint16_t param_number,
 	    if (uxParametersFound == param_number)
 		{
 		/* How long is the parameter? */
-		pcReturn = cli_in_buffer;
+		pcReturn = (char*)cli_in_buffer;
 		while (((*cli_in_buffer) != 0x00)
 			&& ((*cli_in_buffer) != ' '))
 		    {
-		    (*paran_number_len)++;
+		    (*param_number_len)++;
 		    cli_in_buffer++;
 		    }
 
-		if (*paran_number_len == 0)
+		if (*param_number_len == 0)
 		    {
 		    pcReturn = NULL;
 		    }
@@ -168,7 +169,7 @@ char* CLI_Get_Parameter(char *cli_in_buffer, uint16_t param_number,
 
 
 
-uint8_t Help_Callback(char* cli_rx_command, char* cli_tx_out_buffer)
+uint8_t Help_Callback(const char* cli_rx_command, char* cli_tx_out_buffer, uint16_t max_buffer_len)
     {
 
     static uint16_t count = 0;
@@ -189,7 +190,6 @@ uint8_t Help_Callback(char* cli_rx_command, char* cli_tx_out_buffer)
     return 0; // operation complete do not call again
 
     }
-
 
 static CLI_Command_t Help_Defination =
     {

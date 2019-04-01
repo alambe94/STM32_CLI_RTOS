@@ -141,14 +141,14 @@ uint8_t Get_From_AT24(uint8_t location, int32_t* data)
     }
 
 
-void Print_Command_Ok(char* cli_tx_out_buffer, char* cli_rx_command)
+void Print_Command_Ok(char* cli_tx_out_buffer, const char* cli_rx_command)
     {
     strncat(cli_tx_out_buffer, "\r\nOk->", 20);
     strncat(cli_tx_out_buffer, cli_rx_command, strlen(cli_rx_command));
     strncat(cli_tx_out_buffer, "\r\n", 3);
     }
 
-void Print_Command_Err(char* cli_tx_out_buffer, char* cli_rx_command)
+void Print_Command_Err(char* cli_tx_out_buffer, const char* cli_rx_command)
     {
     strncat(cli_tx_out_buffer, "\r\nInvalid Command:", 50);
     strncat(cli_tx_out_buffer, cli_rx_command, strlen(cli_rx_command));
@@ -227,7 +227,7 @@ uint8_t Parse_Int(char* param, int32_t* param_int)
     }
 
 
-uint8_t Move_Callback(char* cli_rx_command, char* cli_tx_out_buffer)
+uint8_t Move_Callback(const char* cli_rx_command, char* cli_tx_out_buffer, uint16_t max_buffer_len)
     {
 
     uint8_t  is_command_valid = 1;
@@ -357,7 +357,7 @@ CLI_Command_t Move_Defination =
 
 
 
-uint8_t Goto_Callback(char* cli_rx_command, char* cli_tx_out_buffer)
+uint8_t Goto_Callback(const char* cli_rx_command, char* cli_tx_out_buffer, uint16_t max_buffer_len)
     {
 
     uint8_t  is_command_valid = 1;
@@ -487,7 +487,7 @@ CLI_Command_t Goto_Defination =
 
 
 
-uint8_t Speed_Callback(char* cli_rx_command, char* cli_tx_out_buffer)
+uint8_t Speed_Callback(const char* cli_rx_command, char* cli_tx_out_buffer, uint16_t max_buffer_len)
     {
 
     uint8_t  is_command_valid = 1;
@@ -601,7 +601,7 @@ CLI_Command_t Speed_Defination =
 
 
 
-uint8_t Run_Callback(char* cli_rx_command, char* cli_tx_out_buffer)
+uint8_t Run_Callback(const char* cli_rx_command, char* cli_tx_out_buffer, uint16_t max_buffer_len)
     {
 
     uint8_t  is_command_valid = 1;
@@ -730,7 +730,7 @@ CLI_Command_t Run_Defination =
 
 
 
-uint8_t Home_Callback(char* cli_rx_command, char* cli_tx_out_buffer)
+uint8_t Home_Callback(const char* cli_rx_command, char* cli_tx_out_buffer, uint16_t max_buffer_len)
 
     {
 
@@ -832,7 +832,7 @@ CLI_Command_t Home_Defination =
 
 
 
-uint8_t Auto_Callback(char* cli_rx_command, char* cli_tx_out_buffer)
+uint8_t Auto_Callback(const char* cli_rx_command, char* cli_tx_out_buffer, uint16_t max_buffer_len)
     {
 
     uint16_t param_len = 0;
@@ -864,7 +864,7 @@ CLI_Command_t Auto_Defination =
 
 
 
-uint8_t Manual_Callback(char* cli_rx_command, char* cli_tx_out_buffer)
+uint8_t Manual_Callback(const char* cli_rx_command, char* cli_tx_out_buffer, uint16_t max_buffer_len)
     {
 
     uint16_t param_len = 0;
@@ -896,7 +896,7 @@ CLI_Command_t Manual_Defination =
 
 
 
-uint8_t Getpos_Callback(char* cli_rx_command, char* cli_tx_out_buffer)
+uint8_t Getpos_Callback(const char* cli_rx_command, char* cli_tx_out_buffer, uint16_t max_buffer_len)
     {
 
     uint16_t param_len = 0;
@@ -948,7 +948,7 @@ CLI_Command_t Getpos_Defination =
 
 
 /* expecting 4 params*/
-uint8_t Setfocus_Callback(char* cli_rx_command, char* cli_tx_out_buffer)
+uint8_t Setfocus_Callback(const char* cli_rx_command, char* cli_tx_out_buffer, uint16_t max_buffer_len)
     {
 
     uint8_t is_command_valid = 1;
@@ -1067,7 +1067,7 @@ CLI_Command_t Setfocus_Defination =
 
 
 
-uint8_t Getfocus_Callback(char* cli_rx_command, char* cli_tx_out_buffer)
+uint8_t Getfocus_Callback(const char* cli_rx_command, char* cli_tx_out_buffer, uint16_t max_buffer_len)
     {
 
     uint8_t  is_command_valid = 1;
@@ -1169,7 +1169,7 @@ CLI_Command_t Getfocus_Defination =
 
 
 
-uint8_t Setlense_Callback(char* cli_rx_command, char* cli_tx_out_buffer)
+uint8_t Setlense_Callback(const char* cli_rx_command, char* cli_tx_out_buffer, uint16_t max_buffer_len)
     {
 
     return 0;// operation complete do not call again
@@ -1187,7 +1187,7 @@ CLI_Command_t Setlense_Defination =
 
 
 
-uint8_t Getlense_Callback(char* cli_rx_command, char* cli_tx_out_buffer)
+uint8_t Getlense_Callback(const char* cli_rx_command, char* cli_tx_out_buffer, uint16_t max_buffer_len)
     {
 
     return 0;// operation complete do not call again

@@ -96,7 +96,7 @@ void CLI_UART_Loop()
 	    do
 		{
 		memset(CLI_Output_Buffer, 0x00, OUTPUT_BUFFER_SIZE); //reset output buffer
-		call_again = CLI_Process_Cammand(CLI_CMD_Buffer, CLI_Output_Buffer);
+		call_again = CLI_Process_Cammand(CLI_CMD_Buffer, CLI_Output_Buffer, OUTPUT_BUFFER_SIZE);
 		CLI_UART_Send_String(CLI_Output_Buffer);
 		}
 	    while(call_again);
