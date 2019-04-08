@@ -34,11 +34,14 @@
 
 #include "cli_uart_interface.h"
 
-#define OUTPUT_BUFFER_SIZE 100
-#define INPUT_BUFFER_SIZE  100
+#define UART_RING_BUFFER_SIZE   128
+#define OUTPUT_BUFFER_SIZE      128
+#define INPUT_BUFFER_SIZE       128
+
+static char   UART_DMA_RX_Buffer[UART_RING_BUFFER_SIZE];
+static Ring_Buffer_t UART_Ring_Buffer_Handle;
 
 static char CLI_Output_Buffer[OUTPUT_BUFFER_SIZE]; //cli output
-static char CLI_Input_Buffer[INPUT_BUFFER_SIZE];
 static char CLI_CMD_Buffer[INPUT_BUFFER_SIZE];
 
 extern UART_HandleTypeDef huart2;
@@ -47,7 +50,8 @@ UART_HandleTypeDef* CLI_UART = &huart2;
 void CLI_UART_Init()
     {
     CLI_Add_Help_Cammand();
-    Ring_Buffer_Init(CLI_UART);
+    Ring_Buffer_Init(&UART_Ring_Buffer_Handle,UART_DMA_RX_Buffer, UART_RING_BUFFER_SIZE);
+    HAL_UART_Receive_DMA(CLI_UART, (uint8_t*) UART_DMA_RX_Buffer, UART_RING_BUFFER_SIZE);
     CLI_UART_Send_String("\n->");
     }
 
@@ -75,50 +79,56 @@ void CLI_UART_Loop()
     {
 
     static uint8_t rx_char_count;
-    uint8_t rx_char;
+    char rx_char;
     uint8_t call_again;
 
-    while (Ring_Buffer_Get_Count())
+    while (Ring_Buffer_Get_Count(&UART_Ring_Buffer_Handle))
 	{
 
-	Ring_Buffer_Get_Char(&rx_char);
+	Ring_Buffer_Get_Char(&UART_Ring_Buffer_Handle, &rx_char);
 
-	if (rx_char == '\n') // end of command
+	if (rx_char == '\r')
 	    {
 
-	    if (rx_char_count) // new command received
-		{
-		strncpy(CLI_CMD_Buffer, CLI_Input_Buffer, INPUT_BUFFER_SIZE); // copy command
-		memset(CLI_Input_Buffer, 0x00, INPUT_BUFFER_SIZE); //reset input buffer
-		rx_char_count = 0;
-		}
+	    rx_char_count = 0; //reset CLI_CMD_Buffer index
+	    Ring_Buffer_Get_Char(&UART_Ring_Buffer_Handle, &rx_char); //remove \n, if there is
+	    Ring_Buffer_Flush(&UART_Ring_Buffer_Handle); //reset ring buffer
 
+	    // process cammand
 	    do
 		{
+
 		memset(CLI_Output_Buffer, 0x00, OUTPUT_BUFFER_SIZE); //reset output buffer
-		call_again = CLI_Process_Cammand(CLI_CMD_Buffer, CLI_Output_Buffer, OUTPUT_BUFFER_SIZE);
-		CLI_UART_Send_String(CLI_Output_Buffer);
+
+		call_again = CLI_Process_Cammand(CLI_CMD_Buffer,
+			CLI_Output_Buffer, OUTPUT_BUFFER_SIZE);
+
+		if (CLI_Output_Buffer[0] != '\0')
+		    {
+		    //send output to console
+		    CLI_UART_Send_String(CLI_Output_Buffer);
+		    }
 		}
-	    while(call_again);
+	    while (call_again);
 
 	    CLI_UART_Send_String("\n->");
-
 	    }
-	else
+	else //else update command buffer
 	    {
 
-	    if (rx_char == '\r')
+	    if (!rx_char_count)
 		{
-		/* Ignore the character. */
+		memset(CLI_CMD_Buffer, 0x00, INPUT_BUFFER_SIZE); //reset cmd buffer
 		}
-	    else if ((rx_char == '\b') || (rx_char == 0x7F)) // backspace or delete
+
+	    if ((rx_char == '\b') || (rx_char == 0x7F)) // backspace or delete
 		{
 		/* Backspace was pressed.  Erase the last character in the
 		 string - if any. */
 		if (rx_char_count > 0)
 		    {
 		    rx_char_count--;
-		    CLI_Input_Buffer[rx_char_count] = '\0';
+		    CLI_CMD_Buffer[rx_char_count] = '\0';
 		    }
 		}
 	    else
@@ -128,7 +138,7 @@ void CLI_UART_Loop()
 		    {
 		    if (rx_char_count < INPUT_BUFFER_SIZE)
 			{
-			CLI_Input_Buffer[rx_char_count] = rx_char;
+			CLI_CMD_Buffer[rx_char_count] = rx_char;
 			rx_char_count++;
 			}
 		    }

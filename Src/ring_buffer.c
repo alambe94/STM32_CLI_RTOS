@@ -5,112 +5,131 @@
  *      Author: medprime
  */
 
-
-
-/** Implementation of read only ring buffer for uart
- *
- * data is written to buffer via uart DMA in background
- *
- *
- */
-
-
 #include "ring_buffer.h"
 
-#define BUFFER_SIZE       128  /* must be power of two */
+void Ring_Buffer_Init(Ring_Buffer_t* handle, char* buffer, uint16_t size)
+    {
+    handle->Buffer        =  buffer;
+    handle->Read_Index    =  0;
+    handle->Write_Index   =  0;
+    handle->Size          =  size;
+    }
 
-static uint8_t RX_DMA_Buffer[BUFFER_SIZE]={0};
-static UART_HandleTypeDef *huart;
-static uint32_t Read_PTR;
+/*not checking for overflow*/
+uint8_t Ring_Buffer_Put_Char(Ring_Buffer_t* handle, char data)
+    {
 
-#define WRITE_PTR (uint32_t)( BUFFER_SIZE - (huart->hdmarx->Instance->NDTR))
-
-void Ring_Buffer_Init(UART_HandleTypeDef *_huart)
-{
-	huart = _huart;
-	huart->hdmarx->Instance->NDTR = BUFFER_SIZE;
-	Read_PTR = 0;
-	HAL_UART_Receive_DMA(huart, RX_DMA_Buffer, BUFFER_SIZE);
-
-}
-
-uint8_t Ring_Buffer_Is_Full(void)
-{
-
-	return (Read_PTR == WRITE_PTR)?1:0;
-}
-
-uint8_t Ring_Buffer_Get_Char(uint8_t* data)
-{
-	if (WRITE_PTR == Read_PTR)
+    if (handle->Write_Index == handle->Read_Index)
 	{
-		return 0;
+        //over flow
 	}
+
+    handle->Buffer[handle->Write_Index] = data;
+
+    handle->Write_Index++;
+
+    if (handle->Write_Index == handle->Size)
+	{
+	handle->Write_Index = 0;
+	}
+
+    return 1;
+    }
+
+
+uint8_t Ring_Buffer_Get_Char(Ring_Buffer_t* handle, char* data)
+    {
+
+    if (handle->Read_Index == handle->Write_Index)
+	{
+	*data = 0;
+	return 0;
+	}
+
+    *data = handle->Buffer[handle->Read_Index];
+
+    handle->Read_Index++;
+
+    if (handle->Read_Index == handle->Size)
+	{
+	handle->Read_Index = 0;
+	}
+
+    return 1;
+    }
+
+
+uint8_t Ring_Buffer_Peek_Char(Ring_Buffer_t* handle, char* data,
+	uint16_t position)
+    {
+
+    if (position < Ring_Buffer_Get_Count(handle))
+	{
+	if (position + handle->Read_Index < handle->Size)
+	    {
+	    position = handle->Read_Index + position;
+	    }
 	else
-	{
-		*data = RX_DMA_Buffer[Read_PTR];
-
-		Read_PTR++;
-
-		if (Read_PTR == BUFFER_SIZE)
-		{
-			Read_PTR = 0;
-		}
-
-		return 1;
+	    {
+	    position = handle->Size - (position + handle->Read_Index);
+	    }
+	*data = handle->Buffer[position];
 	}
-}
-
-uint8_t Ring_Buffer_Get_Count(void)
-{
-	if (WRITE_PTR >= Read_PTR)
+    else
 	{
-		return (WRITE_PTR - Read_PTR);
+	*data = 0;
+	return 0;
 	}
-	return (BUFFER_SIZE - (Read_PTR - WRITE_PTR));
-}
+
+    return 1;
+
+    }
 
 
-void Ring_Buffer_Flush()
-{
-	Read_PTR = WRITE_PTR;
-}
+uint8_t Ring_Buffer_Search_Char(Ring_Buffer_t* handle, char data)
+    {
 
+    uint8_t  xreturn = 0;
+    uint16_t temp = handle->Read_Index;
 
-
-
-
-static uint32_t Check_PTR = 0;
-
-uint8_t Ring_Buffer_Check_Char(uint8_t* data)
-{
-	if (WRITE_PTR == Check_PTR)
+    while (temp != handle->Write_Index)
 	{
-		return 0;
+
+	if (data == handle->Buffer[temp++])
+	    {
+	    xreturn = 1;
+	    break;
+	    }
+
+	if(temp == handle->Size)
+	    {
+	    temp = 0;
+	    }
+
 	}
-	else
+
+    return xreturn;
+    }
+
+
+uint8_t Ring_Buffer_Is_Full(Ring_Buffer_t* handle)
+    {
+    return (handle->Read_Index == handle->Write_Index ) ? 1 : 0;
+    }
+
+
+void Ring_Buffer_Flush(Ring_Buffer_t* handle)
+    {
+    handle->Read_Index = handle->Write_Index;
+    }
+
+
+uint8_t Ring_Buffer_Get_Count(Ring_Buffer_t* handle)
+    {
+    if (handle->Write_Index >= handle->Read_Index)
 	{
-		*data = RX_DMA_Buffer[Check_PTR];
-
-		Check_PTR++;
-
-		if (Check_PTR == BUFFER_SIZE)
-		{
-		    Check_PTR = 0;
-		}
-
-		return 1;
+	return (handle->Write_Index - handle->Read_Index);
 	}
-}
-
-
-uint8_t Ring_Buffer_Check_Count(void)
-{
-	if (WRITE_PTR >= Check_PTR)
-	{
-		return (WRITE_PTR - Check_PTR);
-	}
-	return (BUFFER_SIZE - (Check_PTR - WRITE_PTR));
-}
-
+    return (handle->Size - (handle->Read_Index - handle->Write_Index ));
+    }
 
