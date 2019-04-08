@@ -41,6 +41,11 @@
 static char   UART_DMA_RX_Buffer[UART_RING_BUFFER_SIZE];
 static Ring_Buffer_t UART_Ring_Buffer_Handle;
 
+/*data is written to buffer via uart DMA in background*/
+/* need to update Write_Index manually */
+#define     UPDATE_RING_BUFFER() (UART_Ring_Buffer_Handle.Write_Index = ( UART_RING_BUFFER_SIZE - (CLI_UART->hdmarx->Instance->NDTR)))
+
+
 static char CLI_Output_Buffer[OUTPUT_BUFFER_SIZE]; //cli output
 static char CLI_CMD_Buffer[INPUT_BUFFER_SIZE];
 
@@ -81,6 +86,10 @@ void CLI_UART_Loop()
     static uint8_t rx_char_count;
     char rx_char;
     uint8_t call_again;
+
+    /*data is written to buffer via uart DMA in background*/
+    /* need to update Write_Index manually */
+    UPDATE_RING_BUFFER();
 
     while (Ring_Buffer_Get_Count(&UART_Ring_Buffer_Handle))
 	{
