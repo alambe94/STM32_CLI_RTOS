@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project>
+    <FileVersion>2.0</FileVersion> 
+
+    <ProjectPath>/home/medprime/Documents/Projects/alsaad/Cube/WorkSpace/STM32_CLI/UCOS_III/</ProjectPath> 
+
+    <ProjectName>STM32_CLI_UCOS_III</ProjectName> 
+
+    <ProjectNature>C</ProjectNature> 
+
+    <HAL_Driver>/home/medprime/STM32Cube/Repository//STM32Cube_FW_F4_V1.24.1</HAL_Driver>
+    <CMSIS>Drivers/CMSIS</CMSIS> 
+    <Toolchain>STM32CubeIDE</Toolchain>
+    <Version>0</Version>
+
+    <configs>
+<config>
+    <name>STM32_CLI_UCOS_III</name>	 
+    <device>STM32F401RETx</device>		 
+    <cpucore>Arm Cortex-M4</cpucore>    
+    <fpu>SP</fpu>  
+    <memories>   
+        <memory name="RAM" access="xrw" start="0x20000000" size="96" />
+        <memory name="FLASH" access="rx" start="0x8000000" size="512" />
+        </memories>
+    <startup>/home/medprime/STM32Cube/Repository//STM32Cube_FW_F4_V1.24.1/Drivers/CMSIS/Device\ST\STM32F4xx\Source\Templates\gcc\startup_stm32f401xe.s</startup>      
+
+    <heapSize>0x200</heapSize>
+    <stackSize>0x1000</stackSize>
+
+    <board>NUCLEO-F401RE</board>
+
+    <debugprobe>swd</debugprobe>
+    <optimization></optimization>
+
+    <Aincludes>
+        <include></include>
+
+        </Aincludes>
+    <Adefines>
+        </Adefines>  
+    <Cdefines>
+        <define>USE_HAL_DRIVER</define>
+        <define>STM32F401xE</define>
+        </Cdefines>
+    <Ldefines>
+        </Ldefines>
+    <definestoremove>
+        <Adefines>
+            </Adefines>
+        <Cdefines>
+            <define>USE_FULL_LL_DRIVER</define>
+            <define>MBEDTLS_CONFIG_FILE=&quot;mbedtls_config.h&quot;</define>
+            </Cdefines> 
+        <Ldefines>
+            </Ldefines> 
+        </definestoremove>
+
+    <inctoremove>
+        <Aincludes>
+            <include></include>
+            </Aincludes>
+        <Cincludes>
+            <include>Middlewares/Third_Party/FreeRTOS/Source/include</include>
+            <include>Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS</include>
+            <include>Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F</include>
+            </Cincludes>
+        </inctoremove>
+    <filestoremove>
+        <file>
+            <name>Src/freertos.c</name>
+            <name>Middlewares/Third_Party/FreeRTOS/Source/croutine.c</name>
+            <name>Middlewares/Third_Party/FreeRTOS/Source/event_groups.c</name>
+            <name>Middlewares/Third_Party/FreeRTOS/Source/list.c</name>
+            <name>Middlewares/Third_Party/FreeRTOS/Source/queue.c</name>
+            <name>Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c</name>
+            <name>Middlewares/Third_Party/FreeRTOS/Source/tasks.c</name>
+            <name>Middlewares/Third_Party/FreeRTOS/Source/timers.c</name>
+            <name>Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c</name>
+            <name>Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c</name>
+            <name>Middlewares/Third_Party/FreeRTOS/Source/croutine.c</name>
+            <name>Middlewares/Third_Party/FreeRTOS/Source/event_groups.c</name>
+            <name>Middlewares/Third_Party/FreeRTOS/Source/list.c</name>
+            <name>Middlewares/Third_Party/FreeRTOS/Source/queue.c</name>
+            <name>Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c</name>
+            <name>Middlewares/Third_Party/FreeRTOS/Source/tasks.c</name>
+            <name>Middlewares/Third_Party/FreeRTOS/Source/timers.c</name>
+            <name>Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c</name>
+            <name>Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c</name>
+            <name>Middlewares/Third_Party/FreeRTOS/Source/croutine.c</name>
+            <name>Middlewares/Third_Party/FreeRTOS/Source/event_groups.c</name>
+            <name>Middlewares/Third_Party/FreeRTOS/Source/list.c</name>
+            <name>Middlewares/Third_Party/FreeRTOS/Source/queue.c</name>
+            <name>Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c</name>
+            <name>Middlewares/Third_Party/FreeRTOS/Source/tasks.c</name>
+            <name>Middlewares/Third_Party/FreeRTOS/Source/timers.c</name>
+            <name>Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c</name>
+            <name>Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c</name>
+            </file>
+        </filestoremove>
+    <Cincludes>
+        <include>Inc</include>
+        <include>Drivers/STM32F4xx_HAL_Driver/Inc</include>
+        <include>Drivers/STM32F4xx_HAL_Driver/Inc/Legacy</include>
+        <include>Drivers/CMSIS/Device/ST/STM32F4xx/Include</include>
+        <include>Drivers/CMSIS/Include</include>
+
+        </Cincludes>
+    </config>
+        </configs> 
+
+    <underRoot>true</underRoot>
+    <copyAsReference>false</copyAsReference>
+ 
+    <sourceEntries>
+            <sourceEntry>
+            <name>Src</name>
+            </sourceEntry>
+        <sourceEntry>
+            <name>Drivers</name>
+            </sourceEntry>
+        </sourceEntries>
+ 
+    </Project>
+
