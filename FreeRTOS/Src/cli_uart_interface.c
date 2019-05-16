@@ -45,7 +45,7 @@ static Ring_Buffer_t UART_Ring_Buffer_Handle;
 /************************************ring buffer stuff end********************************/
 
 static const char* const pcWelcomeMessage =
-	"Type Help to view a list of registered commands. V1.12\r\n\r\n>";
+	"Type Help to view a list of registered commands. FreeRTOS\r\n\r\n>";
 
 #define OUTPUT_BUFFER_SIZE      128
 #define INPUT_BUFFER_SIZE       128

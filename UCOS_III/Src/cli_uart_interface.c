@@ -47,7 +47,7 @@ static Ring_Buffer_t UART_Ring_Buffer_Handle;
 /************************************ring buffer stuff end********************************/
 
 static const char* const pcWelcomeMessage =
-	"Type Help to view a list of registered commands. V1.12\r\n\r\n>";
+	"Type Help to view a list of registered commands. UCOS III\r\n\r\n>";
 
 #define OUTPUT_BUFFER_SIZE      128
 #define INPUT_BUFFER_SIZE       128
@@ -58,7 +58,7 @@ static char CLI_CMD_Buffer[INPUT_BUFFER_SIZE];
 extern UART_HandleTypeDef huart2;
 UART_HandleTypeDef* CLI_UART = &huart2;
 
-#define  CLI_UART_TASK_PRIO                10u
+#define  CLI_UART_TASK_PRIO                2u
 #define  CLI_UART_TASK_STK_SIZE            512u
 static  OS_TCB   CLI_UART_Task_TCB;
 static  CPU_STK  CLI_UART_Task_STK[CLI_UART_TASK_STK_SIZE];
