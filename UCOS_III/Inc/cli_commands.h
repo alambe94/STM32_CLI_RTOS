@@ -11,7 +11,6 @@
 #include "FreeRTOS_CLI.h"
 #include "stm32f4xx_hal.h"
 #include "cli_uart_interface.h"
-#include "stdio.h"
 #include "stdlib.h"
 
 

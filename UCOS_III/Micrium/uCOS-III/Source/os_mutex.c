@@ -3,14 +3,14 @@
 *                                                      uC/OS-III
 *                                                 The Real-Time Kernel
 *
-*                                  (c) Copyright 2009-2014; Micrium, Inc.; Weston, FL
+*                                  (c) Copyright 2009-2015; Micrium, Inc.; Weston, FL
 *                           All rights reserved.  Protected by international copyright laws.
 *
 *                                                   MUTEX MANAGEMENT
 *
 * File    : OS_MUTEX.C
 * By      : JJL
-* Version : V3.04.04
+* Version : V3.04.05
 *
 * LICENSING TERMS:
 * ---------------
@@ -429,6 +429,14 @@ void  OSMutexPend (OS_MUTEX  *p_mutex,
     }
 
     if (OSTCBCurPtr == p_mutex->OwnerTCBPtr) {              /* See if current task is already the owner of the mutex  */
+        if (p_mutex->OwnerNestingCtr == (OS_NESTING_CTR)-1) {
+            CPU_CRITICAL_EXIT();
+#if (defined(TRACE_CFG_EN) && (TRACE_CFG_EN > 0u))
+            TRACE_OS_MUTEX_PEND_FAILED(p_mutex);            /* Record the event.                                      */
+#endif
+           *p_err = OS_ERR_MUTEX_OVF;
+            return;
+        }
         p_mutex->OwnerNestingCtr++;
         if (p_ts != (CPU_TS *)0) {
            *p_ts  = p_mutex->TS;

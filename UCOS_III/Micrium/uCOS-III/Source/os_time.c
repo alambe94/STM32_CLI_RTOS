@@ -3,14 +3,14 @@
 *                                                      uC/OS-III
 *                                                 The Real-Time Kernel
 *
-*                                  (c) Copyright 2009-2014; Micrium, Inc.; Weston, FL
+*                                  (c) Copyright 2009-2015; Micrium, Inc.; Weston, FL
 *                           All rights reserved.  Protected by international copyright laws.
 *
 *                                                   TIME MANAGEMENT
 *
 * File    : OS_TIME.C
 * By      : JJL
-* Version : V3.04.04
+* Version : V3.04.05
 *
 * LICENSING TERMS:
 * ---------------
@@ -559,6 +559,7 @@ void  OSTimeTick (void)
                        (OS_OPT  ) OS_OPT_POST_NONE,
                        (OS_ERR *)&err);
 
+   (void)err;
 
 #if OS_CFG_SCHED_ROUND_ROBIN_EN > 0u
     OS_SchedRoundRobin(&OSRdyList[OSPrioCur]);

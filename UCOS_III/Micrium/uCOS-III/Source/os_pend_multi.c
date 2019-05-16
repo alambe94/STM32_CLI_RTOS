@@ -3,14 +3,14 @@
 *                                                      uC/OS-III
 *                                                 The Real-Time Kernel
 *
-*                                  (c) Copyright 2009-2014; Micrium, Inc.; Weston, FL
+*                                  (c) Copyright 2009-2015; Micrium, Inc.; Weston, FL
 *                           All rights reserved.  Protected by international copyright laws.
 *
 *                                               PEND ON MULTIPLE OBJECTS
 *
 * File    : OS_PEND_MULTI.C
 * By      : JJL
-* Version : V3.04.04
+* Version : V3.04.05
 *
 * LICENSING TERMS:
 * ---------------

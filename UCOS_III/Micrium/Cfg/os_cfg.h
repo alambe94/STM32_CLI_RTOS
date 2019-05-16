@@ -3,22 +3,22 @@
 *                                                      uC/OS-III
 *                                                 The Real-Time Kernel
 *
-*                                  (c) Copyright 2009-2012; Micrium, Inc.; Weston, FL
+*                                  (c) Copyright 2009-2015; Micrium, Inc.; Weston, FL
 *                           All rights reserved.  Protected by international copyright laws.
 *
 *                                                  CONFIGURATION FILE
 *
 * File    : OS_CFG.H
 * By      : JJL
-* Version : V3.03.00
+* Version : V3.04.05
 *
 * LICENSING TERMS:
 * ---------------
-*           uC/OS-III is provided in source form for FREE short-term evaluation, for educational use or 
+*           uC/OS-III is provided in source form for FREE short-term evaluation, for educational use or
 *           for peaceful research.  If you plan or intend to use uC/OS-III in a commercial application/
-*           product then, you need to contact Micrium to properly license uC/OS-III for its use in your 
-*           application/product.   We provide ALL the source code for your convenience and to help you 
-*           experience uC/OS-III.  The fact that the source is provided does NOT mean that you can use 
+*           product then, you need to contact Micrium to properly license uC/OS-III for its use in your
+*           application/product.   We provide ALL the source code for your convenience and to help you
+*           experience uC/OS-III.  The fact that the source is provided does NOT mean that you can use
 *           it commercially without paying a licensing fee.
 *
 *           Knowledge of the source code may NOT be used to develop a similar product.
@@ -26,18 +26,19 @@
 *           Please help us continue to provide the embedded community with the finest software available.
 *           Your honesty is greatly appreciated.
 *
-*           You can contact us at www.micrium.com, or by phone at +1 (954) 217-2036.
+*           You can find our product's user manual, API reference, release notes and
+*           more information at https://doc.micrium.com.
+*           You can contact us at www.micrium.com.
 ************************************************************************************************************************
 */
 
 #ifndef OS_CFG_H
 #define OS_CFG_H
 
-
                                              /* ---------------------------- MISCELLANEOUS -------------------------- */
-#define OS_CFG_APP_HOOKS_EN             0u   /* Enable (1) or Disable (0) application specific hooks                  */
-#define OS_CFG_ARG_CHK_EN               1u   /* Enable (1) or Disable (0) argument checking                           */
-#define OS_CFG_CALLED_FROM_ISR_CHK_EN   1u   /* Enable (1) or Disable (0) check for called from ISR                   */
+#define OS_CFG_APP_HOOKS_EN             1u   /* Enable (1) or Disable (0) application specific hooks                  */
+#define OS_CFG_ARG_CHK_EN               0u   /* Enable (1) or Disable (0) argument checking                           */
+#define OS_CFG_CALLED_FROM_ISR_CHK_EN   0u   /* Enable (1) or Disable (0) check for called from ISR                   */
 #define OS_CFG_DBG_EN                   1u   /* Enable (1) debug code/variables                                       */
 #define OS_CFG_ISR_POST_DEFERRED_EN     0u   /* Enable (1) or Disable (0) Deferred ISR posts                          */
 #define OS_CFG_OBJ_TYPE_CHK_EN          1u   /* Enable (1) or Disable (0) object type checking                        */
@@ -47,8 +48,8 @@
 
 #define OS_CFG_PRIO_MAX                32u   /* Defines the maximum number of task priorities (see OS_PRIO data type) */
 
-#define OS_CFG_SCHED_LOCK_TIME_MEAS_EN  1u   /* Include code to measure scheduler lock time                           */
-#define OS_CFG_SCHED_ROUND_ROBIN_EN     1u   /* Include code for Round-Robin scheduling                               */
+#define OS_CFG_SCHED_LOCK_TIME_MEAS_EN  0u   /* Include code to measure scheduler lock time                           */
+#define OS_CFG_SCHED_ROUND_ROBIN_EN     0u   /* Include code for Round-Robin scheduling                               */
 #define OS_CFG_STK_SIZE_MIN            64u   /* Minimum allowable task stack size                                     */
 
 
@@ -78,14 +79,14 @@
 
                                              /* ----------------------------- SEMAPHORES ---------------------------- */
 #define OS_CFG_SEM_EN                   1u   /* Enable (1) or Disable (0) code generation for SEMAPHORES              */
-#define OS_CFG_SEM_DEL_EN               0u   /*    Include code for OSSemDel()                                        */
+#define OS_CFG_SEM_DEL_EN               1u   /*    Include code for OSSemDel()                                        */
 #define OS_CFG_SEM_PEND_ABORT_EN        1u   /*    Include code for OSSemPendAbort()                                  */
 #define OS_CFG_SEM_SET_EN               1u   /*    Include code for OSSemSet()                                        */
 
 
                                              /* -------------------------- TASK MANAGEMENT -------------------------- */
-#define OS_CFG_STAT_TASK_EN             0u   /* Enable (1) or Disable(0) the statistics task                          */
-#define OS_CFG_STAT_TASK_STK_CHK_EN     0u   /* Check task stacks from statistic task                                 */
+#define OS_CFG_STAT_TASK_EN             1u   /* Enable (1) or Disable(0) the statistics task                          */
+#define OS_CFG_STAT_TASK_STK_CHK_EN     1u   /* Check task stacks from statistic task                                 */
 
 #define OS_CFG_TASK_CHANGE_PRIO_EN      1u   /* Include code for OSTaskChangePrio()                                   */
 #define OS_CFG_TASK_DEL_EN              0u   /* Include code for OSTaskDel()                                          */
@@ -107,7 +108,10 @@
 
 
                                              /* ------------------------- TIMER MANAGEMENT -------------------------- */
-#define OS_CFG_TMR_EN                   0u   /* Enable (1) or Disable (0) code generation for TIMERS                  */
+#define OS_CFG_TMR_EN                   1u   /* Enable (1) or Disable (0) code generation for TIMERS                  */
 #define OS_CFG_TMR_DEL_EN               0u   /* Enable (1) or Disable (0) code generation for OSTmrDel()              */
+
+                                             /* ------------------------------ uC/TRACE ----------------------------- */
+#define TRACE_CFG_EN                    0u   /* Enable (1) or Disable (0) uC/Trace instrumentation                    */
 
 #endif

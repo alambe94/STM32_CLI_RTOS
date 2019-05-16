@@ -58,7 +58,7 @@ static char CLI_CMD_Buffer[INPUT_BUFFER_SIZE];
 extern UART_HandleTypeDef huart2;
 UART_HandleTypeDef* CLI_UART = &huart2;
 
-#define  CLI_UART_TASK_PRIO                2u
+#define  CLI_UART_TASK_PRIO                10u
 #define  CLI_UART_TASK_STK_SIZE            512u
 static  OS_TCB   CLI_UART_Task_TCB;
 static  CPU_STK  CLI_UART_Task_STK[CLI_UART_TASK_STK_SIZE];
@@ -78,7 +78,7 @@ void CLI_UART_Thread_Add()
 		  (OS_ERR*	) &os_err);
 
 
-    OSTaskCreate(&CLI_UART_Task_TCB,                               /* Create the startup task                              */
+    OSTaskCreate(&CLI_UART_Task_TCB,
                   "CLI_UART_Task",
 		  CLI_UART_Task,
                   0u,
@@ -93,14 +93,14 @@ void CLI_UART_Thread_Add()
                   &os_err);
     }
 
-void CLI_UART_Send_Char(char data)
+void CLI_UART_Send_Char(const char data)
     {
     CLI_UART->Instance->DR = (data);
     while (__HAL_UART_GET_FLAG(CLI_UART,UART_FLAG_TC) == 0)
 	;
     }
 
-void CLI_UART_Send_String(char* data)
+void CLI_UART_Send_String(const char* data)
     {
     uint16_t count = 0;
     while (*data)
@@ -141,7 +141,6 @@ void CLI_UART_Send_Float(float num)
 
 static void CLI_UART_Task(void* argument)
     {
-
     OS_ERR  os_err;
 
     //static uint8_t rx_char_count; // function variable, must be static in polling mode
@@ -164,25 +163,25 @@ static void CLI_UART_Task(void* argument)
     __HAL_UART_ENABLE_IT(CLI_UART, UART_IT_IDLE);
 
     /*** gaurd uart ***/
-    OSMutexPend(&CLI_UART_Mutex,0,OS_OPT_PEND_BLOCKING,0,&os_err);
+    OSMutexPend(&CLI_UART_Mutex, 0, OS_OPT_PEND_BLOCKING, 0, &os_err);
 
     /* Send the welcome message. */
     CLI_UART_Send_String_DMA(pcWelcomeMessage);
 
     /* wait for transmission to complete */
-    OSTaskSemPend(0,OS_OPT_PEND_BLOCKING,0,&os_err);
+    OSTaskSemPend(0, OS_OPT_PEND_BLOCKING, 0, &os_err);
 
     for (;;)
 	{
 
 	/*** release uart ***/
-	OSMutexPost(&CLI_UART_Mutex,OS_OPT_POST_NONE,&os_err);
+	OSMutexPost(&CLI_UART_Mutex, OS_OPT_POST_NONE, &os_err);
 
 	/*** wait for idle line interrupt ***/
-	OSTaskSemPend(0,OS_OPT_PEND_BLOCKING,0,&os_err);
+	OSTaskSemPend(0, OS_OPT_PEND_BLOCKING, 0, &os_err);
 
 	/*** gaurd uart ***/
-	OSMutexPend(&CLI_UART_Mutex,0,OS_OPT_PEND_BLOCKING,0,&os_err);
+	OSMutexPend(&CLI_UART_Mutex, 0, OS_OPT_PEND_BLOCKING, 0, &os_err);
 
 	/*data is written to buffer via uart DMA in background*/
 	/* need to update Write_Index manually */
@@ -210,18 +209,17 @@ static void CLI_UART_Task(void* argument)
 
 		    if (CLI_Output_Buffer[0] != '\0')
 			{
+
 			//send output to console
 			CLI_UART_Send_String_DMA(CLI_Output_Buffer);
 
 			/* wait for transmission to complete */
-			OSTaskSemPend(0,OS_OPT_PEND_BLOCKING,0,&os_err);
-
-			CLI_UART_Send_String("\nTX xbdcdsj->");
-
+			OSTaskSemPend(0, OS_OPT_PEND_BLOCKING, 0, &os_err);
 
 			}
 		    }
 		while (call_again);
+
 
 		CLI_UART_Send_String("\n->");
 		}
@@ -274,10 +272,10 @@ void CLI_UART_Task_Wakeup()
          // the interrupt has started
          OSIntEnter();
 
+         OSTaskSemPost(&CLI_UART_Task_TCB, OS_OPT_POST_NONE, &os_err);
+
          CPU_CRITICAL_EXIT();
          // Handle the interrupt
-
-         OSTaskSemPost(&CLI_UART_Task_TCB,OS_OPT_PEND_BLOCKING,&os_err);
 
          // Make the kernel aware that
          // the interrupt has ended
@@ -297,18 +295,14 @@ void HAL_UART_TxHalfCpltCallback(UART_HandleTypeDef *huart)
 void CLI_UART_RX_ISR()
     {
 
-    if (__HAL_UART_GET_IT_SOURCE(CLI_UART, UART_IT_IDLE))
+    uint8_t interrupt_source =  __HAL_UART_GET_FLAG(&huart2, UART_FLAG_IDLE);
+
+    if (interrupt_source)
 	{
 
-	/*
-	 PE (Parity error), FE (Framing error), NE (Noise error), ORE (Overrun
-	 error) and IDLE (Idle line detected) flags are cleared by software
-	 sequence: a read operation to USART_SR register followed by a read
-	 operation to USART_DR register.
-	 */
-	(void) __HAL_UART_GET_FLAG(CLI_UART, UART_FLAG_IDLE);
-	(void) CLI_UART->Instance->DR;
+	__HAL_UART_CLEAR_IDLEFLAG(CLI_UART);
 
-	CLI_UART_Task_Wakeup();
+	 CLI_UART_Task_Wakeup();
+
 	}
     }

@@ -3,12 +3,12 @@
 *                                                      uC/OS-III
 *                                                 The Real-Time Kernel
 *
-*                                  (c) Copyright 2009-2014; Micrium, Inc.; Weston, FL
+*                                  (c) Copyright 2009-2015; Micrium, Inc.; Weston, FL
 *                           All rights reserved.  Protected by international copyright laws.
 *
 * File    : OS.H
 * By      : JJL
-* Version : V3.04.04
+* Version : V3.04.05
 *
 * LICENSING TERMS:
 * ---------------
@@ -44,7 +44,7 @@
 ************************************************************************************************************************
 */
 
-#define  OS_VERSION  30404u                       /* Version of uC/OS-III (Vx.yy.zz mult. by 10000)                   */
+#define  OS_VERSION  30405u                       /* Version of uC/OS-III (Vx.yy.zz mult. by 10000)                   */
 
 /*
 ************************************************************************************************************************
@@ -481,6 +481,7 @@ typedef  enum  os_err {
     OS_ERR_MUTEX_NOT_OWNER           = 22401u,
     OS_ERR_MUTEX_OWNER               = 22402u,
     OS_ERR_MUTEX_NESTING             = 22403u,
+    OS_ERR_MUTEX_OVF                 = 22404u,
 
     OS_ERR_N                         = 23000u,
     OS_ERR_NAME                      = 23001u,
@@ -1963,8 +1964,6 @@ void          OS_TmrInit                (OS_ERR                *p_err);
 void          OS_TmrLink                (OS_TMR                *p_tmr,
                                          OS_OPT                 opt);
 
-void          OS_TmrResetPeak           (void);
-
 void          OS_TmrUnlink              (OS_TMR                *p_tmr);
 
 void          OS_TmrTask                (void                  *p_arg);
@@ -2234,8 +2233,6 @@ void          OS_TickListInsertDly      (OS_TCB                *p_tcb,
                                          OS_ERR                *p_err);
 
 void          OS_TickListRemove         (OS_TCB                *p_tcb);
-
-void          OS_TickListResetPeak      (void);
 
 
 /*

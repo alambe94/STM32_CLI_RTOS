@@ -1851,7 +1851,7 @@ void  Mem_DynPoolCreate (const  CPU_CHAR      *p_name,
         p_seg = &Mem_SegHeap;
 #else
        *p_err = LIB_MEM_ERR_NULL_PTR;
-        return (DEF_NULL);
+        return ;
 #endif
     }
 
@@ -1923,7 +1923,7 @@ void  Mem_DynPoolCreateHW (const  CPU_CHAR      *p_name,
         p_seg = &Mem_SegHeap;
 #else
        *p_err = LIB_MEM_ERR_NULL_PTR;
-        return (DEF_NULL);
+        return ;
 #endif
     }
 

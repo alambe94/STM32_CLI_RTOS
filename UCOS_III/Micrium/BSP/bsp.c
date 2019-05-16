@@ -104,37 +104,6 @@
 
 /*
 *********************************************************************************************************
-*                                               BSP_Init()
-*
-* Description : Initialize the Board Support Package (BSP).
-*
-* Argument(s) : none.
-*
-* Return(s)   : none.
-*
-* Caller(s)   : Application.
-*
-* Note(s)     : (1) This function SHOULD be called before any other BSP function is called.
-*
-*               (2) CPU instruction / data tracing requires the use of the following pins :
-*                   (a) (1) Asynchronous      :  PB[3]
-*                       (2) Synchronous 1-bit :  PE[3:2]
-*                       (3) Synchronous 2-bit :  PE[4:2]
-*                       (4) Synchronous 4-bit :  PE[6:2]
-*
-*                   (c) The application may wish to adjust the trace bus width depending on I/O
-*                       requirements.
-*********************************************************************************************************
-*/
-
-void  BSP_Init (void)
-{
-
-}
-
-
-/*
-*********************************************************************************************************
 *                                            BSP_CPU_ClkFreq()
 *
 * Description : Read CPU registers to determine the CPU clock frequency of the chip.
@@ -152,27 +121,6 @@ void  BSP_Init (void)
 CPU_INT32U  BSP_CPU_ClkFreq (void)
 {
     return HAL_RCC_GetSysClockFreq();
-}
-
-
-/*
-*********************************************************************************************************
-*                                            BSP_Tick_Init()
-*
-* Description : Configure and Initialize the OS Tick Services (SysTick).
-*
-* Argument(s) : none.
-*
-* Return(s)   : none.
-*
-* Caller(s)   : Application.
-*
-* Note(s)     : none.
-*********************************************************************************************************
-*/
-
-void  BSP_Tick_Init (void)
-{                                 /* Init uC/OS periodic time src (SysTick).              */
 }
 
 

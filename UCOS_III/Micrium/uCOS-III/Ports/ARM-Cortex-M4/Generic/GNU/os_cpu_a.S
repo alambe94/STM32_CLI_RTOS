@@ -4,13 +4,13 @@
 @                                          The Real-Time Kernel
 @
 @
-@                         (c) Copyright 2009-2013; Micrium, Inc.; Weston, FL
+@                         (c) Copyright 2009-2015; Micrium, Inc.; Weston, FL
 @                    All rights reserved.  Protected by international copyright laws.
 @
 @                                           ARM Cortex-M4 Port
 @
 @ File      : OS_CPU_A.ASM
-@ Version   : V3.04.04
+@ Version   : V3.04.05
 @ By        : JJL
 @             BAN
 @             JBL
@@ -145,6 +145,10 @@ OSStartHighRdy:
     MOVW    R1, #:lower16:NVIC_PENDSV_PRI
     MOVT    R1, #:upper16:NVIC_PENDSV_PRI
     STRB    R1, [R0]
+
+    MOV     R0, #0
+    MSR     PSP, R0
+    BL      OSTaskSwHook                                        @ Call OSTaskSwHook for FPU Pop
 
     MOVW    R0, #:lower16:OS_CPU_ExceptStkBase                  @ Initialize the MSP to the OS_CPU_ExceptStkBase
     MOVT    R0, #:upper16:OS_CPU_ExceptStkBase

@@ -4,13 +4,13 @@
 *                                          The Real-Time Kernel
 *
 *
-*                         (c) Copyright 2009-2013; Micrium, Inc.; Weston, FL
+*                         (c) Copyright 2009-2015; Micrium, Inc.; Weston, FL
 *                    All rights reserved.  Protected by international copyright laws.
 *
 *                                           ARM Cortex-M4 Port
 *
 * File      : OS_CPU_C.C
-* Version   : V3.04.04
+* Version   : V3.04.05
 * By        : JJL
 *             BAN
 *             JBL
@@ -35,7 +35,7 @@
 *
 * For       : ARMv7 Cortex-M4
 * Mode      : Thumb-2 ISA
-* Toolchain : GNU G Compiler
+* Toolchain : RealView
 *********************************************************************************************************
 */
 
@@ -52,7 +52,7 @@ const  CPU_CHAR  *os_cpu_c__c = "$Id: $";
 *********************************************************************************************************
 */
 
-#include  "os.h"
+#include  "../../../../Source/os.h"
 
 
 #ifdef __cplusplus
@@ -236,7 +236,7 @@ CPU_STK  *OSTaskStkInit (OS_TASK_PTR    p_task,
 {
     CPU_STK    *p_stk;
 
-    
+
     (void)opt;                                                  /* Prevent compiler warning                               */
 
     p_stk = &p_stk_base[stk_size];                              /* Load stack pointer                                     */
@@ -260,7 +260,7 @@ CPU_STK  *OSTaskStkInit (OS_TASK_PTR    p_task,
     *--p_stk = (CPU_STK)0x06060606u;                            /* R6                                                     */
     *--p_stk = (CPU_STK)0x05050505u;                            /* R5                                                     */
     *--p_stk = (CPU_STK)0x04040404u;                            /* R4                                                     */
-    
+
 #if (OS_CPU_ARM_FP_EN == DEF_ENABLED)
     if ((opt & OS_OPT_TASK_SAVE_FP) != (OS_OPT)0) {
         *--p_stk = (CPU_STK)0x02000000u;                        /* FPSCR                                                  */
@@ -298,7 +298,7 @@ CPU_STK  *OSTaskStkInit (OS_TASK_PTR    p_task,
         *--p_stk = (CPU_STK)0x3F800000u;                        /* S1                                                     */
         *--p_stk = (CPU_STK)0x00000000u;                        /* S0                                                     */
     }
-#endif    
+#endif
 
     return (p_stk);
 }
@@ -329,7 +329,7 @@ void  OSTaskSwHook (void)
     CPU_TS  int_dis_time;
 #endif
 
-    
+
 #if (OS_CPU_ARM_FP_EN == DEF_ENABLED)
     if ((OSTCBCurPtr->Opt & OS_OPT_TASK_SAVE_FP) != (OS_OPT)0) {
         OS_CPU_FP_Reg_Push(OSTCBCurPtr->StkPtr);
@@ -338,14 +338,14 @@ void  OSTaskSwHook (void)
     if ((OSTCBHighRdyPtr->Opt & OS_OPT_TASK_SAVE_FP) != (OS_OPT)0) {
         OS_CPU_FP_Reg_Pop(OSTCBHighRdyPtr->StkPtr);
     }
-#endif    
+#endif
 
 #if OS_CFG_APP_HOOKS_EN > 0u
     if (OS_AppTaskSwHookPtr != (OS_APP_HOOK_VOID)0) {
         (*OS_AppTaskSwHookPtr)();
     }
 #endif
-    
+
 #if (defined(TRACE_CFG_EN) && (TRACE_CFG_EN > 0u))
     TRACE_OS_TASK_SWITCHED_IN(OSTCBHighRdyPtr);             /* Record the event.                                      */
 #endif
@@ -361,18 +361,18 @@ void  OSTaskSwHook (void)
 #endif
 
 #ifdef  CPU_CFG_INT_DIS_MEAS_EN
-    int_dis_time = CPU_IntDisMeasMaxCurReset();             /* Keep track of per-task interrupt disable time          */
+    int_dis_time = CPU_IntDisMeasMaxCurReset();                 /* Keep track of per-task interrupt disable time          */
     if (OSTCBCurPtr->IntDisTimeMax < int_dis_time) {
         OSTCBCurPtr->IntDisTimeMax = int_dis_time;
     }
 #endif
 
 #if OS_CFG_SCHED_LOCK_TIME_MEAS_EN > 0u
-                                                            /* Keep track of per-task scheduler lock time             */
+                                                                /* Keep track of per-task scheduler lock time             */
     if (OSTCBCurPtr->SchedLockTimeMax < OSSchedLockTimeMaxCur) {
         OSTCBCurPtr->SchedLockTimeMax = OSSchedLockTimeMaxCur;
     }
-    OSSchedLockTimeMaxCur = (CPU_TS)0;                      /* Reset the per-task value                               */
+    OSSchedLockTimeMaxCur = (CPU_TS)0;                          /* Reset the per-task value                               */
 #endif
 }
 
@@ -403,12 +403,12 @@ void  OSTimeTickHook (void)
 *********************************************************************************************************
 *                                          SYS TICK HANDLER
 *
-* Description: Handle the system tick (SysTick) interrupt, which is used to generate the uC/OS-III tick
+* Description: Handle the system tick (SysTick) interrupt, which is used to generate the uC/OS-II tick
 *              interrupt.
 *
 * Arguments  : None.
 *
-* Note(s)    : 1) This function MUST be placed on entry 15 of the Cortex-M4 vector table.
+* Note(s)    : 1) This function MUST be placed on entry 15 of the Cortex-M3 vector table.
 *********************************************************************************************************
 */
 
@@ -459,7 +459,6 @@ void  OS_CPU_SysTickInit (CPU_INT32U  cnts)
                                                             /* Enable timer interrupt.                                */
     CPU_REG_NVIC_ST_CTRL  |= CPU_REG_NVIC_ST_CTRL_TICKINT;
 }
-
 
 #ifdef __cplusplus
 }

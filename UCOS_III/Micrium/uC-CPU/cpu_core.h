@@ -3,7 +3,7 @@
 *                                                uC/CPU
 *                                    CPU CONFIGURATION & PORT LAYER
 *
-*                          (c) Copyright 2004-2013; Micrium, Inc.; Weston, FL
+*                          (c) Copyright 2004-2015; Micrium, Inc.; Weston, FL
 *
 *               All rights reserved.  Protected by international copyright laws.
 *
@@ -27,7 +27,7 @@
 *                                           CORE CPU MODULE
 *
 * Filename      : cpu_core.h
-* Version       : V1.30.01
+* Version       : V1.30.02
 * Programmer(s) : SR
 *                 ITJ
 *********************************************************************************************************
@@ -450,13 +450,13 @@ CPU_CORE_EXT  CPU_TS_TMR       CPU_IntDisMeasMax_cnts;          /* ... non-reset
 #define  CPU_TYPE_CREATE(char_1, char_2, char_3, char_4)        (((CPU_INT32U)((CPU_INT08U)(char_1)) << (3u * DEF_OCTET_NBR_BITS)) | \
                                                                  ((CPU_INT32U)((CPU_INT08U)(char_2)) << (2u * DEF_OCTET_NBR_BITS)) | \
                                                                  ((CPU_INT32U)((CPU_INT08U)(char_3)) << (1u * DEF_OCTET_NBR_BITS)) | \
-                                                                 ((CPU_INT32U)((CPU_INT08U)(char_4)) << (0u * DEF_OCTET_NBR_BITS)))
+                                                                 ((CPU_INT32U)((CPU_INT08U)(char_4))))
 
 #else
 
 #if    ((CPU_CFG_DATA_SIZE   == CPU_WORD_SIZE_64) || \
         (CPU_CFG_DATA_SIZE   == CPU_WORD_SIZE_32))
-#define  CPU_TYPE_CREATE(char_1, char_2, char_3, char_4)        (((CPU_INT32U)((CPU_INT08U)(char_1)) << (0u * DEF_OCTET_NBR_BITS)) | \
+#define  CPU_TYPE_CREATE(char_1, char_2, char_3, char_4)        (((CPU_INT32U)((CPU_INT08U)(char_1))) | \
                                                                  ((CPU_INT32U)((CPU_INT08U)(char_2)) << (1u * DEF_OCTET_NBR_BITS)) | \
                                                                  ((CPU_INT32U)((CPU_INT08U)(char_3)) << (2u * DEF_OCTET_NBR_BITS)) | \
                                                                  ((CPU_INT32U)((CPU_INT08U)(char_4)) << (3u * DEF_OCTET_NBR_BITS)))
@@ -465,14 +465,14 @@ CPU_CORE_EXT  CPU_TS_TMR       CPU_IntDisMeasMax_cnts;          /* ... non-reset
 #elif   (CPU_CFG_DATA_SIZE   == CPU_WORD_SIZE_16)
 #define  CPU_TYPE_CREATE(char_1, char_2, char_3, char_4)        (((CPU_INT32U)((CPU_INT08U)(char_1)) << (2u * DEF_OCTET_NBR_BITS)) | \
                                                                  ((CPU_INT32U)((CPU_INT08U)(char_2)) << (3u * DEF_OCTET_NBR_BITS)) | \
-                                                                 ((CPU_INT32U)((CPU_INT08U)(char_3)) << (0u * DEF_OCTET_NBR_BITS)) | \
+                                                                 ((CPU_INT32U)((CPU_INT08U)(char_3))) | \
                                                                  ((CPU_INT32U)((CPU_INT08U)(char_4)) << (1u * DEF_OCTET_NBR_BITS)))
 
 #else                                                           /* Dflt CPU_WORD_SIZE_08.                               */
 #define  CPU_TYPE_CREATE(char_1, char_2, char_3, char_4)        (((CPU_INT32U)((CPU_INT08U)(char_1)) << (3u * DEF_OCTET_NBR_BITS)) | \
                                                                  ((CPU_INT32U)((CPU_INT08U)(char_2)) << (2u * DEF_OCTET_NBR_BITS)) | \
                                                                  ((CPU_INT32U)((CPU_INT08U)(char_3)) << (1u * DEF_OCTET_NBR_BITS)) | \
-                                                                 ((CPU_INT32U)((CPU_INT08U)(char_4)) << (0u * DEF_OCTET_NBR_BITS)))
+                                                                 ((CPU_INT32U)((CPU_INT08U)(char_4))))
 #endif
 #endif
 
@@ -614,6 +614,7 @@ CPU_DATA         CPU_CntTrailZeros32      (CPU_INT32U  val);
 CPU_DATA         CPU_CntTrailZeros64      (CPU_INT64U  val);
 #endif
 
+CPU_INT08U       CPU_PopCnt32             (CPU_INT32U  value);
 
 /*
 *********************************************************************************************************

@@ -11,12 +11,11 @@ RM := rm -rf
 -include Startup/subdir.mk
 -include Src/subdir.mk
 -include Micrium/uCOS-III/Source/subdir.mk
--include Micrium/uCOS-III/Ports/ARM-Cortex-M4/GNU/subdir.mk
+-include Micrium/uCOS-III/Ports/ARM-Cortex-M4/Generic/GNU/subdir.mk
 -include Micrium/uC-LIB/Ports/ARM-Cortex-M4/GNU/subdir.mk
 -include Micrium/uC-LIB/subdir.mk
 -include Micrium/uC-CPU/ARM-Cortex-M4/GNU/subdir.mk
 -include Micrium/uC-CPU/subdir.mk
--include Micrium/Cfg/subdir.mk
 -include Micrium/BSP/subdir.mk
 -include Drivers/STM32F4xx_HAL_Driver/Src/subdir.mk
 -include subdir.mk

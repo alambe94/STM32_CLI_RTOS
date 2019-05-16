@@ -3,7 +3,7 @@
 *                                                uC/CPU
 *                                    CPU CONFIGURATION & PORT LAYER
 *
-*                          (c) Copyright 2004-2013; Micrium, Inc.; Weston, FL
+*                          (c) Copyright 2004-2015; Micrium, Inc.; Weston, FL
 *
 *               All rights reserved.  Protected by international copyright laws.
 *
@@ -30,7 +30,7 @@
 *                                            GNU C Compiler
 *
 * Filename      : cpu.h
-* Version       : V1.30.01.00
+* Version       : V1.30.02.00
 * Programmer(s) : JJL
 *                 BAN
 *********************************************************************************************************

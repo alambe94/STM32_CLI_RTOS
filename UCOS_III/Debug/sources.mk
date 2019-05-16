@@ -20,12 +20,11 @@ OBJCOPY_BIN :=
 SUBDIRS := \
 Drivers/STM32F4xx_HAL_Driver/Src \
 Micrium/BSP \
-Micrium/Cfg \
 Micrium/uC-CPU/ARM-Cortex-M4/GNU \
 Micrium/uC-CPU \
 Micrium/uC-LIB/Ports/ARM-Cortex-M4/GNU \
 Micrium/uC-LIB \
-Micrium/uCOS-III/Ports/ARM-Cortex-M4/GNU \
+Micrium/uCOS-III/Ports/ARM-Cortex-M4/Generic/GNU \
 Micrium/uCOS-III/Source \
 Src \
 Startup \

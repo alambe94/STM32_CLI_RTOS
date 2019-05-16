@@ -3,12 +3,12 @@
 *                                                      uC/OS-III
 *                                                 The Real-Time Kernel
 *
-*                                  (c) Copyright 2009-2014; Micrium, Inc.; Weston, FL
+*                                  (c) Copyright 2009-2015; Micrium, Inc.; Weston, FL
 *                           All rights reserved.  Protected by international copyright laws.
 *
 * File    : OS_TYPE.H
 * By      : JJL
-* Version : V3.04.04
+* Version : V3.04.05
 *
 * LICENSING TERMS:
 * ---------------

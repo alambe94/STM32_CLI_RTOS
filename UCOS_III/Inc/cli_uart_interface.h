@@ -37,15 +37,16 @@
 
 #include "FreeRTOS_CLI.h"
 #include "stm32f4xx_hal.h"
-#include "stdio.h"
 #include "stdlib.h"
 #include "ring_buffer.h"
 #include "cli_commands.h"
 #include "string.h"
+#include "printf.h"
+
 
 void CLI_UART_Thread_Add();
-void CLI_UART_Send_Char(char data);
-void CLI_UART_Send_String(char* data);
+void CLI_UART_Send_Char(const char data);
+void CLI_UART_Send_String(const char* data);
 void CLI_UART_Send_String_DMA(const char* data);
 void CLI_UART_Send_Int(int32_t num);
 

@@ -3,7 +3,7 @@
 *                                                uC/CPU
 *                                    CPU CONFIGURATION & PORT LAYER
 *
-*                          (c) Copyright 2004-2013; Micrium, Inc.; Weston, FL
+*                          (c) Copyright 2004-2015; Micrium, Inc.; Weston, FL
 *
 *               All rights reserved.  Protected by international copyright laws.
 *
@@ -27,7 +27,7 @@
 *                                           CORE CPU MODULE
 *
 * Filename      : cpu_core.c
-* Version       : V1.30.01
+* Version       : V1.30.02
 * Programmer(s) : SR
 *                 ITJ
 *********************************************************************************************************
@@ -44,8 +44,10 @@
 #define    CPU_CORE_MODULE
 #include  "cpu_core.h"
 
+#if defined(CPU_CFG_CACHE_MGMT_EN)
 #if (CPU_CFG_CACHE_MGMT_EN == DEF_ENABLED)
 #include  "cpu_cache.h"
+#endif
 #endif
 
 
@@ -54,6 +56,12 @@
 *                                            LOCAL DEFINES
 *********************************************************************************************************
 */
+
+                                                                /* Pop cnt algorithm csts.                              */
+#define CRC_UTIL_POPCNT_MASK01010101_32  0x55555555u
+#define CRC_UTIL_POPCNT_MASK00110011_32  0x33333333u
+#define CRC_UTIL_POPCNT_MASK00001111_32  0x0F0F0F0Fu
+#define CRC_UTIL_POPCNT_POWERSOF256_32   0x01010101u
 
 
 /*
@@ -1356,24 +1364,24 @@ CPU_DATA  CPU_CntLeadZeros32 (CPU_INT32U  val)
     if (val > 0x0000FFFFu) {
         if (val > 0x00FFFFFFu) {                                                /* Chk bits [31:24] :                   */
                                                                                 /* .. Nbr lead zeros =               .. */
-            ix             = (CPU_DATA)((CPU_DATA)val >> 24u);                  /* .. lookup tbl ix  = 'val' >> 24 bits */
+            ix             = (CPU_DATA)((CPU_DATA)(val >> 24u));                /* .. lookup tbl ix  = 'val' >> 24 bits */
             nbr_lead_zeros = (CPU_DATA)(CPU_CntLeadZerosTbl[ix]);               /* .. plus nbr msb lead zeros =  0 bits.*/
 
         } else {                                                                /* Chk bits [23:16] :                   */
                                                                                 /* .. Nbr lead zeros =               .. */
-            ix             = (CPU_DATA)((CPU_DATA)val >> 16u);                  /* .. lookup tbl ix  = 'val' >> 16 bits */
+            ix             = (CPU_DATA)((CPU_DATA)(val >> 16u));                /* .. lookup tbl ix  = 'val' >> 16 bits */
             nbr_lead_zeros = (CPU_DATA)((CPU_DATA)CPU_CntLeadZerosTbl[ix] +  8u);/* .. plus nbr msb lead zeros =  8 bits.*/
         }
 
     } else {
         if (val > 0x000000FFu) {                                                /* Chk bits [15:08] :                   */
                                                                                 /* .. Nbr lead zeros =               .. */
-            ix             = (CPU_DATA)((CPU_DATA)val >>  8u);                  /* .. lookup tbl ix  = 'val' >>  8 bits */
+            ix             = (CPU_DATA)((CPU_DATA)(val >>  8u));                /* .. lookup tbl ix  = 'val' >>  8 bits */
             nbr_lead_zeros = (CPU_DATA)((CPU_DATA)CPU_CntLeadZerosTbl[ix] + 16u);/* .. plus nbr msb lead zeros = 16 bits.*/
 
         } else {                                                                /* Chk bits [07:00] :                   */
                                                                                 /* .. Nbr lead zeros =               .. */
-            ix             = (CPU_DATA)((CPU_DATA)val >>  0u);                  /* .. lookup tbl ix  = 'val' >>  0 bits */
+            ix             = (CPU_DATA)((CPU_DATA)(val >>  0u));                /* .. lookup tbl ix  = 'val' >>  0 bits */
             nbr_lead_zeros = (CPU_DATA)((CPU_DATA)CPU_CntLeadZerosTbl[ix] + 24u);/* .. plus nbr msb lead zeros = 24 bits.*/
         }
     }
@@ -2045,6 +2053,47 @@ CPU_DATA  CPU_CntTrailZeros64 (CPU_INT64U  val)
     return (nbr_trail_zeros);
 }
 #endif
+
+
+/*
+*********************************************************************************************************
+*                                           CRCUtil_PopCnt_32()
+*
+* Description : Compute population count (hamming weight) for value (number of bits set).
+*
+* Argument(s) : value           Value to compute population count on.
+*
+*
+* Return(s)   : value's population count.
+*
+* Caller(s)   : various.
+*
+* Note(s)     : (1) Algorithm taken from http://en.wikipedia.org/wiki/Hamming_weight
+*********************************************************************************************************
+*/
+
+CPU_INT08U  CPU_PopCnt32 (CPU_INT32U  value)
+{
+    CPU_INT32U  even_cnt;
+    CPU_INT32U  odd_cnt;
+    CPU_INT32U  result;
+
+
+    odd_cnt  = (value >> 1u) & CRC_UTIL_POPCNT_MASK01010101_32; /* 2-bits pieces.                                       */
+    result   =  value - odd_cnt;                                /* Same result as result=odd_cnt+(value & 0x55555555).  */
+
+    even_cnt =  result & CRC_UTIL_POPCNT_MASK00110011_32;       /* 4-bits pieces.                                       */
+    odd_cnt  = (result >> 2u) & CRC_UTIL_POPCNT_MASK00110011_32;
+    result   =  even_cnt + odd_cnt;
+
+    even_cnt =  result & CRC_UTIL_POPCNT_MASK00001111_32;       /* 8-bits pieces.                                       */
+    odd_cnt  = (result >> 4u) & CRC_UTIL_POPCNT_MASK00001111_32;
+    result   =  even_cnt + odd_cnt;
+
+    result = (result * CRC_UTIL_POPCNT_POWERSOF256_32) >> 24u;
+
+    return (result);
+}
 
 
 /*

@@ -10,11 +10,11 @@
 #include "os.h"
 
 
-#define  UART_TX_TASK_PRIO                3u
-#define  UART_TX_TASK_STK_SIZE            256u
+#define  UART_Print_Task_PRIO                3u
+#define  UART_Print_Task_STK_SIZE            256u
 static  OS_TCB   UART_Task_TCB;
-static  CPU_STK  UART_Task_STK[UART_TX_TASK_STK_SIZE];
-static  void  UART_TX_Task (void  *p_arg);
+static  CPU_STK  UART_Task_STK[UART_Print_Task_STK_SIZE];
+static  void  UART_Print_Task (void  *p_arg);
 
 extern  OS_MUTEX CLI_UART_Mutex;
 
@@ -548,13 +548,13 @@ void CLI_Add_All_Commands()
     CLI_Add_Cammand(&Sqrt_Defination);
 
     OSTaskCreate(&UART_Task_TCB,                               /* Create the startup task                              */
-                 "UART_Task",
-		  UART_TX_Task,
+                 "UART_Print_Task",
+		  UART_Print_Task,
                   0u,
- 		  UART_TX_TASK_PRIO,
+ 		  UART_Print_Task_PRIO,
                   &UART_Task_STK[0u],
- 		  UART_Task_STK[UART_TX_TASK_STK_SIZE / 10u],
- 		  UART_TX_TASK_STK_SIZE,
+ 		  UART_Task_STK[UART_Print_Task_STK_SIZE / 10u],
+ 		  UART_Print_Task_STK_SIZE,
                   0u,
                   0u,
                   0u,
@@ -563,7 +563,7 @@ void CLI_Add_All_Commands()
 
     }
 
-static  void  UART_TX_Task (void *p_arg)
+static  void  UART_Print_Task (void *p_arg)
 {
     OS_ERR  os_err;
 

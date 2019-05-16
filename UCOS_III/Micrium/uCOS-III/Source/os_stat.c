@@ -3,14 +3,14 @@
 *                                                      uC/OS-III
 *                                                 The Real-Time Kernel
 *
-*                                  (c) Copyright 2009-2014; Micrium, Inc.; Weston, FL
+*                                  (c) Copyright 2009-2015; Micrium, Inc.; Weston, FL
 *                           All rights reserved.  Protected by international copyright laws.
 *
 *                                                  STATISTICS MODULE
 *
 * File    : OS_STAT.C
 * By      : JJL
-* Version : V3.04.04
+* Version : V3.04.05
 *
 * LICENSING TERMS:
 * ---------------
@@ -157,13 +157,6 @@ void  OSStatReset (OS_ERR  *p_err)
         CPU_CRITICAL_EXIT();
     }
 #endif
-
-    OS_TickListResetPeak();                                 /* Reset tick wheel statistics                            */
-
-#if OS_CFG_TMR_EN > 0u
-    OS_TmrResetPeak();
-#endif
-
 
    *p_err = OS_ERR_NONE;
 }
@@ -353,7 +346,7 @@ void  OS_StatTask (void  *p_arg)
                 OSStatTaskCPUUsageMax = OSStatTaskCPUUsage;
             }
         } else {
-            OSStatTaskCPUUsage = (OS_CPU_USAGE)10000u;
+            OSStatTaskCPUUsage = (OS_CPU_USAGE)0u;
         }
 
         OSStatTaskHook();                                   /* Invoke user definable hook                             */

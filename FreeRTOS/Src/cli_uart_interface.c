@@ -258,18 +258,14 @@ void HAL_UART_TxHalfCpltCallback(UART_HandleTypeDef *huart)
 void CLI_UART_RX_ISR()
     {
 
-    if (__HAL_UART_GET_IT_SOURCE(CLI_UART, UART_IT_IDLE))
+    uint8_t interrupt_source =  __HAL_UART_GET_FLAG(&huart2, UART_FLAG_IDLE);
+
+    if (interrupt_source)
 	{
 
-	/*
-	 PE (Parity error), FE (Framing error), NE (Noise error), ORE (Overrun
-	 error) and IDLE (Idle line detected) flags are cleared by software
-	 sequence: a read operation to USART_SR register followed by a read
-	 operation to USART_DR register.
-	 */
-	(void) __HAL_UART_GET_FLAG(CLI_UART, UART_FLAG_IDLE);
-	(void) CLI_UART->Instance->DR;
+	__HAL_UART_CLEAR_IDLEFLAG(CLI_UART);
 
-	CLI_UART_Task_Wakeup();
+	 CLI_UART_Task_Wakeup();
+
 	}
     }

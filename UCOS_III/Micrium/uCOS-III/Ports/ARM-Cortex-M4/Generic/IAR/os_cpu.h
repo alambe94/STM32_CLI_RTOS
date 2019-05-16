@@ -4,13 +4,13 @@
 *                                          The Real-Time Kernel
 *
 *
-*                         (c) Copyright 2009-2013; Micrium, Inc.; Weston, FL
+*                         (c) Copyright 2009-2015; Micrium, Inc.; Weston, FL
 *                    All rights reserved.  Protected by international copyright laws.
 *
 *                                           ARM Cortex-M4 Port
 *
 * File      : OS_CPU.H
-* Version   : V3.04.04
+* Version   : V3.04.05
 * By        : JJL
 *             JBL
 *
@@ -32,9 +32,9 @@
 *           more information at https://doc.micrium.com.
 *           You can contact us at www.micrium.com.
 *
-* For       : ARMv7 Cortex-M4
+* For       : ARMv7M Cortex-M4
 * Mode      : Thumb-2 ISA
-* Toolchain : GNU C Compiler
+* Toolchain : IAR EWARM
 *********************************************************************************************************
 */
 
@@ -58,13 +58,12 @@ extern  "C" {
 *********************************************************************************************************
 */
 
-#if (defined(__VFP_FP__) && !defined(__SOFTFP__))
+#ifdef __ARMVFP__
 #define  OS_CPU_ARM_FP_EN                              DEF_ENABLED
 #else
 #define  OS_CPU_ARM_FP_EN                              DEF_DISABLED
 #endif
 #define  OS_CPU_ARM_FP_REG_NBR                           32u
-
 
 /*
 *********************************************************************************************************
@@ -72,9 +71,9 @@ extern  "C" {
 *********************************************************************************************************
 */
 
-#define  OS_TASK_SW()           OSCtxSw()
+#define  OS_TASK_SW()               OSCtxSw()
 
-#define  OS_TASK_SW_SYNC()      __asm__ __volatile__ ("isb" : : : "memory")
+#define  OS_TASK_SW_SYNC()          __ISB()
 
 /*
 *********************************************************************************************************

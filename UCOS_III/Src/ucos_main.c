@@ -10,14 +10,23 @@
 #include "main.h"
 #include "os_cfg_app.h"
 
+
 #define  APP_CFG_STARTUP_TASK_PRIO          3u
 #define  APP_CFG_STARTUP_TASK_STK_SIZE    128u
 static  OS_TCB   StartupTaskTCB;
 static  CPU_STK  StartupTaskStk[APP_CFG_STARTUP_TASK_STK_SIZE];
 static  void  StartupTask (void  *p_arg);
 
+//#define TRC_USE_TRACEALYZER_RECORDER 1
+
 int  ucos_main (void)
 {
+
+
+#if (TRC_USE_TRACEALYZER_RECORDER == 1)
+  vTraceEnable(TRC_START);
+#endif
+
     OS_ERR  os_err;
 
     Mem_Init();                                                 /* Initialize Memory Managment Module                   */
@@ -80,24 +89,14 @@ static  void  StartupTask (void *p_arg)
    HAL_SYSTICK_Config(SystemCoreClock /OS_CFG_TICK_RATE_HZ);
 
    /*set systic interrupt priority to lowest */
-   HAL_NVIC_SetPriority(SysTick_IRQn, 15, 0U);
+   HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0U);
 
    /* Initialize all configured peripherals */
    MX_GPIO_Init();
    MX_DMA_Init();
    MX_USART2_UART_Init();
 
-
-
    CLI_UART_Thread_Add();
-
-#if OS_CFG_STAT_TASK_EN > 0u
-    OSStatTaskCPUUsageInit(&os_err);                            /* Compute CPU capacity with no task running            */
-#endif
-
-#ifdef CPU_CFG_INT_DIS_MEAS_EN
-    CPU_IntDisMeasMaxCurReset();
-#endif
 
     while (DEF_TRUE) {                                          /* Task body, always written as an infinite loop.       */
         HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);

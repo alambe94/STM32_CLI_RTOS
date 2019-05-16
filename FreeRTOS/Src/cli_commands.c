@@ -11,7 +11,7 @@
 #define      PRINT_ABOUT_TASK_STAK_SIZE 128u
 #define      PRINT_ABOUT_TASK_PRIORITY  2u
 TaskHandle_t Print_About_Task_Handle;
-StackType_t Print_About_Task_Stack[PRINT_ABOUT_TASK_STAK_SIZE];
+StackType_t  Print_About_Task_Stack[PRINT_ABOUT_TASK_STAK_SIZE];
 StaticTask_t Print_About_Task_TCB;
 static void Print_About_Task(void* argument);
 

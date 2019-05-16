@@ -3,7 +3,7 @@
 *                                                uC/CPU
 *                                    CPU CONFIGURATION & PORT LAYER
 *
-*                          (c) Copyright 2004-2013; Micrium, Inc.; Weston, FL
+*                          (c) Copyright 2004-2015; Micrium, Inc.; Weston, FL
 *
 *               All rights reserved.  Protected by international copyright laws.
 *
@@ -27,7 +27,7 @@
 *                                      CPU CONFIGURATION DEFINES
 *
 * Filename      : cpu_def.h
-* Version       : V1.30.01
+* Version       : V1.30.02
 * Programmer(s) : ITJ
 *********************************************************************************************************
 */
@@ -73,7 +73,7 @@
 *********************************************************************************************************
 */
 
-#define  CPU_CORE_VERSION                              13001u   /* See Note #1.                                         */
+#define  CPU_CORE_VERSION                              13002u   /* See Note #1.                                         */
 
 
 /*

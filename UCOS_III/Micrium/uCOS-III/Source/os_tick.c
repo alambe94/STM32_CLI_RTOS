@@ -3,14 +3,14 @@
 *                                                      uC/OS-III
 *                                                 The Real-Time Kernel
 *
-*                                  (c) Copyright 2009-2014; Micrium, Inc.; Weston, FL
+*                                  (c) Copyright 2009-2015; Micrium, Inc.; Weston, FL
 *                           All rights reserved.  Protected by international copyright laws.
 *
 *                                                   TICK MANAGEMENT
 *
 * File    : OS_TICK.C
 * By      : JJL
-* Version : V3.04.04
+* Version : V3.04.05
 *
 * LICENSING TERMS:
 * ---------------
@@ -401,25 +401,6 @@ void  OS_TickListRemove (OS_TCB  *p_tcb)
     }
 }
 
-/*
-************************************************************************************************************************
-*                                              RESET TICK LIST PEAK DETECTOR
-*
-* Description: This function is used to reset the peak detector for the number of entries in each spoke.
-*
-* Arguments  : void
-*
-* Returns    : none
-*
-* Note(s)    : This function is INTERNAL to uC/OS-III and your application should not call it.
-************************************************************************************************************************
-*/
-
-void  OS_TickListResetPeak (void)
-{
-#if OS_CFG_DBG_EN > 0u
-#endif
-}
 
 /*
 ************************************************************************************************************************
