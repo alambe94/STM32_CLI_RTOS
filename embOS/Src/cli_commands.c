@@ -7,8 +7,8 @@
 
 #include "cli_commands.h"
 #include "math.h"
-
-#include "../Segger/embOS/Include/RTOS.h"
+#include "printf.h"
+#include "RTOS.h"
 
 
 #define  UART_Print_Task_PRIO                3u

@@ -1,7 +1,7 @@
 [PreviousGenFiles]
-HeaderPath=/home/medprime/Documents/Projects/alsaad/Cube/WorkSpace/STM32_CLI_embOS/Inc
+HeaderPath=/home/medprime/Documents/Projects/alsaad/Cube/WorkSpace/STM32_CLI/embOS/Inc
 HeaderFiles=stm32f4xx_it.h;stm32f4xx_hal_conf.h;main.h;gpio.h;dma.h;usart.h;
-SourcePath=/home/medprime/Documents/Projects/alsaad/Cube/WorkSpace/STM32_CLI_embOS/Src
+SourcePath=/home/medprime/Documents/Projects/alsaad/Cube/WorkSpace/STM32_CLI/embOS/Src
 SourceFiles=stm32f4xx_it.c;stm32f4xx_hal_msp.c;main.c;gpio.c;dma.c;usart.c;
 
 [PreviousLibFiles]

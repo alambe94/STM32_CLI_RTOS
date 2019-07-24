@@ -33,8 +33,7 @@
  */
 
 #include "cli_uart_interface.h"
-
-#include "../Segger/embOS/Include/RTOS.h"
+#include "RTOS.h"
 
 
 /************************************ring buffer stuff start******************************/
@@ -169,7 +168,7 @@ static void CLI_UART_Task()
 	OS_SEMAPHORE_TakeBlocked(&CLI_UART_SYNC_SEM);
 
 	/*** gaurd uart ***/
-	OS_MUTEX_Lock(&CLI_UART_Mutex);
+	OS_MUTEX_LockBlocked(&CLI_UART_Mutex);
 
 	/*data is written to buffer via uart DMA in background*/
 	/* need to update Write_Index manually */

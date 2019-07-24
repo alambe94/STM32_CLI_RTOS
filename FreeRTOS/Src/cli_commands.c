@@ -6,6 +6,7 @@
  */
 
 #include "cli_commands.h"
+#include "printf.h"
 #include "math.h"
 
 #define      PRINT_ABOUT_TASK_STAK_SIZE 128u
