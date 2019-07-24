@@ -61,26 +61,16 @@ void Error_Handler(void);
 #define B1_Pin GPIO_PIN_13
 #define B1_GPIO_Port GPIOC
 #define B1_EXTI_IRQn EXTI15_10_IRQn
-#define L6470_BUSY_SYNC_INT_Pin GPIO_PIN_0
-#define L6470_BUSY_SYNC_INT_GPIO_Port GPIOC
-#define L6470_BUSY_SYNC_INT_EXTI_IRQn EXTI0_IRQn
-#define L6470_Flag_INT_Pin GPIO_PIN_1
-#define L6470_Flag_INT_GPIO_Port GPIOC
-#define L6470_Flag_INT_EXTI_IRQn EXTI1_IRQn
 #define USART_TX_Pin GPIO_PIN_2
 #define USART_TX_GPIO_Port GPIOA
 #define USART_RX_Pin GPIO_PIN_3
 #define USART_RX_GPIO_Port GPIOA
-#define L6470_CS_Pin GPIO_PIN_4
-#define L6470_CS_GPIO_Port GPIOA
 #define LD2_Pin GPIO_PIN_5
 #define LD2_GPIO_Port GPIOA
 #define TMS_Pin GPIO_PIN_13
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14
 #define TCK_GPIO_Port GPIOA
-#define L6470_RST_STBY_Pin GPIO_PIN_5
-#define L6470_RST_STBY_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

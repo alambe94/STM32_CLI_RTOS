@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<!-- V171109 -->
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Release notes for embOS V5.02a for Cortex-M and Keil ARM MDK (ARM compiler V5)</title>
+<meta name="robots" content="noindex,nofollow">
+<meta http-equiv="pragma" content="no-cache">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style type="text/css">
+body {
+  margin: 0;
+  background-color: #4F5157;
+  color: #3B3D3F;
+  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+ font-size: 0.9rem  line-height: 1.5;
+  min-width: 400px;
+}
+.header{
+  background: #2C5B9C;
+  }
+.head {
+  color: #fff;
+  padding: 20px 30px;
+}
+.head h2 {
+  color: #fff;
+}
+.headh3 li, .head h3 a, .head a {
+  color: #fff;
+}
+.footer {
+  color: #4f5157;
+  background: #BFC3C6;
+  padding: 20px;
+  border-top: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+}
+.footer h2 {
+  color: #bfc3c6;
+}
+.footer h3 li, .footer h3 a, .footer a {
+  color: #000;
+}
+
+.divider-global {
+  border-top: 2px solid #fff;
+  padding: 20px 30px;
+}
+h1 {
+  margin-bottom: 30px;
+  text-align: left;
+  font-size: 1.5em;
+  color: #fff;
+  border-bottom: 1px solid #fff;
+}
+h2 {
+  text-align: left;
+  font-size: 1.2em;
+  color: #002F5C;
+  text-decoration: underline;
+  display: inline-block;
+}
+h3 {
+  text-align: left;
+  font-size: 1.0em;
+}
+h3 li {
+  margin: 10px 0;
+}
+div.divider-global:nth-of-type(odd) {
+  background: #F2F2F2;
+}
+div.divider-global:nth-of-type(even) {
+  background: #F6F6F6;
+}
+.toolChain Table {
+  max-width: 1000px;
+}
+.toolChain Table th {
+  font-weight: 600;
+  text-align: left;
+  width: 12%;
+}
+#seggerLogo {
+  padding: 20px 30px;
+  display: inline-block;
+}
+.claim {
+  font-size: 20px;
+  display: inline-block;
+  color: #fff;
+  line-height: 115px;
+  vertical-align: top;
+}
+ @media screen and (max-width: 600px) {
+.claim {
+  display: none;
+}
+}
+ @media screen and (min-width: 600px) {
+.claim {
+  font-size: 200%;
+}
+}
+ @media screen and (min-width: 1024px) {
+.claim {
+  font-size: 300%;
+}
+}
+</style>
+</head>
+<body class="en" id="top">
+<main class="main-content" id="content" role="main">
+  <div class="header">
+    <div class="row">
+      <div id="seggerLogo"> <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="150px" height="75px" viewBox="110 27.5 150 75" style="enable-background:new 110 27.5 150 75;" xml:space="preserve">
+        <style type="text/css">
+
+  .st0{fill:#FFFFFF;}
+  .st1{fill:#005CA8;}
+  .st2{fill:#010000;}
+
+</style>
+        <g>
+          <g>
+            <path class="st0" d="M258,96.1c0,2.6-2,4.7-4.4,4.7H115.9c-2.4,0-4.4-2.1-4.4-4.7V33.7c0-2.6,2-4.7,4.4-4.7h137.7
+      c2.4,0,4.4,2.1,4.4,4.7"></path>
+            <path class="st2" d="M253.7,102.3H115.9c-3.3,0-5.9-2.8-5.9-6.2V33.7c0-3.5,2.6-6.2,5.9-6.2h137.7c3.3,0,5.9,2.8,5.9,6.2v62.4
+      C259.6,99.5,256.9,102.3,253.7,102.3z M115.9,30.6c-1.6,0-2.8,1.4-2.8,3.1v62.4c0,1.7,1.3,3.1,2.8,3.1h137.7
+      c1.6,0,2.8-1.4,2.8-3.1V33.7c0-1.7-1.3-3.1-2.8-3.1H115.9z"></path>
+          </g>
+          <polygon class="st1" points="117.8,52.4 127.1,64.9 117.8,77.3   "></polygon>
+          <g>
+            <path class="st1" d="M131.6,41.3l15.6,20.3v0.1c0.4,0.5,1,1,1.7,1h99.7c1.2,0,2.2-1.1,2.2-2.3c0-1.2-1-2.3-2.2-2.3H150l-14.9-19.4
+      l0,0c-0.4-0.5-1-0.9-1.7-0.9c-1.2,0-2.2,1-2.2,2.2C131.2,40.4,131.4,40.9,131.6,41.3L131.6,41.3z"></path>
+            <path class="st1" d="M140.4,66.3c0.3-0.4,0.5-0.9,0.5-1.4c0-0.5-0.2-1-0.5-1.4l-18.6-24.9l0,0c-0.4-0.5-1-0.9-1.7-0.9
+      c-1.2,0-2.2,1-2.2,2.2c0,0.5,0.2,1,0.5,1.4l17.6,23.5l-17.7,23.5c-0.3,0.4-0.5,0.9-0.5,1.4c0,1.2,1,2.2,2.2,2.2
+      c0.7,0,1.3-0.3,1.7-0.9l0,0L140.4,66.3z"></path>
+            <path class="st1" d="M248.7,67.2h-99.8c-0.7,0-1.3,0.4-1.7,1v0.1l-15.6,20.3l0,0c-0.3,0.3-0.5,0.8-0.5,1.3c0,1.2,1,2.2,2.2,2.2
+      c0.7,0,1.3-0.3,1.7-0.9v0.1l15-19.4h98.7c1.2,0,2.2-1.1,2.2-2.3S249.9,67.2,248.7,67.2z"></path>
+          </g>
+          <path class="st2" d="M163,80.7c0,0.4-0.1,0.7-0.4,1c-0.3,0.2-0.7,0.3-1.2,0.3c-0.6,0-1.2-0.3-1.8-1c-0.2-0.2-0.3-0.3-0.3-0.3
+    c-0.3-0.3-0.7-0.5-1.2-0.7c-0.5-0.1-1-0.2-1.7-0.2c-0.9,0-1.6,0.2-2.1,0.5c-0.5,0.3-0.7,0.7-0.7,1.3c0,0.7,1,1.3,2.9,1.7
+    c0.5,0.1,0.9,0.2,1.1,0.2c1.2,0.2,2.1,0.5,2.7,0.6s1,0.3,1.5,0.5c0.7,0.3,1.2,0.8,1.6,1.3c0.3,0.6,0.5,1.2,0.5,2
+    c0,1.4-0.6,2.6-1.8,3.4c-1.2,0.9-2.8,1.3-4.9,1.3c-1.2,0-2.1-0.1-2.9-0.3c-0.8-0.2-1.6-0.5-2.4-1c-0.5-0.3-0.9-0.7-1.2-1.2
+    s-0.5-0.9-0.5-1.3c0-0.4,0.1-0.7,0.4-1c0.3-0.3,0.7-0.4,1.2-0.4c0.6,0,1.2,0.3,1.7,1c0.2,0.3,0.3,0.5,0.5,0.6
+    c0.3,0.3,0.7,0.6,1.3,0.8c0.5,0.2,1.1,0.2,1.8,0.2c1.1,0,1.9-0.2,2.5-0.5c0.6-0.3,0.9-0.8,0.9-1.4c0-0.9-1.4-1.6-4.3-2.1
+    c-0.1,0-0.2-0.1-0.2-0.1c-2.2-0.4-3.7-1-4.5-1.6c-0.8-0.6-1.2-1.6-1.2-2.8c0-1.4,0.6-2.5,1.7-3.2c1.1-0.7,2.8-1.2,4.8-1.2
+    c1,0,1.8,0.1,2.6,0.3c0.7,0.2,1.5,0.5,2.1,0.9c0.5,0.3,0.9,0.6,1.2,1C162.8,79.9,163,80.3,163,80.7z"></path>
+          <path class="st2" d="M177.8,89.6c0.6,0,1.1,0.1,1.4,0.3c0.3,0.2,0.5,0.6,0.5,1s-0.2,0.7-0.5,1c-0.3,0.2-0.8,0.3-1.4,0.3h-9
+    c-0.8,0-1.4-0.2-1.7-0.5c-0.3-0.3-0.5-0.9-0.5-1.8V80c0-0.9,0.1-1.5,0.5-1.8c0.3-0.3,0.9-0.5,1.7-0.5h8.6c0.6,0,1.1,0.1,1.4,0.3
+    c0.3,0.2,0.5,0.5,0.5,1c0,0.4-0.2,0.7-0.5,0.9c-0.3,0.2-0.8,0.3-1.4,0.3h-7.2v3.1h6.5c0.6,0,1.1,0.1,1.4,0.3c0.3,0.2,0.5,0.5,0.5,1
+    c0,0.4-0.2,0.7-0.5,0.9c-0.3,0.2-0.8,0.3-1.4,0.3h-6.5v3.7L177.8,89.6L177.8,89.6z"></path>
+          <path class="st2" d="M194.2,86.9h-2.6c-0.5,0-0.8-0.1-1.1-0.3c-0.3-0.2-0.4-0.5-0.4-0.9c0-0.3,0.1-0.7,0.4-0.9
+    c0.3-0.2,0.6-0.3,1.1-0.3h3.8c0.7,0,1.3,0.1,1.6,0.3c0.3,0.2,0.5,0.6,0.5,1v5.6c0,0.5-0.1,0.7-0.3,1c-0.2,0.2-0.5,0.3-0.9,0.3
+    c-0.3,0-0.6-0.1-0.9-0.2c-0.2-0.2-0.4-0.4-0.5-0.7l-0.3-1.1c-0.6,0.7-1.4,1.3-2.2,1.6c-0.8,0.3-1.7,0.5-2.8,0.5
+    c-2.4,0-4.4-0.7-5.8-2.1c-1.5-1.4-2.2-3.3-2.2-5.6s0.7-4.2,2.2-5.6c1.5-1.4,3.5-2.1,5.9-2.1c0.8,0,1.6,0.1,2.2,0.2
+    c0.7,0.1,1.4,0.3,2,0.6c0.9,0.4,1.5,0.8,2,1.3c0.5,0.5,0.7,1,0.7,1.4c0,0.4-0.2,0.7-0.5,1c-0.3,0.3-0.6,0.4-1.1,0.4
+    c-0.4,0-0.7-0.1-1-0.2c-0.3-0.1-0.6-0.4-1-0.8c-0.5-0.5-1-0.9-1.4-1.1c-0.5-0.2-1.1-0.3-1.8-0.3c-1.4,0-2.6,0.5-3.4,1.3
+    c-0.8,0.9-1.2,2.1-1.2,3.7c0,1.6,0.4,2.8,1.3,3.7c0.9,0.9,2.1,1.3,3.5,1.3c1.2,0,2.1-0.3,2.8-0.9C193.5,88.7,193.9,87.8,194.2,86.9
+    z"></path>
+          <path class="st2" d="M212.6,86.9H210c-0.5,0-0.8-0.1-1.1-0.3c-0.3-0.2-0.4-0.5-0.4-0.9c0-0.3,0.1-0.7,0.4-0.9
+    c0.3-0.2,0.6-0.3,1.1-0.3h3.8c0.7,0,1.3,0.1,1.6,0.3c0.3,0.2,0.5,0.6,0.5,1v5.6c0,0.5-0.1,0.7-0.3,1c-0.2,0.2-0.5,0.3-1,0.3
+    c-0.3,0-0.6-0.1-0.9-0.2c-0.2-0.2-0.3-0.4-0.5-0.7l-0.3-1.1c-0.6,0.7-1.4,1.3-2.2,1.6c-0.8,0.3-1.8,0.5-2.9,0.5
+    c-2.4,0-4.4-0.7-5.9-2.1c-1.5-1.4-2.2-3.3-2.2-5.6s0.7-4.2,2.2-5.6c1.5-1.4,3.5-2.1,5.9-2.1c0.8,0,1.6,0.1,2.2,0.2
+    c0.7,0.1,1.4,0.3,2,0.6c0.9,0.4,1.5,0.8,2,1.3c0.5,0.5,0.7,1,0.7,1.4c0,0.4-0.1,0.7-0.5,1c-0.3,0.3-0.7,0.4-1.1,0.4
+    c-0.3,0-0.7-0.1-1-0.2c-0.3-0.1-0.6-0.4-1-0.8c-0.5-0.5-0.9-0.9-1.4-1.1c-0.5-0.2-1.1-0.3-1.8-0.3c-1.4,0-2.6,0.5-3.4,1.3
+    c-0.8,0.9-1.2,2.1-1.2,3.7c0,1.6,0.4,2.8,1.3,3.7c0.9,0.9,2,1.3,3.5,1.3c1.1,0,2.1-0.3,2.8-0.9C212,88.7,212.5,87.8,212.6,86.9z"></path>
+          <path class="st2" d="M230.5,89.6c0.6,0,1.2,0.1,1.4,0.3c0.3,0.2,0.5,0.6,0.5,1s-0.2,0.7-0.5,1c-0.3,0.2-0.8,0.3-1.4,0.3h-9
+    c-0.8,0-1.4-0.2-1.7-0.5c-0.3-0.3-0.5-0.9-0.5-1.8V80c0-0.9,0.2-1.5,0.5-1.8c0.3-0.3,0.9-0.5,1.7-0.5h8.6c0.6,0,1.1,0.1,1.4,0.3
+    s0.5,0.5,0.5,1c0,0.4-0.2,0.7-0.5,0.9c-0.3,0.2-0.8,0.3-1.4,0.3h-7.2v3.1h6.6c0.6,0,1.1,0.1,1.4,0.3c0.3,0.2,0.5,0.5,0.5,1
+    c0,0.4-0.2,0.7-0.5,0.9c-0.3,0.2-0.8,0.3-1.4,0.3h-6.6v3.7L230.5,89.6L230.5,89.6z"></path>
+          <path class="st2" d="M238.4,80.3v3.9h4.1c0.9,0,1.6-0.2,2-0.5c0.4-0.3,0.6-0.8,0.6-1.4c0-0.6-0.2-1.1-0.6-1.4
+    c-0.4-0.3-1-0.5-1.8-0.5H238.4L238.4,80.3z M238.4,90.8c0,0.5-0.1,0.9-0.5,1.2c-0.3,0.3-0.7,0.4-1.3,0.4s-1-0.1-1.3-0.4
+    c-0.3-0.3-0.5-0.7-0.5-1.2V80c0-0.9,0.2-1.5,0.5-1.8c0.3-0.3,0.9-0.5,1.7-0.5h6.2c1.9,0,3.3,0.3,4.1,1c0.9,0.7,1.4,1.7,1.4,3.1
+    c0,0.9-0.2,1.6-0.7,2.2c-0.5,0.6-1.1,1-1.9,1.2c0.6,0.2,1.1,0.5,1.5,0.9c0.3,0.4,0.5,0.9,0.6,1.6c0.1,0.3,0.1,0.6,0.1,1
+    c0,0.5,0.1,0.7,0.1,0.9c0.1,0.2,0.1,0.4,0.2,0.7c0.1,0.3,0.1,0.6,0.1,0.7c0,0.4-0.2,0.7-0.5,1c-0.3,0.2-0.7,0.3-1.3,0.3
+    c-0.7,0-1.3-0.2-1.6-0.5c-0.3-0.3-0.5-1.3-0.6-2.8c-0.1-1.1-0.3-1.9-0.7-2.2c-0.3-0.3-1-0.4-1.9-0.4h-3.7v4.3H238.4z"></path>
+        </g>
+        </svg> </div>
+      <div class="claim">The Embedded Experts</div>
+      <div class="head">
+        <div class="container">
+          <!-- ****************************************************************** -->
+          <!-- Modifiable information starts here                                 -->
+          <!-- Don't forget to edit the title tag either                          -->
+          <!-- ****************************************************************** -->
+          <h1>Release notes for embOS V5.02a for Cortex-M and Keil ARM MDK</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- ****************************************************************** -->
+  <!-- TOOL CHAIN (Compiler) Information                                  -->
+  <!-- ****************************************************************** -->
+  <div id="toolChain" class="divider-global">
+    <div class="container">
+      <h2>Tool chain used for build</h2>
+      <div>
+        <div class="toolChain">
+          <table width="100%" border="0" cellspacing="5">
+            <tbody>
+              <tr>
+                <th scope="row">Compiler: </th>
+                <td>ARM/Thumb C/C++ Compiler, ARM Compiler 5.06 update 4 (build 422)</td>
+              </tr>
+              <tr>
+                <th scope="row">Assembler: </th>
+                <td>ARM/Thumb Macro Assembler, ARM Compiler 5.06 update 4 (build 422)</td>
+              </tr>
+              <tr>
+                <th scope="row">Linker: </th>
+                <td>ARM Linker, ARM Compiler 5.06 update 4 (build 422)</td>
+              </tr>
+              <tr>
+                <th scope="row">Librarian: </th>
+                <td>ARM Archiver, ARM Compiler 5.06 update 4 (build 422)</td>
+              </tr>
+              <tr>
+                <th scope="row">Workbench: </th>
+                <td>Keil uVision Version 5.23.0.0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- ****************************************************************** -->
+  <!-- History                                                       -->
+  <!-- ****************************************************************** -->
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 5.02a [02. Aug 2018]</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>Update to latest embOS generic sources V5.02a.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 5.00a [23. May 2018]</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>Update to latest embOS generic sources V5.00a.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 4.40 [16. Jan 2018]</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>Update to latest embOS generic sources V4.40.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 4.38 [18. Oct 2017]</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>Update to latest embOS generic sources V4.38.</li>
+          <li>Board support package for the Infineon TLE987x added.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 4.36 [21. Jul 2017]</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>Update to latest embOS generic sources V4.36.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 4.34 [21. Apr 2017]</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>Update to latest embOS generic sources V4.34.</li>
+          <li>Update to Keil uVision V5.23.</li>
+          <li>Board support package for the IDT ZAMC4100-Eval board added.
+          <li>Board support package for the STMicro STM32756G-Eval board added.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 4.22 [27. Jun 2016]</h2>
+      <div
+        <h3>New Features</h3>
+        <ol>
+          <li>Update to latest embOS generic sources V4.22.</li>
+          <li>VFP register handling is now automatically performed by embOS.<br>
+            embOS API functions OS_ExtendTaskContext_VFP(), OS_VFP_Save(), OS_VFP_Restore(), and OS_ExtendTaskContext_TLS_VFP() are deprecated. Compatibility with older embOS versions is ensured through macro definitions.</li>
+          <li>Board support package for the Segger emPower evalboard added.</li>
+        </ol>
+        <h3>Improvements</h3>
+        <ol>
+          <li>Additional debug check added to detect tasks that end without termination.</li>
+        </ol>
+        <h3>Program corrections</h3>
+        <ol>
+          <li>Applied workaround for interrupt handling with Cortex-M7 r0p1.<br>
+            Erratum 837070, ARM-EPM-064408: Increasing priority using a write to BASEPRI does not take effect immediately. An appropriate workaround was applied.<br>
+            The problem, which is exclusive for Cortex-M7 r0p1, existed on all previous versions of embOS for Cortex-M and Keil ARM MDK and is fixed with version 4.22.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 4.16 [10. Mar 2016]</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>Update to latest embOS generic sources V4.16.</li>
+          <li>Added Segger Real-Time Transfer (RTT) to all projects.<br>
+            Additional information on Segger RTT is available at <a href ="https://www.segger.com/products/debug-probes/j-link/technology/real-time-transfer/about-real-time-transfer/">www.segger.com</a>.
+          </li>
+          <li>Added Segger SystemView to all projects.<br>
+            The Segger SystemView User Guide is available at <a href ="https://www.segger.com/systemview.html">www.segger.com</a>.
+          </li>
+        </ol>
+        <h3>Improvements</h3>
+        <ol>
+          <li>Improved HardFault Handler added to all projects.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 4.12 [24. Aug 2015]</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>Update to latest embOS generic sources V4.12.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 4.10b [10. Aug 2015]</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>Update to latest embOS generic sources V4.10b.</li>
+        </ol>
+        <h3>Program corrections</h3>
+        <ol>
+          <li>Task switch fixed.<br>
+            The fix introduced with V4.06b did not work correctly for Cortex M0/M3/M4.<br>
+            This issue does not affect Cortex M4F.
+            The problem existed version 4.06b and is fixed with V4.10b.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 4.06b [14. Apr 2015]</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>Update to latest embOS generic sources V4.06b.</li>
+        </ol>
+        <h3>Program corrections</h3>
+        <ol>
+          <li>Task switch fixed.<br>
+            A problem with the task switch could cause that a task was not activated at once when it was triggered by an interrupt.<br>
+            The problem existed on all previous versions of embOS Cortex M Keil MDK and is fixed with version 4.06b.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 4.04a [09. Dec 2014]</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>Update to latest embOS generic sources V4.04a.</li>
+        </ol>
+        <h3>Program corrections</h3>
+        <ol>
+          <li>OS_LeaveNestableInterrupt() fixed.<br>
+            A problem with OS_LeaveNestableInterrupt() could cause that a task switch which was triggered by an interrupt routine which
+            interrupted another interrupt routine was not executed.<br>
+            The problem existed on all previous versions of embOS Cortex M Keil MDK and is fixed with version 4.04a.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.88h [20. Dec 2013]</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>Update to latest embOS generic sources V3.88h.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.88g [17. Dec 2013]</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>Update to latest embOS generic sources V3.88g.</li>
+          <li>Board support package for the STMicro STM32F429-Discovery board added.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.88c [15. Aug 2013]</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>Update to latest embOS generic sources V3.88c.</li>
+          <li>Board support package for the IAR STM32F051R8 Starter Kit added.</li>
+        </ol>
+        <h3>Program corrections</h3>
+        <ol>
+          <li>Scheduling fixed.<br>
+            A problem with the scheduler could cause that a task not in ready state was not suspended and continued running.<br>
+            Higher priority tasks were blocked even when they were ready to execute.<br>
+            The problem existed on all previous versions of embOS Cortex M KEIL MDK and is fixed with version 3.88b.
+          </li>
+          <li>OS_Start() fixed.<br>
+          A problem with OS_Start() could cause that embOS did not start.<br>
+          The problem existed on all previous versions of embOS Cortex M KEIL MDK and is fixed with version 3.88c.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.86n [21. Dec 2012]</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>Update to latest embOS generic sources V3.86n.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.86h [06. Sep 2012]</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>Update to latest embOS generic sources V3.86h.</li>
+        </ol>
+        <h3>Program corrections</h3>
+        <ol>
+          <li>OS_EVENT handling with timeout corrected.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.86g [07. Aug 2012]</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>Update to latest embOS generic sources V3.86g.</li>
+        </ol>
+        <h3>Improvements</h3>
+        <ol>
+          <li>Nested interrupt handling improved.<br>
+            Unnecessary enabling and disabling of interrupts removed from OS_EnterNestableInterrupt() and OS_LeaveNestableInterrupt().<br>
+            Thus, interrupthandling of nested interrupts runs faster.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.86e [28. Jun 2012]</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>Update to latest embOS generic sources V3.86e.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.86a [30. Apr 2012]</h2>
+      <div>
+        <h3>Program corrections</h3>
+        <ol>
+          <li>Queue handling corrected.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.86.1 [19. Apr 2012]</h2>
+      <div>
+        <h3>Program corrections</h3>
+        <ol>
+          <li>Typo in RTOS.h corrected.<br>
+          The prototype OS_VFP_SaveRegsTemp() had a typo.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.86 [17. Apr 2012]</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>Update to latest embOS generic sources V3.86.</li>
+          <li>Support for Cortex-M4 with floating point unit added.</li>
+        </ol>
+        <h3>Program corrections</h3>
+        <ol>
+          <li>OS_GetTime_Cycles() in RTOSInit.c in CMSIS projects corrected.<br>
+          OS_GetTime_Cycles() did not return the cycles correctly.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.84c [10. Jan 2012]</h2>
+      <div>
+        <h3>Program corrections</h3>
+        <ol>
+          <li>Update to latest embOS generic sources V3.84c.<br>
+          OS_Q_Put() was included twice in embOS generic sources V3.84b.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.84b [21. Dec 2011]</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>Update to latest embOS generic sources V3.84b.</li>
+          <li>Board support package for the IAR STM32F207ZG-Starter Kit added.</li>
+          <li>Board support package for the ST STM3220G-Eval board added.</li>
+          <li>Board support package for the Toshiba BMSKTOPASM369 evalboard added.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.82v [15. Jul 2011]</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>embOS Cortex M Keil now also supports Cortex M4.</li>
+          <li>Support for Freescale Kinetis added.<br>
+          The embOS version 3.82s for Keil compiler and Cortex-M now comes with start projects for the Freescale Kinetis K40 and K60 CPUs.<br>
+          The sample projects run on the Kinetis TWR starter kit boards and can be downloaded into the CPUs Flash using J-Link.<br>
+          <li>Update to latest embOS generic sources V3.82s</li>
+        </ol>
+        <h3>Improvements</h3>
+        <ol>
+          <li>Retarget.c file added.<br>
+            The retarget.c file contains functions which allow terminal I/O in a debug session using the uVision and JTAG debugger like J-Link.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.82q [21. Jan 2011]</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>embOS Cortex M Keil now also supports Cortex M0.</li>
+          <li>Update to latest embOS generic sources V3.82q.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.82h [31. May 2010]</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>Update to embOS sources 3.82h<br></li>
+          <li>Fully CMSIS compliant projects<br>
+          All start projects of embOS for Cortex-M3 are now fully CMSIS compliant.<br>
+          The projects come with new startup code and vector tables which are fully CMSIS compliant.<br>
+          When CMSIS shall be used for the application, the chip specific CMSIS startup code and vector tables can be used.<br>
+          CMSIS libraries of the chip vendor are not required to run embOS, embOS can be used as is.<br>
+          </li>
+          <li>Generic CMSIS project template<br>
+          embOS for Cortex M3 now comes with a generic CMSIS compatible start project which runs on any Cortex M3 CPU.<br>
+          To run the project on a specific chip, the startup code and the vector table may be replaced by the chip vendor specific versions of these files.<br>
+          No modification on any embOS function or file is required. The vendor specific CMSIS files will guarantee that the embOS timer runs at expected rate of 1ms.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.82e [07. February 2010]</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>Update to latest embOS generic sources V3.82e.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.60d [05. June 2008]</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>Update to latest embOS generic sources V3.60d.</li>
+          <li>BSP for IAR STM-SK Eval board renamed to STM32F103_STM_SK.<br>
+            BSP is now for IAR STM-SK only instead of IAR STM-SK and ST MB525.
+          </li>
+          <li>BSP for ST MB525 Eval board added.<br>
+            Start project and board support package for STM32F103 CPU and ST MB525 eval board added.
+          </li>
+          <li>BSP for ST MB672 Eval board added.<br>
+            Start project and board support package for STM32F103 CPU and ST MB672 eval board added.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.60c [30. May 2008]</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>Update to latest embOS generic sources V3.60c.</li>
+          <li>Start project for STM32.</li>
+        </ol>
+        <h3>Improvements</h3>
+        <ol>
+          <li>OS_ASSERT_INIT_CALLED()<br>
+            A new assertion is added which checks whether OS_InitKern() was called before tasks are created.<br>
+            In debug builds, the OS_Error() function will be called, if tasks are created before calling OS_InitKern().
+          </li>
+          <li>OS_GetTaskName() modified.<br>
+            In previous versions, OS_GetTaskName() had to be called with a valid task ID. Now, the NULL pointer may be passed as argument to address the current task.<br>
+            The function will always return a valid string.<br>
+            The previous implementation might have returned a NULL pointer, which could cause problems, if the result was not evaluated be the calling function.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.60b</h2>
+      <div>
+        <h3>Improvements</h3>
+        <ol>
+          <li>OS_ASSERT_ISR_LEVEL()<br>
+            A new assertion was defined which will call OS_Error() if the CPU runs in interrupt mode but OS_EnterInterrupt() or OS_EnterNestableInterrupt() was not called.<br>
+            With version 3.60b the assertion is not implemented, it is just defined and usage is prepared. The implementation will be made in future versions of embOS.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.60a</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>embOS trial versions may run an unlimited number of tasks.<br>
+            The embOS trial versions run unlimited as long as only 3 tasks are created.<br>
+            Since version 3.60a, a time limit is added to the trial version. During the first 15 minutes, an unlimited number of tasks can be created.<br>
+            If more than three tasks were created during the time limit time, the system stops and calls OS_Error() when the time limit exceeded.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.60</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>OS_AddTickHook() and OS_RemoveTickHook() implemented.<br>
+            These new functions allow the application to add and remove user function calls (hook functions) to the OS timer tick handler.
+          </li>
+        </ol>
+        <h3>Improvements</h3>
+        <ol>
+          <li>OS_GetVersion() implemented as function<br>
+            OS_GetVersion() may be used by the application to retrieve the embOS library version. The result may be used to verify whether the library version matches the embOS header file RTOS.h.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.52e</h2>
+      <div>
+        <h3>Improvements</h3>
+        <ol>
+          <li>All embOS variables located in one module.<br>
+            All embOS variables are located in one module now. In previous versions of embOS, some module specific embOS variables were located in the module they were used for.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.52c</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>OS_SetTaskName() introduced<br>
+            OS_SetTaskName() allows modification of task names on the fly.<br>
+            This may be useful if the functionality of a task changes during runtime and the new state should be shown using embOSView or an other task visualisation tool.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.52b</h2>
+      <div>
+        <h3>Program corrections</h3>
+        <ol>
+          <li>OS_SendString() corrected.<br>
+            When sending an empty string, the calling task was suspended forever.<br>
+            The problem existed in all previous embOS versions and is fixed with version 3.52b.
+          </li>
+          <li>embOSView corrected.<br>
+            When the update interval of embOSView was set to 200ms or a longer value, the reaction of user input or mouse events was blocked for the same time.<br>
+            The problem existed since version 3.32 of embOSView and is fixed with version 3.52b.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.52a</h2>
+      <div>
+        <h3>Program corrections</h3>
+        <ol>
+          <li>OS_Terminate() for XR-build corrected.<br>
+            OS_Terminate() in XR-builds might have failed and the system stuck in an endless loop.<br>
+            All other library modes were not affected.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.52</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>OS_CallISR() and OS_CallNestableISR() introduced<br>
+            These new functions are required for some specific CPUs, but may be used in general to call an interrupt handler function without the need of using OS_EnterInterrupt() / OS_LeaveInterrupt() in the handler function.
+          </li>
+        </ol>
+        <h3>Improvements</h3>
+        <ol>
+          <li>OS_TickHandler() and OS_TickHandler_Ex() removed.<br>
+            These two functions are obsolete, because they can be replaced by OS_HandleTick() and OS_HandleTick_EX(), if OS_EnterInterrupt() / OS_LeaveInterrupt is used in the interrupt handler.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.50c</h2>
+      <div>
+        <h3>Improvements</h3>
+        <ol>
+          <li>OS_GetTime32() optimized for 32bit CPUs<br>
+            For 32bit CPUs, OS_GetTime32() is now automatically replaced by an efficient macro which delivers value of the embOS internal time variable.<br>
+            In previous versions of embOS, a function was called, when it was not over-written in the CPU specific part of the OS header file.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.50b</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>New library mode XR allows extremely compact applications<br>
+            The new XR libraries may be used to build extremely compact applications to save space in RAM and ROM and speed up context switching time.<br>
+            The XR embOS libraries are compiled with round robin scheduling disabled and task names disabled, which results in smaller data structures, smaller code size and faster context switching time.
+          </li>
+        </ol>
+        <h3>Improvements</h3>
+        <ol>
+          <li>Internal optimizations<br>
+            Some internal optimizations were performed to optimize task switching time and interrupt latencies.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.50a</h2>
+      <div>
+        <h3>Program corrections</h3>
+        <ol>
+          <li>System stack check corrected<br>
+            The system stack check failed in the case the system stack grows from lower addresses to higher addresses.<br>
+            In this case, the system stack was not correctly filled with the stack check pattern.<br>
+            The problem existed for embOS for PIC only and is fixed with version 3.50a.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.50</h2>
+      <div>
+        <h3>Improvements</h3>
+        <ol>
+          <li>Scheduler optimized<br>
+            The embOS scheduler was optimized to reduce task switching time and interrupt latencies.<br>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.40d</h2>
+      <div>
+        <h3>Improvements</h3>
+        <ol>
+          <li>OS_Yield() now writes an entry into the trace buffer<br>
+            When using the debug library with trace capabilities, OS_Yield() writes an entry into the trace buffer which shows the function call and the calling task.<br>
+            embOSView version 3.40d is required to show this entry.
+          </li>
+        </ol>
+        <h3>Program corrections</h3>
+        <ol>
+          <li>OS_Suspend() corrected<br>
+            When using the debug library with trace capabilities, a call of OS_Suspend() wrote a wrong trace code into the trace buffer.<br>
+            Instead of writing the code for task suspension, the code for task termination was written.<br>
+            The function itself worked correctly, only the data written into the trace buffer was wrong.<br>
+            The problem existed in all previous embOS versions and is fixed with version 3.40d.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.40c</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>OS_Yield() may suspend a task unconditionally<br>
+            When tasks are running on round robin with timeslice, the function OS_Yield() can be used to end the timeslice of the running task immediately and activate an other task with the same priority which is ready for execution.
+            The function has no effect on tasks that are not running on round robin.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.40b</h2>
+      <div>
+        <h3>Improvements</h3>
+        <ol>
+          <li>Queue management improved.<br>
+            For some CPUs, the buffer start address for Queues has to be aligned.
+            Now embOS automatically corrects the alignment, if required.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.40a</h2>
+      <div>
+        <h3>Improvements</h3>
+        <ol>
+          <li>Counting semaphores improved.<br>
+            The counters of counting semaphores are now integer values.<br>
+            Error handling is also improved. When a counting semaphore overflows, the embOS error handler OS_Error() is called in debug builds.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.40 [25. May 2007]</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>Task switch time can be measured by application<br>
+            embOS now comes with sample applications which allow accurate measurement of task switch time in a running application.<br>
+          </li>
+        </ol>
+        <h3>Improvements</h3>
+        <ol>
+          <li>Task switch time improved.<br>
+            Scheduling optimized to improve task switch time.
+          </li>
+          <li>Task switch time improved for task events.<br>
+            Task event handling modified to improve task switch time for tasks waiting on events.
+          </li>
+          <li>Interrupt latency improved.<br>
+            During task switch, the time period when interrupts are disabled is reduced.
+          </li>
+          <li>embOS timer tick handler improved.<br>
+            The standard timer tick handler run faster now. The embOS internal time variable is incremented by 1 on every timer tick.<br>
+            When different increments are required, the new timer tick handler OS_HandleTick_Ex(), OS_TickHandler_Ex() or OS_HandleTickDI_Ex() have to be used by application.<br>
+            Different inctrements may be configured by a call of OS_CONFIG().
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.32o</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>Automatic call of OS_INIT_SYS_LOCKS() removed.<br>
+            During initialization of embOS, OS_INIT_SYS_LOCK() is not called automatically.<br>
+            As most of the applications do not need thread safe system libraries, an automatic activation of syslocks causes unwanted overhead.<br>
+            If supported and required, the user may call OS_INIT_SYS_LOCKS() from his own application after normal initialization of embOS.<br>
+          </li>
+        </ol>
+        <h3>Program corrections</h3>
+        <ol>
+          <li>OS_Unuse() corrected<br>
+            OS_Unuse() must not be called from a task that does not claim the resource semaphore.<br>
+            According to the documentation, the debug build of embOS should generate a call to OS_Error() if this fault happens.<br>
+            All previous versions of embOS did not call OS_Error().
+            Now, OS_Error() will be called in that situation with error code 156: OS_ERR_RESOURCE_OWNER().
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.32m</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>OS_TimerEx, Extended timer implemented<br>
+            Extended timers are software timers which call a user defined callback function when the timer expires.<br>
+            In comparison to normal embOS timers, a parameter is passed to the timer callback function.<br>
+            The parameter value is initialized during timer creation.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.32l</h2>
+      <div>
+        <h3>Program corrections</h3>
+        <ol>
+          <li>OS_EVENT_Delete() corrected<br>
+            OS_EVENT_Delete() did not work correctly. OS_LeaveRegion() was called inside the function without calling OS_EnterRegion() bfore.<br>
+            In debug builds of embOS, the error handler OS_Error() was called with error 151 (OS_ERR_LEAVEREGION_BEFORE_ENTERREGION).<br>
+            In release builds the system was blocked because the underflow of region count inhibts all further task switches, or system crashes, because incrementing the region count the next time allows task switches instead of blocking them.
+            The problem existed in all previous versions and is fixed with version 3.32l.
+          </li>
+          <li>Round-robin task switching corrected.<br>
+            Round robin task switching did not work correctly in previous version. A task which was blocked for some reason could be activated. The system crashed during task switch.<br>
+            The problem existed since version 3.32j and is fixed with version 3.32l.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.32k</h2>
+      <div>
+        <h3>Program corrections</h3>
+        <ol>
+          <li>Handler function _OS_OnTx() for serial communication to embOSView corrected.<br>
+            The transmission handler for communication with embOSView might have sent incorrect data to embOSView, because internal control state was updated after sending the data.<br>
+            The problem occurred on a new embOS port for a specific CPU only and is fixed with version 3.32k.<br>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.32j</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>OS_CSemaRequest implemented<br>
+            May be used to decrement a counting semaphore conditionally, if a signal is available.<br>
+            The function never blocks the calling task and delivers a result which indicates whether the semaphore was available.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.32i</h2>
+      <div>
+        <h3>Improvements</h3>
+        <ol>
+          <li>Task switch to OS_Idle() modified.<br>
+            The call of OS_Idle() from OS_ChangeTask can be overwritten (inhibited) by defining the macro OS_IDLE() which is norammly defined as OS_Idle().<br>
+            This allows task switching via an exception for specific CPU/compiler versions.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.32h</h2>
+      <div>
+        <h3>Program corrections</h3>
+        <ol>
+          <li>OS_Error() was required in release build when resource semaphores were used.<br>
+            When using release build libraries and resource semaphores, the embOS error handler OS_Error() was required and the file OS_Error.c had to be compiled and linked in a project.<br>
+            The problem existed since version 3.28i of embOS and is fixed with version 3.32h.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.32g</h2>
+      <div>
+        <h3>Improvements</h3>
+        <ol>
+          <li>Pointer comparison improved for fixed size memory pools (OS_MEMF module).<br>
+            Some compiler produced wrong pointer comparison code in far memory model.<br>
+            For specific CPU/compiler versions, the new OS_POINTER_TO_VALUE() function was inroduced to deliver correct results in pointer comparison.
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="divider-global">
+    <div class="container">
+      <h2>Version 3.32f [18. Dec 2006]</h2>
+      <div>
+        <h3>New Features</h3>
+        <ol>
+          <li>All features of generic 3.32f kernel supported.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- ****************************************************************** -->
+  <!-- Modifiable information ends here                                   -->
+  <!-- Don't forget to edit the "Copyright" year if necessary and         -->
+  <!-- >>>>>if a SUPPORT E-MAIL is required change the info@segger.com<<<<<<  -->
+  <!-- ****************************************************************** -->
+
+</main>
+<div class="footer">
+  <div class="container">
+    <div>
+      <p>Copyright 2001-2018 SEGGER Microcontroller GmbH. All rights reserved.<br>
+        For more information, please visit our website&nbsp;<a href="https://www.segger.com/" target="_blank">www.segger.com</a>&nbsp;or contact us at&nbsp;<a href="mailto:support_embos@segger.com">support_embos@segger.com</a>&nbsp;</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>
