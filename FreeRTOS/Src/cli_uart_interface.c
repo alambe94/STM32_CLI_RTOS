@@ -59,9 +59,9 @@ UART_HandleTypeDef* CLI_UART = &huart2;
 #define      CLI_UART_TASK_STACK_SIZE 256u
 #define      CLI_UART_TASK_PRIORITY   3u
 TaskHandle_t CLI_UART_Task_Handle;
-StackType_t CLI_UART_Task_Stack[CLI_UART_TASK_STACK_SIZE];
+StackType_t  CLI_UART_Task_Stack[CLI_UART_TASK_STACK_SIZE];
 StaticTask_t CLI_UART_Task_TCB;
-static void CLI_UART_Task(void* argument);
+static void  CLI_UART_Task(void* argument);
 
 SemaphoreHandle_t CLI_UART_Mutex_Handle;
 StaticSemaphore_t CLI_UART_Mutex_Buffer;
@@ -179,7 +179,6 @@ static void CLI_UART_Task(void* argument)
 		{
 
 		rx_char_count = 0; //reset CLI_CMD_Buffer index
-		Ring_Buffer_Get_Char(&UART_Ring_Buffer_Handle, &rx_char); //remove \n, if there is
 		Ring_Buffer_Flush(&UART_Ring_Buffer_Handle); //reset ring buffer
 
 		// process cammand

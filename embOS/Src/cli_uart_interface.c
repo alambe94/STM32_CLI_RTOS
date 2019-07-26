@@ -183,7 +183,6 @@ static void CLI_UART_Task()
 		{
 
 		rx_char_count = 0; //reset CLI_CMD_Buffer index
-		Ring_Buffer_Get_Char(&UART_Ring_Buffer_Handle, &rx_char); //remove \n, if there is
 		Ring_Buffer_Flush(&UART_Ring_Buffer_Handle); //reset ring buffer
 
 		// process cammand

@@ -48,6 +48,9 @@
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
 
+extern uint32_t Stat_Time_Counter;
+extern TIM_HandleTypeDef htim11;
+
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
 uint32_t defaultTaskBuffer[ 128 ];
@@ -73,12 +76,12 @@ unsigned long getRunTimeCounterValue(void);
 /* Functions needed when configGENERATE_RUN_TIME_STATS is on */
 __weak void configureTimerForRunTimeStats(void)
 {
-
+    HAL_TIM_Base_Start_IT(&htim11);
 }
 
 __weak unsigned long getRunTimeCounterValue(void)
 {
-return 0;
+	return Stat_Time_Counter;
 }
 /* USER CODE END 1 */
 
@@ -143,14 +146,13 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void const * argument)
 {
     
-    
-
   /* USER CODE BEGIN StartDefaultTask */
-    //vTaskSuspend(NULL);
+
   /* Infinite loop */
   for(;;)
   {
-    osDelay(5000);
+	HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+    osDelay(200);
   }
   /* USER CODE END StartDefaultTask */
 }
