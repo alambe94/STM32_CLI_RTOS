@@ -1,35 +1,34 @@
 /*
-************************************************************************************************************************
-*                                                      uC/OS-III
-*                                                 The Real-Time Kernel
+*********************************************************************************************************
+*                                                uC/OS-III
+*                                          The Real-Time Kernel
 *
-*                                  (c) Copyright 2009-2015; Micrium, Inc.; Weston, FL
-*                           All rights reserved.  Protected by international copyright laws.
+*                         (c) Copyright 2009-2018; Silicon Laboratories Inc.,
+*                                400 W. Cesar Chavez, Austin, TX 78701
 *
-*                                              MESSAGE HANDLING SERVICES
+*                   All rights reserved. Protected by international copyright laws.
 *
-* File    : OS_MSG.C
-* By      : JJL
-* Version : V3.04.05
+*                  Your use of this software is subject to your acceptance of the terms
+*                  of a Silicon Labs Micrium software license, which can be obtained by
+*                  contacting info@micrium.com. If you do not agree to the terms of this
+*                  license, you may not use this software.
 *
-* LICENSING TERMS:
-* ---------------
-*           uC/OS-III is provided in source form for FREE short-term evaluation, for educational use or 
-*           for peaceful research.  If you plan or intend to use uC/OS-III in a commercial application/
-*           product then, you need to contact Micrium to properly license uC/OS-III for its use in your 
-*           application/product.   We provide ALL the source code for your convenience and to help you 
-*           experience uC/OS-III.  The fact that the source is provided does NOT mean that you can use 
-*           it commercially without paying a licensing fee.
+*                  Please help us continue to provide the Embedded community with the finest
+*                  software available. Your honesty is greatly appreciated.
 *
-*           Knowledge of the source code may NOT be used to develop a similar product.
+*                    You can find our product's documentation at: doc.micrium.com
 *
-*           Please help us continue to provide the embedded community with the finest software available.
-*           Your honesty is greatly appreciated.
+*                          For more information visit us at: www.micrium.com
+*********************************************************************************************************
+*/
+
+/*
+*********************************************************************************************************
+*                                       MESSAGE HANDLING SERVICES
 *
-*           You can find our product's user manual, API reference, release notes and
-*           more information at https://doc.micrium.com.
-*           You can contact us at www.micrium.com.
-************************************************************************************************************************
+* File    : os_msg.c
+* Version : V3.07.03
+*********************************************************************************************************
 */
 
 #define  MICRIUM_SOURCE
@@ -40,7 +39,7 @@ const  CPU_CHAR  *os_msg__c = "$Id: $";
 #endif
 
 
-#if OS_MSG_EN > 0u
+#if (OS_MSG_EN == DEF_ENABLED)
 
 /*
 ************************************************************************************************************************
@@ -68,20 +67,12 @@ void  OS_MsgPoolInit (OS_ERR  *p_err)
     OS_MSG_QTY   loops;
 
 
-
-#ifdef OS_SAFETY_CRITICAL
-    if (p_err == (OS_ERR *)0) {
-        OS_SAFETY_CRITICAL_EXCEPTION();
-        return;
-    }
-#endif
-
-#if OS_CFG_ARG_CHK_EN > 0u
+#if (OS_CFG_ARG_CHK_EN == DEF_ENABLED)
     if (OSCfg_MsgPoolBasePtr == (OS_MSG *)0) {
        *p_err = OS_ERR_MSG_POOL_NULL_PTR;
         return;
     }
-    if (OSCfg_MsgPoolSize == (OS_MSG_QTY)0) {
+    if (OSCfg_MsgPoolSize == 0u) {
        *p_err = OS_ERR_MSG_POOL_EMPTY;
         return;
     }
@@ -91,26 +82,30 @@ void  OS_MsgPoolInit (OS_ERR  *p_err)
     p_msg2 = OSCfg_MsgPoolBasePtr;
     p_msg2++;
     loops  = OSCfg_MsgPoolSize - 1u;
-    for (i = 0u; i < loops; i++) {                          /* Init. list of free OS_MSGs                             */
+    for (i = 0u; i < loops; i++) {                              /* Init. list of free OS_MSGs                           */
         p_msg1->NextPtr = p_msg2;
-        p_msg1->MsgPtr  = (void      *)0;
-        p_msg1->MsgSize = (OS_MSG_SIZE)0u;
-        p_msg1->MsgTS   = (CPU_TS     )0u;
+        p_msg1->MsgPtr  = (void *)0;
+        p_msg1->MsgSize =         0u;
+#if (OS_CFG_TS_EN == DEF_ENABLED)
+        p_msg1->MsgTS   =         0u;
+#endif
         p_msg1++;
         p_msg2++;
     }
-    p_msg1->NextPtr = (OS_MSG    *)0;                       /* Last OS_MSG                                            */
-    p_msg1->MsgPtr  = (void      *)0;
-    p_msg1->MsgSize = (OS_MSG_SIZE)0u;
-    p_msg1->MsgTS   = (CPU_TS     )0u;
-
-    OSMsgPool.NextPtr    =  OSCfg_MsgPoolBasePtr;
-    OSMsgPool.NbrFree    =  OSCfg_MsgPoolSize;
-    OSMsgPool.NbrUsed    = (OS_MSG_QTY)0;
-#if OS_CFG_DBG_EN > 0u
-    OSMsgPool.NbrUsedMax = (OS_MSG_QTY)0;
+    p_msg1->NextPtr = (OS_MSG *)0;                              /* Last OS_MSG                                          */
+    p_msg1->MsgPtr  = (void   *)0;
+    p_msg1->MsgSize =           0u;
+#if (OS_CFG_TS_EN == DEF_ENABLED)
+    p_msg1->MsgTS   =           0u;
 #endif
-   *p_err                =  OS_ERR_NONE;
+
+    OSMsgPool.NextPtr    = OSCfg_MsgPoolBasePtr;
+    OSMsgPool.NbrFree    = OSCfg_MsgPoolSize;
+    OSMsgPool.NbrUsed    = 0u;
+#if (OS_CFG_DBG_EN == DEF_ENABLED)
+    OSMsgPool.NbrUsedMax = 0u;
+#endif
+   *p_err                = OS_ERR_NONE;
 }
 
 
@@ -136,19 +131,19 @@ OS_MSG_QTY  OS_MsgQFreeAll (OS_MSG_Q  *p_msg_q)
 
 
 
-    qty = p_msg_q->NbrEntries;                              /* Get the number of OS_MSGs being freed                  */
-    if (p_msg_q->NbrEntries > (OS_MSG_QTY)0) {
-        p_msg                   = p_msg_q->InPtr;           /* Point to end of message chain                          */
+    qty = p_msg_q->NbrEntries;                                  /* Get the number of OS_MSGs being freed                */
+    if (p_msg_q->NbrEntries > 0u) {
+        p_msg                   = p_msg_q->InPtr;               /* Point to end of message chain                        */
         p_msg->NextPtr          = OSMsgPool.NextPtr;
-        OSMsgPool.NextPtr       = p_msg_q->OutPtr;          /* Point to beginning of message chain                    */
-        OSMsgPool.NbrUsed      -= p_msg_q->NbrEntries;      /* Update statistics for free list of messages            */
+        OSMsgPool.NextPtr       = p_msg_q->OutPtr;              /* Point to beginning of message chain                  */
+        OSMsgPool.NbrUsed      -= p_msg_q->NbrEntries;          /* Update statistics for free list of messages          */
         OSMsgPool.NbrFree      += p_msg_q->NbrEntries;
-        p_msg_q->NbrEntries     = (OS_MSG_QTY)0;            /* Flush the message queue                                */
-#if OS_CFG_DBG_EN > 0u
-        p_msg_q->NbrEntriesMax  = (OS_MSG_QTY)0;
+        p_msg_q->NbrEntries     =           0u;                 /* Flush the message queue                              */
+#if (OS_CFG_DBG_EN == DEF_ENABLED)
+        p_msg_q->NbrEntriesMax  =           0u;
 #endif
-        p_msg_q->InPtr          = (OS_MSG   *)0;
-        p_msg_q->OutPtr         = (OS_MSG   *)0;
+        p_msg_q->InPtr          = (OS_MSG *)0;
+        p_msg_q->OutPtr         = (OS_MSG *)0;
     }
     return (qty);
 }
@@ -163,7 +158,7 @@ OS_MSG_QTY  OS_MsgQFreeAll (OS_MSG_Q  *p_msg_q)
 * Arguments  : p_msg_q      is a pointer to the message queue to initialize
 *              -------
 *
-*              max          is the maximum number of entries that a message queue can have.
+*              size          is the maximum number of entries that a message queue can have.
 *
 * Returns    : none
 *
@@ -174,13 +169,13 @@ OS_MSG_QTY  OS_MsgQFreeAll (OS_MSG_Q  *p_msg_q)
 void  OS_MsgQInit (OS_MSG_Q    *p_msg_q,
                    OS_MSG_QTY   size)
 {
-    p_msg_q->NbrEntriesSize = (OS_MSG_QTY)size;
-    p_msg_q->NbrEntries     = (OS_MSG_QTY)0;
-#if OS_CFG_DBG_EN > 0u
-    p_msg_q->NbrEntriesMax  = (OS_MSG_QTY)0;
+    p_msg_q->NbrEntriesSize = size;
+    p_msg_q->NbrEntries     =           0u;
+#if (OS_CFG_DBG_EN == DEF_ENABLED)
+    p_msg_q->NbrEntriesMax  =           0u;
 #endif
-    p_msg_q->InPtr          = (OS_MSG   *)0;
-    p_msg_q->OutPtr         = (OS_MSG   *)0;
+    p_msg_q->InPtr          = (OS_MSG *)0;
+    p_msg_q->OutPtr         = (OS_MSG *)0;
 }
 
 
@@ -217,40 +212,40 @@ void  *OS_MsgQGet (OS_MSG_Q     *p_msg_q,
     void    *p_void;
 
 
-
-#ifdef OS_SAFETY_CRITICAL
-    if (p_err == (OS_ERR *)0) {
-        OS_SAFETY_CRITICAL_EXCEPTION();
-        return ((void *)0);
-    }
+#if (OS_CFG_TS_EN == DEF_DISABLED)
+    (void)p_ts;                                                 /* Prevent compiler warning for not using 'ts'          */
 #endif
 
-    if (p_msg_q->NbrEntries == (OS_MSG_QTY)0) {             /* Is the queue empty?                                    */
-       *p_msg_size = (OS_MSG_SIZE)0;                        /* Yes                                                    */
+    if (p_msg_q->NbrEntries == 0u) {                            /* Is the queue empty?                                  */
+       *p_msg_size = 0u;                                        /* Yes                                                  */
+#if (OS_CFG_TS_EN == DEF_ENABLED)
         if (p_ts != (CPU_TS *)0) {
-           *p_ts  = (CPU_TS  )0;
+           *p_ts = 0u;
         }
+#endif
        *p_err = OS_ERR_Q_EMPTY;
         return ((void *)0);
     }
 
-    p_msg           = p_msg_q->OutPtr;                      /* No, get the next message to extract from the queue     */
+    p_msg           = p_msg_q->OutPtr;                          /* No, get the next message to extract from the queue   */
     p_void          = p_msg->MsgPtr;
    *p_msg_size      = p_msg->MsgSize;
+#if (OS_CFG_TS_EN == DEF_ENABLED)
     if (p_ts != (CPU_TS *)0) {
-       *p_ts  = p_msg->MsgTS;
+       *p_ts = p_msg->MsgTS;
     }
+#endif
 
-    p_msg_q->OutPtr = p_msg->NextPtr;                       /* Point to next message to extract                       */
+    p_msg_q->OutPtr = p_msg->NextPtr;                           /* Point to next message to extract                     */
 
-    if (p_msg_q->OutPtr == (OS_MSG *)0) {                   /* Are there any more messages in the queue?              */
-        p_msg_q->InPtr      = (OS_MSG   *)0;                /* No                                                     */
-        p_msg_q->NbrEntries = (OS_MSG_QTY)0;
+    if (p_msg_q->OutPtr == (OS_MSG *)0) {                       /* Are there any more messages in the queue?            */
+        p_msg_q->InPtr      = (OS_MSG *)0;                      /* No                                                   */
+        p_msg_q->NbrEntries =           0u;
     } else {
-        p_msg_q->NbrEntries--;                              /* Yes, One less message in the queue                     */
+        p_msg_q->NbrEntries--;                                  /* Yes, One less message in the queue                   */
     }
 
-    p_msg->NextPtr    = OSMsgPool.NextPtr;                  /* Return message control block to free list              */
+    p_msg->NextPtr    = OSMsgPool.NextPtr;                      /* Return message control block to free list            */
     OSMsgPool.NextPtr = p_msg;
     OSMsgPool.NbrFree++;
     OSMsgPool.NbrUsed--;
@@ -303,62 +298,60 @@ void  OS_MsgQPut (OS_MSG_Q     *p_msg_q,
     OS_MSG  *p_msg_in;
 
 
-
-#ifdef OS_SAFETY_CRITICAL
-    if (p_err == (OS_ERR *)0) {
-        OS_SAFETY_CRITICAL_EXCEPTION();
-        return;
-    }
+#if (OS_CFG_TS_EN == DEF_DISABLED)
+    (void)ts;                                                   /* Prevent compiler warning for not using 'ts'          */
 #endif
 
     if (p_msg_q->NbrEntries >= p_msg_q->NbrEntriesSize) {
-       *p_err = OS_ERR_Q_MAX;                               /* Message queue cannot accept any more messages          */
+       *p_err = OS_ERR_Q_MAX;                                   /* Message queue cannot accept any more messages        */
         return;
     }
 
-    if (OSMsgPool.NbrFree == (OS_MSG_QTY)0) {
-       *p_err = OS_ERR_MSG_POOL_EMPTY;                      /* No more OS_MSG to use                                  */
+    if (OSMsgPool.NbrFree == 0u) {
+       *p_err = OS_ERR_MSG_POOL_EMPTY;                          /* No more OS_MSG to use                                */
         return;
     }
 
-    p_msg             = OSMsgPool.NextPtr;                  /* Remove message control block from free list            */
+    p_msg = OSMsgPool.NextPtr;                                  /* Remove message control block from free list          */
     OSMsgPool.NextPtr = p_msg->NextPtr;
     OSMsgPool.NbrFree--;
     OSMsgPool.NbrUsed++;
 
-#if OS_CFG_DBG_EN > 0u
+#if (OS_CFG_DBG_EN == DEF_ENABLED)
     if (OSMsgPool.NbrUsedMax < OSMsgPool.NbrUsed) {
         OSMsgPool.NbrUsedMax = OSMsgPool.NbrUsed;
     }
 #endif
 
-    if (p_msg_q->NbrEntries == (OS_MSG_QTY)0) {             /* Is this first message placed in the queue?             */
-        p_msg_q->InPtr         = p_msg;                     /* Yes                                                    */
+    if (p_msg_q->NbrEntries == 0u) {                            /* Is this first message placed in the queue?           */
+        p_msg_q->InPtr         = p_msg;                         /* Yes                                                  */
         p_msg_q->OutPtr        = p_msg;
-        p_msg_q->NbrEntries    = (OS_MSG_QTY)1;
+        p_msg_q->NbrEntries    =           1u;
         p_msg->NextPtr         = (OS_MSG *)0;
-    } else {                                                /* No                                                     */
-        if ((opt & OS_OPT_POST_LIFO) == OS_OPT_POST_FIFO) { /* Is it FIFO or LIFO?                                    */
-            p_msg_in           = p_msg_q->InPtr;            /* FIFO, add to the head                                  */
+    } else {                                                    /* No                                                   */
+        if ((opt & OS_OPT_POST_LIFO) == OS_OPT_POST_FIFO) {     /* Is it FIFO or LIFO?                                  */
+            p_msg_in           = p_msg_q->InPtr;                /* FIFO, add to the head                                */
             p_msg_in->NextPtr  = p_msg;
             p_msg_q->InPtr     = p_msg;
             p_msg->NextPtr     = (OS_MSG *)0;
         } else {
-            p_msg->NextPtr     = p_msg_q->OutPtr;           /* LIFO, add to the tail                                  */
+            p_msg->NextPtr     = p_msg_q->OutPtr;               /* LIFO, add to the tail                                */
             p_msg_q->OutPtr    = p_msg;
         }
         p_msg_q->NbrEntries++;
     }
 
-#if OS_CFG_DBG_EN > 0u
+#if (OS_CFG_DBG_EN == DEF_ENABLED)
     if (p_msg_q->NbrEntriesMax < p_msg_q->NbrEntries) {
         p_msg_q->NbrEntriesMax = p_msg_q->NbrEntries;
     }
 #endif
 
-    p_msg->MsgPtr  = p_void;                                /* Deposit message in the message queue entry             */
+    p_msg->MsgPtr  = p_void;                                    /* Deposit message in the message queue entry           */
     p_msg->MsgSize = msg_size;
+#if (OS_CFG_TS_EN == DEF_ENABLED)
     p_msg->MsgTS   = ts;
+#endif
    *p_err          = OS_ERR_NONE;
 }
 #endif

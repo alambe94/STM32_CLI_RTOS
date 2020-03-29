@@ -1,24 +1,24 @@
 /*
 *********************************************************************************************************
-*                                                uC/LIB
-*                                        CUSTOM LIBRARY MODULES
+*                                               uC/LIB
+*                                       Custom Library Modules
 *
-*                         (c) Copyright 2004-2014; Micrium, Inc.; Weston, FL
+*                         (c) Copyright 2004-2019; Silicon Laboratories Inc.,
+*                                400 W. Cesar Chavez, Austin, TX 78701
 *
-*                  All rights reserved.  Protected by international copyright laws.
+*                   All rights reserved. Protected by international copyright laws.
 *
-*                  uC/LIB is provided in source form to registered licensees ONLY.  It is
-*                  illegal to distribute this source code to any third party unless you receive
-*                  written permission by an authorized Micrium representative.  Knowledge of
-*                  the source code may NOT be used to develop a similar product.
+*                  Your use of this software is subject to your acceptance of the terms
+*                  of a Silicon Labs Micrium software license, which can be obtained by
+*                  contacting info@micrium.com. If you do not agree to the terms of this
+*                  license, you may not use this software.
 *
 *                  Please help us continue to provide the Embedded community with the finest
-*                  software available.  Your honesty is greatly appreciated.
+*                  software available. Your honesty is greatly appreciated.
 *
-*                  You can find our product's user manual, API reference, release notes and
-*                  more information at: https://doc.micrium.com
+*                    You can find our product's documentation at: doc.micrium.com
 *
-*                  You can contact us at: http://www.micrium.com
+*                          For more information visit us at: www.micrium.com
 *********************************************************************************************************
 */
 
@@ -27,39 +27,36 @@
 *
 *                                        MATHEMATIC OPERATIONS
 *
-* Filename      : lib_math.h
-* Version       : V1.38.01
-* Programmer(s) : SR
-*                 ITJ
+* Filename  : lib_math.h
+* Version   : V1.38.03
 *********************************************************************************************************
-* Note(s)       : (1) NO compiler-supplied standard library functions are used in library or product software.
+* Note(s)   : (1) NO compiler-supplied standard library functions are used in library or product software.
 *
-*                     (a) ALL standard library functions are implemented in the custom library modules :
+*                 (a) ALL standard library functions are implemented in the custom library modules :
 *
-*                         (1) \<Custom Library Directory>\lib_*.*
+*                     (1) \<Custom Library Directory>\lib_*.*
 *
-*                         (2) \<Custom Library Directory>\Ports\<cpu>\<compiler>\lib*_a.*
+*                     (2) \<Custom Library Directory>\Ports\<cpu>\<compiler>\lib*_a.*
 *
-*                               where
-*                                       <Custom Library Directory>      directory path for custom library software
-*                                       <cpu>                           directory name for specific processor (CPU)
-*                                       <compiler>                      directory name for specific compiler
+*                           where
+*                                   <Custom Library Directory>      directory path for custom library software
+*                                   <cpu>                           directory name for specific processor (CPU)
+*                                   <compiler>                      directory name for specific compiler
 *
-*                     (b) Product-specific library functions are implemented in individual products.
+*                 (b) Product-specific library functions are implemented in individual products.
 *
 *********************************************************************************************************
-* Notice(s)     : (1) The Institute of Electrical and Electronics Engineers and The Open Group, have given
-*                     us permission to reprint portions of their documentation.  Portions of this text are
-*                     reprinted and reproduced in electronic form from the IEEE Std 1003.1, 2004 Edition,
-*                     Standard for Information Technology -- Portable Operating System Interface (POSIX),
-*                     The Open Group Base Specifications Issue 6, Copyright (C) 2001-2004 by the Institute
-*                     of Electrical and Electronics Engineers, Inc and The Open Group.  In the event of any
-*                     discrepancy between these versions and the original IEEE and The Open Group Standard,
-*                     the original IEEE and The Open Group Standard is the referee document.  The original
-*                     Standard can be obtained online at http://www.opengroup.org/unix/online.html.
+* Notice(s) : (1) The Institute of Electrical and Electronics Engineers and The Open Group, have given
+*                 us permission to reprint portions of their documentation.  Portions of this text are
+*                 reprinted and reproduced in electronic form from the IEEE Std 1003.1, 2004 Edition,
+*                 Standard for Information Technology -- Portable Operating System Interface (POSIX),
+*                 The Open Group Base Specifications Issue 6, Copyright (C) 2001-2004 by the Institute
+*                 of Electrical and Electronics Engineers, Inc and The Open Group.  In the event of any
+*                 discrepancy between these versions and the original IEEE and The Open Group Standard,
+*                 the original IEEE and The Open Group Standard is the referee document.  The original
+*                 Standard can be obtained online at http://www.opengroup.org/unix/online.html.
 *********************************************************************************************************
 */
-
 
 /*
 *********************************************************************************************************

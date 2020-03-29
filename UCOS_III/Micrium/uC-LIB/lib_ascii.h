@@ -1,24 +1,24 @@
 /*
 *********************************************************************************************************
-*                                                uC/LIB
-*                                        CUSTOM LIBRARY MODULES
+*                                               uC/LIB
+*                                       Custom Library Modules
 *
-*                         (c) Copyright 2004-2014; Micrium, Inc.; Weston, FL
+*                         (c) Copyright 2004-2019; Silicon Laboratories Inc.,
+*                                400 W. Cesar Chavez, Austin, TX 78701
 *
-*                  All rights reserved.  Protected by international copyright laws.
+*                   All rights reserved. Protected by international copyright laws.
 *
-*                  uC/LIB is provided in source form to registered licensees ONLY.  It is
-*                  illegal to distribute this source code to any third party unless you receive
-*                  written permission by an authorized Micrium representative.  Knowledge of
-*                  the source code may NOT be used to develop a similar product.
+*                  Your use of this software is subject to your acceptance of the terms
+*                  of a Silicon Labs Micrium software license, which can be obtained by
+*                  contacting info@micrium.com. If you do not agree to the terms of this
+*                  license, you may not use this software.
 *
 *                  Please help us continue to provide the Embedded community with the finest
-*                  software available.  Your honesty is greatly appreciated.
+*                  software available. Your honesty is greatly appreciated.
 *
-*                  You can find our product's user manual, API reference, release notes and
-*                  more information at: https://doc.micrium.com
+*                    You can find our product's documentation at: doc.micrium.com
 *
-*                  You can contact us at: http://www.micrium.com
+*                          For more information visit us at: www.micrium.com
 *********************************************************************************************************
 */
 
@@ -27,51 +27,49 @@
 *
 *                                     ASCII CHARACTER OPERATIONS
 *
-* Filename      : lib_ascii.h
-* Version       : V1.38.01
-* Programmer(s) : BAN
+* Filename : lib_ascii.h
+* Version  : V1.38.03
 *********************************************************************************************************
-* Note(s)       : (1) NO compiler-supplied standard library functions are used in library or product software.
+* Note(s)  : (1) NO compiler-supplied standard library functions are used in library or product software.
 *
-*                     (a) ALL standard library functions are implemented in the custom library modules :
+*                (a) ALL standard library functions are implemented in the custom library modules :
 *
-*                         (1) \<Custom Library Directory>\lib_*.*
+*                    (1) \<Custom Library Directory>\lib_*.*
 *
-*                         (2) \<Custom Library Directory>\Ports\<cpu>\<compiler>\lib*_a.*
+*                    (2) \<Custom Library Directory>\Ports\<cpu>\<compiler>\lib*_a.*
 *
-*                               where
-*                                       <Custom Library Directory>      directory path for custom library software
-*                                       <cpu>                           directory name for specific processor (CPU)
-*                                       <compiler>                      directory name for specific compiler
+*                          where
+*                                  <Custom Library Directory>      directory path for custom library software
+*                                  <cpu>                           directory name for specific processor (CPU)
+*                                  <compiler>                      directory name for specific compiler
 *
-*                     (b) Product-specific library functions are implemented in individual products.
+*                (b) Product-specific library functions are implemented in individual products.
 *
 *
-*                 (2) (a) ECMA-6 '7-Bit coded Character Set' (6th edition), which corresponds to the
-*                         3rd edition of ISO 646, specifies several versions of a 7-bit character set :
+*            (2) (a) ECMA-6 '7-Bit coded Character Set' (6th edition), which corresponds to the
+*                    3rd edition of ISO 646, specifies several versions of a 7-bit character set :
 *
-*                         (1) THE GENERAL VERSION, which allows characters at 0x23 and 0x24 to be given a
-*                             set alternate form and allows the characters 0x40, 0x5B, 0x5D, 0x60, 0x7B &
-*                             0x7D to be assigned a "unique graphic character" or to be declared as unused.
-*                             All other characters are explicitly specified.
+*                    (1) THE GENERAL VERSION, which allows characters at 0x23 and 0x24 to be given a
+*                        set alternate form and allows the characters 0x40, 0x5B, 0x5D, 0x60, 0x7B &
+*                        0x7D to be assigned a "unique graphic character" or to be declared as unused.
+*                        All other characters are explicitly specified.
 *
-*                         (2) THE INTERNATIONAL REFERENCE VERSION, which explicitly specifies all characters
-*                             in the 7-bit character set.
+*                    (2) THE INTERNATIONAL REFERENCE VERSION, which explicitly specifies all characters
+*                        in the 7-bit character set.
 *
-*                         (3) NATIONAL & APPLICATION-ORIENTED VERSIONS, which may be derived from the
-*                             standard in specified ways.
+*                    (3) NATIONAL & APPLICATION-ORIENTED VERSIONS, which may be derived from the
+*                        standard in specified ways.
 *
-*                     (b) The character set represented in this file reproduces the Internation Reference
-*                         Version.  This is identical to the 7-bit character set which occupies Unicode
-*                         characters 0x0000 through 0x007F.  The character names are taken from v5.0 of the
-*                         Unicode specification, with certain abbreviations so that the resulting #define
-*                         names will not violate ANSI C naming restriction :
+*                (b) The character set represented in this file reproduces the Internation Reference
+*                    Version.  This is identical to the 7-bit character set which occupies Unicode
+*                    characters 0x0000 through 0x007F.  The character names are taken from v5.0 of the
+*                    Unicode specification, with certain abbreviations so that the resulting #define
+*                    names will not violate ANSI C naming restriction :
 *
-*                         (1) For the Latin capital & lowercase letters, the name components 'LETTER_CAPITAL'
-*                             & 'LETTER_SMALL' are replaced by 'UPPER' & 'LOWER', respectively.
+*                    (1) For the Latin capital & lowercase letters, the name components 'LETTER_CAPITAL'
+*                        & 'LETTER_SMALL' are replaced by 'UPPER' & 'LOWER', respectively.
 *********************************************************************************************************
 */
-
 
 /*
 *********************************************************************************************************
@@ -674,7 +672,7 @@
 *
 * Return(s)   : DEF_YES, if character is     a punctuation character.
 *
-*               DEF_NO,     if character is NOT a punctuation character.
+*               DEF_NO,  if character is NOT a punctuation character.
 *
 * Caller(s)   : Application.
 *
@@ -683,9 +681,10 @@
 *********************************************************************************************************
 */
 
-#define  ASCII_IS_PUNCT(c)             ((((ASCII_IS_PRINT(c)) == DEF_YES) && \
-                                         ((ASCII_IS_SPACE(c)) == DEF_NO ) && \
-                                         ((ASCII_IS_ALPHA_NUM(c)) == DEF_NO )) ? (DEF_YES) : (DEF_NO))
+#define  ASCII_IS_PUNCT(c)              ((((c > ASCII_CHAR_SPACE)         && (c < ASCII_CHAR_DIGIT_ZERO))    || \
+                                          ((c > ASCII_CHAR_DIGIT_NINE)    && (c < ASCII_CHAR_LATIN_UPPER_A)) || \
+                                          ((c > ASCII_CHAR_LATIN_UPPER_Z) && (c < ASCII_CHAR_LATIN_LOWER_A)) || \
+                                          ((c > ASCII_CHAR_LATIN_LOWER_Z) && (c < ASCII_CHAR_DELETE))) ? (DEF_YES) : (DEF_NO))
 
 
 /*

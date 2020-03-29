@@ -1,24 +1,24 @@
 /*
 *********************************************************************************************************
-*                                                uC/LIB
-*                                        CUSTOM LIBRARY MODULES
+*                                               uC/LIB
+*                                       Custom Library Modules
 *
-*                         (c) Copyright 2004-2014; Micrium, Inc.; Weston, FL
+*                         (c) Copyright 2004-2019; Silicon Laboratories Inc.,
+*                                400 W. Cesar Chavez, Austin, TX 78701
 *
-*                  All rights reserved.  Protected by international copyright laws.
+*                   All rights reserved. Protected by international copyright laws.
 *
-*                  uC/LIB is provided in source form to registered licensees ONLY.  It is
-*                  illegal to distribute this source code to any third party unless you receive
-*                  written permission by an authorized Micrium representative.  Knowledge of
-*                  the source code may NOT be used to develop a similar product.
+*                  Your use of this software is subject to your acceptance of the terms
+*                  of a Silicon Labs Micrium software license, which can be obtained by
+*                  contacting info@micrium.com. If you do not agree to the terms of this
+*                  license, you may not use this software.
 *
 *                  Please help us continue to provide the Embedded community with the finest
-*                  software available.  Your honesty is greatly appreciated.
+*                  software available. Your honesty is greatly appreciated.
 *
-*                  You can find our product's user manual, API reference, release notes and
-*                  more information at: https://doc.micrium.com
+*                    You can find our product's documentation at: doc.micrium.com
 *
-*                  You can contact us at: http://www.micrium.com
+*                          For more information visit us at: www.micrium.com
 *********************************************************************************************************
 */
 
@@ -27,40 +27,36 @@
 *
 *                                       ASCII STRING MANAGEMENT
 *
-* Filename      : lib_str.c
-* Version       : V1.38.01
-* Programmer(s) : ITJ
-*                 BAN
-*                 JDH
+* Filename  : lib_str.c
+* Version   : V1.38.03
 *********************************************************************************************************
-* Note(s)       : (1) NO compiler-supplied standard library functions are used in library or product software.
+* Note(s)   : (1) NO compiler-supplied standard library functions are used in library or product software.
 *
-*                     (a) ALL standard library functions are implemented in the custom library modules :
+*                 (a) ALL standard library functions are implemented in the custom library modules :
 *
-*                         (1) \<Custom Library Directory>\lib_*.*
+*                     (1) \<Custom Library Directory>\lib_*.*
 *
-*                         (2) \<Custom Library Directory>\Ports\<cpu>\<compiler>\lib*_a.*
+*                     (2) \<Custom Library Directory>\Ports\<cpu>\<compiler>\lib*_a.*
 *
-*                               where
-*                                       <Custom Library Directory>      directory path for custom library software
-*                                       <cpu>                           directory name for specific processor (CPU)
-*                                       <compiler>                      directory name for specific compiler
+*                           where
+*                                   <Custom Library Directory>      directory path for custom library software
+*                                   <cpu>                           directory name for specific processor (CPU)
+*                                   <compiler>                      directory name for specific compiler
 *
-*                     (b) Product-specific library functions are implemented in individual products.
+*                 (b) Product-specific library functions are implemented in individual products.
 *
 *********************************************************************************************************
-* Notice(s)     : (1) The Institute of Electrical and Electronics Engineers and The Open Group, have given
-*                     us permission to reprint portions of their documentation.  Portions of this text are
-*                     reprinted and reproduced in electronic form from the IEEE Std 1003.1, 2004 Edition,
-*                     Standard for Information Technology -- Portable Operating System Interface (POSIX),
-*                     The Open Group Base Specifications Issue 6, Copyright (C) 2001-2004 by the Institute
-*                     of Electrical and Electronics Engineers, Inc and The Open Group.  In the event of any
-*                     discrepancy between these versions and the original IEEE and The Open Group Standard,
-*                     the original IEEE and The Open Group Standard is the referee document.  The original
-*                     Standard can be obtained online at http://www.opengroup.org/unix/online.html.
+* Notice(s) : (1) The Institute of Electrical and Electronics Engineers and The Open Group, have given
+*                 us permission to reprint portions of their documentation.  Portions of this text are
+*                 reprinted and reproduced in electronic form from the IEEE Std 1003.1, 2004 Edition,
+*                 Standard for Information Technology -- Portable Operating System Interface (POSIX),
+*                 The Open Group Base Specifications Issue 6, Copyright (C) 2001-2004 by the Institute
+*                 of Electrical and Electronics Engineers, Inc and The Open Group.  In the event of any
+*                 discrepancy between these versions and the original IEEE and The Open Group Standard,
+*                 the original IEEE and The Open Group Standard is the referee document.  The original
+*                 Standard can be obtained online at http://www.opengroup.org/unix/online.html.
 *********************************************************************************************************
 */
-
 
 /*
 *********************************************************************************************************
@@ -467,6 +463,7 @@ CPU_CHAR  *Str_Copy_N (       CPU_CHAR    *pstr_dest,
         pstr_copy_src++;
         len_copy++;
     }
+
                                                                 /* Rtn NULL if NULL ptr(s) found  (see Note #3b1).      */
     if ((pstr_copy_dest == (      CPU_CHAR *)0) ||
         (pstr_copy_src  == (const CPU_CHAR *)0)) {
@@ -646,6 +643,7 @@ CPU_CHAR  *Str_Cat_N (       CPU_CHAR    *pstr_dest,
            (*pstr_cat_dest != (CPU_CHAR  )'\0')) {              /* ... or NULL char found..                             */
         pstr_cat_dest++;
     }
+
     if (pstr_cat_dest == (CPU_CHAR *)0) {                       /* Rtn NULL if NULL ptr found (see Note #3b1).          */
         return ((CPU_CHAR *)0);
     }
@@ -662,6 +660,7 @@ CPU_CHAR  *Str_Cat_N (       CPU_CHAR    *pstr_dest,
         pstr_cat_src++;
         len_cat++;
     }
+
                                                                 /* Rtn NULL if NULL ptr(s) found (see Note #3b1).       */
     if ((pstr_cat_dest == (      CPU_CHAR *)0) ||
         (pstr_cat_src  == (const CPU_CHAR *)0)) {
@@ -1120,7 +1119,7 @@ CPU_INT16S  Str_CmpIgnoreCase (const  CPU_CHAR  *p1_str,
 *                           (A) Strings identical; 0 returned.
 *
 *                       See also Note #2a1C.
-*$PAGE*
+*
 *               (4) Since 16-bit signed arithmetic is performed to calculate a non-identical comparison
 *                   return value, 'CPU_CHAR' native data type size MUST be 8-bit.
 *********************************************************************************************************
@@ -1375,7 +1374,6 @@ CPU_CHAR  *Str_Char_N (const  CPU_CHAR    *pstr,
         len_srch++;
     }
 
-
     if (pstr_char == (const CPU_CHAR *)0) {                     /* Rtn NULL if NULL ptr found      (see Note #3b1).     */
         return ((CPU_CHAR *)0);
     }
@@ -1545,7 +1543,7 @@ CPU_CHAR  *Str_Char_Last_N (const  CPU_CHAR    *pstr,
 
 
     pstr_char    = pstr;
-     str_len_max = len_max - sizeof((CPU_CHAR)'\0');            /* Str len adj'd for NULL char len.                     */
+     str_len_max = len_max - sizeof("");                        /* Str len adj'd for NULL char len.                     */
      str_len     = Str_Len_N(pstr_char, str_len_max);
     pstr_char   += str_len;
 
@@ -1885,6 +1883,7 @@ CPU_CHAR  *Str_Str_N (const  CPU_CHAR    *pstr,
     if (str_len_srch > str_len) {                               /* Rtn NULL if srch str len > str len (see Note #3d).   */
         return ((CPU_CHAR *)0);
     }
+
                                                                 /* Rtn NULL if NULL ptr found         (see Note #3b1).  */
     pstr_str = pstr      + str_len;
     if (pstr_str == (const CPU_CHAR *)0) {
@@ -1895,10 +1894,8 @@ CPU_CHAR  *Str_Str_N (const  CPU_CHAR    *pstr,
         return ((CPU_CHAR *)0);
     }
 
-
     srch_len  = str_len - str_len_srch;                         /* Calc srch len (see Note #3e2).                       */
     srch_ix   = 0u;
-    srch_done = DEF_NO;
 
     do {
         pstr_srch_ix = (const CPU_CHAR *)(pstr + srch_ix);
@@ -1988,7 +1985,7 @@ CPU_CHAR  *Str_Str_N (const  CPU_CHAR    *pstr,
 *                               pstr     = "???"                See Note #6b
 *
 *               (2) The number's base MUST be between 2 & 36, inclusive.
-*$PAGE*
+*
 *               (3) Leading character option prepends leading characters prior to the first non-zero digit.
 *
 *                   (a) (1) Leading character MUST be a printable ASCII character.
@@ -2150,7 +2147,7 @@ CPU_CHAR  *Str_FmtNbr_Int32U (CPU_INT32U    nbr,
 *                               pstr     = "?????"              See Note #6b
 *
 *               (2) The number's base MUST be between 2 & 36, inclusive.
-*$PAGE*
+*
 *               (3) Leading character option prepends leading characters prior to the first non-zero digit.
 *
 *                   (a) (1) Leading character MUST be a printable ASCII character.
@@ -2230,7 +2227,7 @@ CPU_CHAR  *Str_FmtNbr_Int32U (CPU_INT32U    nbr,
 *                       (4) ... then one digit of '0' value is formatted.
 *
 *                           This is NOT a leading character; but a single integer digit of '0' value.
-*$PAGE*
+*
 *               (4) (a) NULL-character terminate option DISABLED prevents overwriting previous character
 *                       array formatting.
 *
@@ -2344,7 +2341,7 @@ CPU_CHAR  *Str_FmtNbr_Int32S (CPU_INT32S    nbr,
 *
 *                   (b) Some CPUs' &/or compilers' floating-point implementations MAY further reduce the
 *                       maximum accuracy.
-*$PAGE*
+*
 *               (2) (a) If the total number of digits to format ('nbr_dig + nbr_dp') is zero; then NO
 *                       formatting is performed except possible NULL-termination of the string (see Note #4).
 *
@@ -2424,7 +2421,7 @@ CPU_CHAR  *Str_FmtNbr_Int32S (CPU_INT32S    nbr,
 *                                       nbr_dp  =  2
 *
 *                                       pstr    = "0.78"
-*$PAGE*
+*
 *                   (c) (1) If the total number of digits to format ('nbr_dig + nbr_dp') is greater than ... :
 *
 *                           (A) ... the maximum accuracy of the CPU's &/or compiler's 32-bit floating-point
@@ -2513,7 +2510,7 @@ CPU_CHAR  *Str_FmtNbr_Int32S (CPU_INT32S    nbr,
 *                           This is NOT a leading character; but a single integer digit of '0' value.
 *
 *                       See also Note #2b4B.
-*$PAGE*
+*
 *               (4) (a) NULL-character terminate option DISABLED prevents overwriting previous character
 *                       array formatting.
 *
@@ -2583,18 +2580,18 @@ CPU_CHAR  *Str_FmtNbr_32 (CPU_FP32      nbr,
     CPU_FP32      nbr_log;
     CPU_INT32U    nbr_shiftd;
     CPU_INT16U    nbr_dig_max;
-    CPU_INT16U    nbr_dig_sig;
+    CPU_INT16U    nbr_dig_sig    = 0;
     CPU_INT08U    nbr_neg_sign;
     CPU_INT08U    dig_val;
     CPU_FP32      dig_exp;
     CPU_FP32      dp_exp;
     CPU_BOOLEAN   lead_char_dig;
-    CPU_BOOLEAN   lead_char_fmtd;
+    CPU_BOOLEAN   lead_char_fmtd = DEF_NO;
     CPU_BOOLEAN   lead_char_0;
     CPU_BOOLEAN   fmt_invalid;
     CPU_BOOLEAN   print_char;
     CPU_BOOLEAN   nbr_neg;
-    CPU_BOOLEAN   nbr_neg_fmtd;
+    CPU_BOOLEAN   nbr_neg_fmtd   = DEF_NO;
 
 
                                                                 /* ---------------- VALIDATE FMT ARGS ----------------- */
@@ -2863,7 +2860,7 @@ CPU_CHAR  *Str_FmtNbr_32 (CPU_FP32      nbr,
 *                           (C) (1) (a) "A final string of one or more unrecognized characters,"  ...
 *                                   (b) "including the terminating null byte of the input string" ...
 *                               (2) "other than a sign or a permissible letter or digit."
-*$PAGE*
+*
 *                       (2) Second, "they shall attempt to convert the subject sequence to an unsigned integer" :
 *
 *                           (A) "If the subject sequence is empty or does not have the expected form" :
@@ -2953,7 +2950,7 @@ CPU_CHAR  *Str_FmtNbr_32 (CPU_FP32      nbr,
 *                           nbr       =  0
 *                           pstr_next = "GABCDE"
 *
-*$PAGE*
+*
 *                   (f) Parse string integer overflow :
 *
 *                           pstr      = "   12345678901234567890*123456"
@@ -3076,7 +3073,7 @@ CPU_INT32U  Str_ParseNbr_Int32U (const  CPU_CHAR     *pstr,
 *                           (C) (1) (a) "A final string of one or more unrecognized characters,"  ...
 *                                   (b) "including the terminating null byte of the input string" ...
 *                               (2) "other than a sign or a permissible letter or digit."
-*$PAGE*
+*
 *                       (2) Second, "they shall attempt to convert the subject sequence to an integer" :
 *
 *                           (A) "If the subject sequence is empty or does not have the expected form" :
@@ -3169,7 +3166,7 @@ CPU_INT32U  Str_ParseNbr_Int32U (const  CPU_CHAR     *pstr,
 *                           nbr       =  0
 *                           pstr_next = "GABCDE"
 *
-*$PAGE*
+*
 *                   (f) Parse string integer overflow :
 *
 *                           pstr      = "   12345678901234567890*123456"
@@ -3269,7 +3266,7 @@ CPU_INT32S  Str_ParseNbr_Int32S (const  CPU_CHAR     *pstr,
 *
 * Caller(s)   : Str_FmtNbr_Int32U(),
 *               Str_FmtNbr_Int32S().
-*$PAGE*
+*
 * Note(s)     : (1) (a) The maximum number of digits to format for 32-bit integer numbers :
 *
 *
@@ -3318,7 +3315,7 @@ CPU_INT32S  Str_ParseNbr_Int32S (const  CPU_CHAR     *pstr,
 *                                   pstr     = "?????"              See Note #7b
 *
 *               (2) The number's base MUST be between 2 & 36, inclusive.
-*$PAGE*
+*
 *               (3) Leading character option prepends leading characters prior to the first non-zero digit.
 *
 *                   (a) (1) Leading character MUST be a printable ASCII character.
@@ -3398,7 +3395,7 @@ CPU_INT32S  Str_ParseNbr_Int32S (const  CPU_CHAR     *pstr,
 *                       (4) ... then one digit of '0' value is formatted.
 *
 *                           This is NOT a leading character; but a single integer digit of '0' value.
-*$PAGE*
+*
 *               (4) (a) NULL-character terminate option DISABLED prevents overwriting previous character
 *                       array formatting.
 *
@@ -3456,11 +3453,11 @@ static  CPU_CHAR  *Str_FmtNbr_Int32 (CPU_INT32U    nbr,
 {
     CPU_CHAR     *pstr_fmt;
     CPU_DATA      i;
-    CPU_INT32U    nbr_fmt;
+    CPU_INT32U    nbr_fmt            = 0;
     CPU_INT32U    nbr_log;
     CPU_INT08U    nbr_dig_max;
     CPU_INT08U    nbr_dig_min;
-    CPU_INT08U    nbr_dig_fmtd;
+    CPU_INT08U    nbr_dig_fmtd       = 0;
     CPU_INT08U    nbr_neg_sign;
     CPU_INT08U    nbr_lead_char;
     CPU_INT08U    dig_val;
@@ -3468,9 +3465,9 @@ static  CPU_CHAR  *Str_FmtNbr_Int32 (CPU_INT32U    nbr,
     CPU_INT08U    lead_char_delta_a;
     CPU_BOOLEAN   lead_char_dig;
     CPU_BOOLEAN   lead_char_0;
-    CPU_BOOLEAN   fmt_invalid;
+    CPU_BOOLEAN   fmt_valid          = DEF_YES;
     CPU_BOOLEAN   print_char;
-    CPU_BOOLEAN   nbr_neg_fmtd;
+    CPU_BOOLEAN   nbr_neg_fmtd       = DEF_NO;
 
 
                                                                 /* ---------------- VALIDATE FMT ARGS ----------------- */
@@ -3478,22 +3475,19 @@ static  CPU_CHAR  *Str_FmtNbr_Int32 (CPU_INT32U    nbr,
         return ((CPU_CHAR *)0);
     }
 
-    fmt_invalid = DEF_NO;
-    lead_char_0 = DEF_NO;
-
     if (nbr_dig < 1) {                                          /* If nbr digs = 0, ...                                 */
-        fmt_invalid = DEF_YES;                                  /* ... fmt invalid str (see Note #6b).                  */
+        fmt_valid = DEF_NO;                                     /* ... fmt valid str (see Note #6b).                    */
     }
                                                                 /* If invalid base, ...                                 */
     if ((nbr_base <  2u) ||
         (nbr_base > 36u)) {
-        fmt_invalid = DEF_YES;                                  /* ... fmt invalid str (see Note #6d).                  */
+        fmt_valid = DEF_NO;                                     /* ... fmt valid str (see Note #6d).                  */
     }
 
     if (lead_char != (CPU_CHAR)'\0') {
         print_char =  ASCII_IsPrint(lead_char);
         if (print_char != DEF_YES) {                            /* If lead char non-printable (see Note #3a1), ...      */
-            fmt_invalid = DEF_YES;                              /* ... fmt invalid str        (see Note #6e).           */
+            fmt_valid = DEF_NO;                                 /* ... fmt valid str          (see Note #6e).           */
 
         } else if (lead_char != '0') {                          /* Chk lead char for non-0 nbr base dig.                */
             lead_char_delta_0 = (CPU_INT08U)(lead_char - '0');
@@ -3508,7 +3502,7 @@ static  CPU_CHAR  *Str_FmtNbr_Int32 (CPU_INT32U    nbr,
                                                     (lead_char_delta_a < (nbr_base - 10u))))) ? DEF_YES : DEF_NO;
 
             if (lead_char_dig == DEF_YES) {                     /* If lead char non-0 nbr base dig (see Note #3a2A), ...*/
-                fmt_invalid = DEF_YES;                          /* ... fmt invalid str             (see Note #6e).      */
+                fmt_valid = DEF_NO;                             /* ... fmt valid str               (see Note #6e).      */
             }
         }
     }
@@ -3518,7 +3512,7 @@ static  CPU_CHAR  *Str_FmtNbr_Int32 (CPU_INT32U    nbr,
     pstr_fmt    = pstr;
     lead_char_0 = DEF_NO;
 
-    if (fmt_invalid == DEF_NO) {
+    if (fmt_valid == DEF_YES) {
         nbr_fmt     = nbr;
         nbr_log     = nbr;
         nbr_dig_max = 1u;
@@ -3535,7 +3529,7 @@ static  CPU_CHAR  *Str_FmtNbr_Int32 (CPU_INT32U    nbr,
             if (lead_char != (CPU_CHAR)'\0') {
                 nbr_dig_fmtd  = nbr_dig;
                 nbr_lead_char = nbr_dig     -
-                                nbr_dig_min - nbr_neg_sign;
+                               (nbr_dig_min + nbr_neg_sign);
             } else {
                 nbr_dig_fmtd  = nbr_dig_min + nbr_neg_sign;
                 nbr_lead_char = 0u;
@@ -3547,11 +3541,11 @@ static  CPU_CHAR  *Str_FmtNbr_Int32 (CPU_INT32U    nbr,
             }
 
         } else {                                                /* Else if nbr trunc'd, ...                             */
-            fmt_invalid = DEF_YES;                              /* ... fmt invalid str (see Note #6c).                  */
+            fmt_valid = DEF_NO;                                 /* ... fmt valid str (see Note #6c).                    */
         }
     }
 
-    if (fmt_invalid != DEF_NO) {
+    if (fmt_valid == DEF_NO) {
         nbr_dig_fmtd = nbr_dig;
     }
 
@@ -3566,7 +3560,7 @@ static  CPU_CHAR  *Str_FmtNbr_Int32 (CPU_INT32U    nbr,
 
 
     for (i = 0u; i < nbr_dig_fmtd; i++) {                       /* Fmt str for desired nbr digs :                       */
-        if (fmt_invalid == DEF_NO) {
+        if (fmt_valid == DEF_YES) {
             if ((nbr_fmt > 0) ||                                /* If fmt nbr > 0                               ...     */
                 (i == 0u)) {                                    /* ... OR on one's  dig to fmt (see Note #3c1), ...     */
                                                                 /* ... calc & fmt dig val;                      ...     */
@@ -3602,7 +3596,7 @@ static  CPU_CHAR  *Str_FmtNbr_Int32 (CPU_INT32U    nbr,
     }
 
 
-    if (fmt_invalid != DEF_NO) {                                /* Rtn NULL for invalid str fmt (see Notes #6a - #6e).  */
+    if (fmt_valid == DEF_NO) {                                /* Rtn NULL for invalid str fmt (see Notes #6a - #6e).  */
         return ((CPU_CHAR *)0);
     }
 
@@ -3696,7 +3690,7 @@ static  CPU_CHAR  *Str_FmtNbr_Int32 (CPU_INT32U    nbr,
 *                                               ('nbr_base') is" 8, the '0' character "may optionally precede
 *                                               the sequence of letters and digits"; it seems reasonable to
 *                                               allow the '0' character to be optionally parsed.
-*$PAGE*
+*
 *                               (2) "A subject sequence .... may be preceded by a '+' or '-' sign."
 *
 *                                   (a) It does NOT seem reasonable to parse & convert a negative number
@@ -3748,7 +3742,7 @@ static  CPU_CHAR  *Str_FmtNbr_Int32 (CPU_INT32U    nbr,
 *                           may fail if" :
 *
 *                           (A) "[EINVAL] - No conversion could be performed."
-*$PAGE*
+*
 *               (3) Return integer value & next string pointer should be used to diagnose parse success or failure :
 *
 *                   (a) Valid parse string integer :
@@ -3862,13 +3856,13 @@ static  CPU_INT32U  Str_ParseNbr_Int32 (const  CPU_CHAR      *pstr,
                                                                 /* --------------- VALIDATE PARSE ARGS ---------------- */
     if (pstr_next == (CPU_CHAR **) 0) {                         /* If NOT avail, ...                                    */
         pstr_next  = (CPU_CHAR **)&pstr_parse_unused;           /* ... re-cfg NULL rtn ptr to unused local var.         */
-       (void)&pstr_parse_unused;                                /* Prevent possible 'variable unused' warning.          */
+       (void)pstr_parse_unused;                                 /* Prevent possible 'variable unused' warning.          */
     }
    *pstr_next = (CPU_CHAR *)pstr;                               /* Init rtn str for err (see Note #5).                  */
 
     if (pnbr_neg == (CPU_BOOLEAN *) 0) {                        /* If NOT avail, ...                                    */
         pnbr_neg  = (CPU_BOOLEAN *)&nbr_neg_unused;             /* ... re-cfg NULL rtn ptr to unused local var.         */
-       (void)&nbr_neg_unused;                                   /* Prevent possible 'variable unused' warning.          */
+       (void)nbr_neg_unused;                                    /* Prevent possible 'variable unused' warning.          */
     }
    *pnbr_neg = DEF_NO;                                          /* Init nbr neg for err (see Note #5).                  */
 
@@ -3992,9 +3986,9 @@ static  CPU_INT32U  Str_ParseNbr_Int32 (const  CPU_CHAR      *pstr,
             } else {
                 nbr_hex_lower = ASCII_IsLower(parse_char);
                 if (nbr_hex_lower == DEF_YES) {
-                    parse_dig = (CPU_INT08U)((parse_char - 'a') + 10u);
+                    parse_dig = ((CPU_INT08U)(parse_char - 'a') + 10u);
                 } else {
-                    parse_dig = (CPU_INT08U)((parse_char - 'A') + 10u);
+                    parse_dig = ((CPU_INT08U)(parse_char - 'A') + 10u);
                 }
             }
 

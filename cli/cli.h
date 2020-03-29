@@ -1,10 +1,4 @@
 /*
- * FreeRTOS_CLI.h
- *
- *  Created on: 22-Mar-2019
- *      Author: medprime
- */
-/*
  * FreeRTOS+CLI V1.0.4
  * Copyright (C) 2017 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
  *
@@ -31,27 +25,33 @@
  * 1 tab == 4 spaces!
  */
 
-#ifndef FREERTOS_CLI_H_
-#define FREERTOS_CLI_H_
+/**
+ * @file  cli.h
+ * @brief using static array instead of linked list
+ * @author medprime (www.medprimetech.com)
+ * @version 0.0.0
+ **/
+
+#ifndef _CLI_H_
+#define _CLI_H_
 
 #include "stm32f4xx_hal.h"
-#include "string.h"
 
 typedef struct
-    {
-	const char* CLI_Command;
-	const char* CLI_Command_Description;
-	uint16_t    CLI_Command_Length;
-	uint8_t   (*CLI_Callback)(const char* cli_rx_command, char* cli_tx_out_buffer, uint16_t max_buffer_len);
-    } CLI_Command_t;
+{
+	const char *CLI_Command;
+	const char *CLI_Command_Description;
+	uint16_t CLI_Command_Length;
+	uint8_t (*CLI_Callback)(uint8_t argc,
+							const char *argv[],
+							char *cli_out_buffer,
+							uint16_t cli_out_max);
+} CLI_Command_t;
 
-void    CLI_Add_Help_Cammand();
-uint8_t CLI_Add_Cammand(CLI_Command_t* command_def);
-uint8_t CLI_Process_Cammand(const char* cli_in_buffer, char* cli_tx_out_buffer, uint16_t max_buffer_len);
-char*   CLI_Get_Parameter(const char *cli_in_buffer,
-	uint16_t  param_number,
-	uint16_t *param_number_len);
+void CLI_Init();
+uint8_t CLI_Add_Cammand(CLI_Command_t *command_def);
+uint8_t CLI_Process_Cammand(const char *cli_in_buffer, char *cli_tx_out_buffer, uint16_t max_buffer_len);
+void CLI_Parse_Arguments(const char *cli_in_buffer, uint8_t *argc, const char *argv[]);
+uint8_t CLI_Get_Argument_Length(const char *arg);
 
-
-
-#endif /* FREERTOS_CLI_H_ */
+#endif /* _CLI_H_ */

@@ -5,10 +5,12 @@
  *      Author: medprime
  */
 
-#include  <os.h>
 #include "stm32f4xx_hal.h"
 #include "main.h"
 #include "os_cfg_app.h"
+#include "lib_mem.h"
+#include "os.h"
+
 
 
 #define  APP_CFG_STARTUP_TASK_PRIO          3u

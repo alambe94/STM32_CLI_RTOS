@@ -35,14 +35,7 @@
 #ifndef UART_CLI_H_
 #define UART_CLI_H_
 
-#include "FreeRTOS_CLI.h"
 #include "stm32f4xx_hal.h"
-#include "stdlib.h"
-#include "ring_buffer.h"
-#include "cli_commands.h"
-#include "string.h"
-#include "printf.h"
-
 
 void CLI_UART_Thread_Add();
 void CLI_UART_Send_Char(const char data);

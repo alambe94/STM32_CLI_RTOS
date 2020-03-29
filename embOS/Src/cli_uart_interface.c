@@ -33,6 +33,12 @@
  */
 
 #include "cli_uart_interface.h"
+#include "cli_commands.h"
+#include "cli.h"
+#include "stdio.h"
+#include "stdlib.h"
+#include "ring_buffer.h"
+#include "string.h"
 #include "RTOS.h"
 
 
@@ -47,7 +53,7 @@ static Ring_Buffer_t UART_Ring_Buffer_Handle;
 /************************************ring buffer stuff end********************************/
 
 static const char* const pcWelcomeMessage =
-	"Type Help to view a list of registered commands. UCOS III\r\n\r\n>";
+	"Type Help to view a list of registered commands. embOS\r\n\r\n>";
 
 #define OUTPUT_BUFFER_SIZE      128
 #define INPUT_BUFFER_SIZE       128
@@ -133,7 +139,7 @@ static void CLI_UART_Task()
     uint8_t call_again = 0;
     char rx_char = 0;
 
-    CLI_Add_Help_Cammand();
+    CLI_Init();
     CLI_Add_All_Commands();
 
     Ring_Buffer_Init(&UART_Ring_Buffer_Handle, UART_DMA_RX_Buffer,

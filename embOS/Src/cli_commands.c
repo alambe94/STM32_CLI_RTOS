@@ -6,9 +6,15 @@
  */
 
 #include "cli_commands.h"
-#include "math.h"
+#include "cli_uart_interface.h"
+#include "cli.h"
 #include "printf.h"
 #include "RTOS.h"
+#include "stdio.h"
+#include "stdlib.h"
+#include "string.h"
+#include "math.h"
+
 
 
 #define  UART_Print_Task_PRIO                3u
@@ -21,29 +27,20 @@ extern  OS_MUTEX CLI_UART_Mutex;
 
 
 /*************************************************************************/
-void Sprint_Ok_Helper(char* cli_tx_out_buffer, const char* cli_rx_command)
-    {
-    const char* cmd1 = "\r\nOk:";
-    const char* cmd2 = "\r\n";
-    strcat(cli_tx_out_buffer, cmd1);
-    strcat(cli_tx_out_buffer, cli_rx_command);
-    strcat(cli_tx_out_buffer, cmd2);
-    }
+void Sprint_Ok_Helper(const char *in, char *out, uint16_t out_max)
+{
+	snprintf(out, out_max, "\r\nOk:%s\r\n", in);
+}
 
-void Sprint_Error_Helper(char* cli_tx_out_buffer, const char* cli_rx_command)
-    {
-    const char* cmd1 = "\r\nInvalid Command:";
-    const char* cmd2 = "\r\n";
-    strcat(cli_tx_out_buffer, cmd1);
-    strcat(cli_tx_out_buffer, cli_rx_command);
-    strcat(cli_tx_out_buffer, cmd2);
-    }
+void Sprint_Error_Helper(const char *in, char *out, uint16_t out_max)
+{
+	snprintf(out, out_max, "\r\nError:CMD invalid->%s\r\n", in);
+}
 
-void Sprint_Done_Helper(char* cli_tx_out_buffer, const char* cli_rx_command)
-    {
-    const char* cmd1 = "\r\nDone\r\n";
-    strcat(cli_tx_out_buffer, cmd1);
-    }
+void Sprint_Ok_Done_Helper(const char *in, char *out, uint16_t out_max)
+{
+	snprintf(out, out_max, "\r\nOk:%s\r\nDone\r\n", in);
+}
 
 /*
  *
@@ -86,448 +83,326 @@ uint8_t Parse_Integer(const char* param, int32_t* value)
     }
 
 /************CLI Callback Prototypes starts***********************************/
-static uint8_t Add_Callback(const char* cli_rx_command, char* cli_tx_out_buffer,
-	uint16_t max_buffer_len);
+static uint8_t Add_Callback(uint8_t argc, const char *argv[], char *out_buffer,
+		uint16_t out_max);
 
-static uint8_t Sub_Callback(const char* cli_rx_command, char* cli_tx_out_buffer,
-	uint16_t max_buffer_len);
+static uint8_t Sub_Callback(uint8_t argc, const char *argv[], char *out_buffer,
+		uint16_t out_max);
 
-static uint8_t Mul_Callback(const char* cli_rx_command, char* cli_tx_out_buffer,
-	uint16_t max_buffer_len);
+static uint8_t Mul_Callback(uint8_t argc, const char *argv[], char *out_buffer,
+		uint16_t out_max);
 
-static uint8_t Div_Callback(const char* cli_rx_command, char* cli_tx_out_buffer,
-	uint16_t max_buffer_len);
+static uint8_t Div_Callback(uint8_t argc, const char *argv[], char *out_buffer,
+		uint16_t out_max);
 
-static uint8_t Pow_Callback(const char* cli_rx_command, char* cli_tx_out_buffer,
-	uint16_t max_buffer_len);
+static uint8_t Pow_Callback(uint8_t argc, const char *argv[], char *out_buffer,
+		uint16_t out_max);
 
-static uint8_t Sqrt_Callback(const char* cli_rx_command,
-	char* cli_tx_out_buffer, uint16_t max_buffer_len);
+static uint8_t Sqrt_Callback(uint8_t argc, const char *argv[], char *out_buffer,
+		uint16_t out_max);
 
 /************CLI Callback Prototypes Ends***********************************/
 
 /************CLI Commands Definitions starts***********************************/
 
 CLI_Command_t Add_Defination =
-    {
-    .CLI_Command = "add", /* The command string to type. */
-    .CLI_Command_Description = "\r\n add: addition\r\n", .CLI_Callback =
-	    Add_Callback,
-    /* The function to run. */
-    };
+{ .CLI_Command = "add", /* The command string to type. */
+.CLI_Command_Description = "\r\n add: addition\r\n", .CLI_Callback =
+		Add_Callback,
+/* The function to run. */
+};
 
 CLI_Command_t Sub_Defination =
-    {
-    .CLI_Command = "sub", /* The command string to type. */
-    .CLI_Command_Description = "\r\n sub: subtraction\r\n", .CLI_Callback =
-	    Sub_Callback,
-    /* The function to run. */
-    };
+{ .CLI_Command = "sub", /* The command string to type. */
+.CLI_Command_Description = "\r\n sub: subtraction\r\n", .CLI_Callback =
+		Sub_Callback,
+/* The function to run. */
+};
 
 CLI_Command_t Mul_Defination =
-    {
-    .CLI_Command = "mul", /* The command string to type. */
-    .CLI_Command_Description = "\r\n mul: multiplication\r\n", .CLI_Callback =
-	    Mul_Callback,
-    /* The function to run. */
-    };
+{ .CLI_Command = "mul", /* The command string to type. */
+.CLI_Command_Description = "\r\n mul: multiplication\r\n", .CLI_Callback =
+		Mul_Callback,
+/* The function to run. */
+};
 
 CLI_Command_t Div_Defination =
-    {
-    .CLI_Command = "div", /* The command string to type. */
-    .CLI_Command_Description = "\r\n div: division\r\n", .CLI_Callback =
-	    Div_Callback,
-    /* The function to run. */
-    };
+{ .CLI_Command = "div", /* The command string to type. */
+.CLI_Command_Description = "\r\n div: division\r\n", .CLI_Callback =
+		Div_Callback,
+/* The function to run. */
+};
 
 CLI_Command_t Pow_Defination =
-    {
-    .CLI_Command = "pow", /* The command string to type. */
-    .CLI_Command_Description = "\r\n pow: raise power\r\n", .CLI_Callback =
-	    Pow_Callback,
-    /* The function to run. */
-    };
+{ .CLI_Command = "pow", /* The command string to type. */
+.CLI_Command_Description = "\r\n pow: raise power\r\n", .CLI_Callback =
+		Pow_Callback,
+/* The function to run. */
+};
 
 CLI_Command_t Sqrt_Defination =
-    {
-    .CLI_Command = "sqrt", /* The command string to type. */
-    .CLI_Command_Description = "\r\n sqrt: square root\r\n", .CLI_Callback =
-	    Sqrt_Callback,
-    /* The function to run. */
-    };
+{ .CLI_Command = "sqrt", /* The command string to type. */
+.CLI_Command_Description = "\r\n sqrt: square root\r\n", .CLI_Callback =
+		Sqrt_Callback,
+/* The function to run. */
+};
 
 /************CLI Commands Definitions ends***********************************/
 
 /************CLI Callback Implementation starts***********************************/
 
-static uint8_t Add_Callback(const char* cli_rx_command, char* cli_tx_out_buffer,
-	uint16_t max_buffer_len)
-    {
+static uint8_t Add_Callback(uint8_t argc, const char *argv[], char *out_buffer,
+		uint16_t out_max)
+{
 
-    uint8_t is_command_valid = 1;
-    uint16_t param_len = 0;
-    uint8_t param_number = 0;
-    uint8_t param_count = 0;
-    char* param_ptr = NULL;
+	uint8_t is_command_valid = 1;
+	int32_t rslt = 0;
+	int32_t tmp = 0;
 
-    int32_t sum = 0;
-    int32_t tmp = 0;
-
-    do
+	if (argc > 2)
 	{
-
-	param_number++; //param number, starting from first
-
-	param_ptr = CLI_Get_Parameter(cli_rx_command, param_number, &param_len);
-
-	if (param_ptr != NULL)
-	    {
-	    param_count++;
-
-	    if (Parse_Integer(param_ptr, &tmp))
+		if (Parse_Integer(argv[1], &rslt))
 		{
-		sum += tmp;
+			for (uint8_t i = 2; i < argc; i++)
+			{
+				if (Parse_Integer(argv[i], &tmp))
+				{
+					rslt += tmp;
+				}
+				else
+				{
+					is_command_valid = 0;
+				}
+			}
 		}
-	    else
-		{
-		is_command_valid = 0;
-		}
-	    }
-
-	}
-    while (param_ptr != NULL);
-
-    /*at least one parameter is expected*/
-    if (!param_count)
-	{
-	is_command_valid = 0;
-	}
-
-    if (is_command_valid)
-	{
-
-	sprintf(cli_tx_out_buffer, "\r\n%i\r\n", (int) sum);
-
-	}
-    else
-	{
-	Sprint_Error_Helper(cli_tx_out_buffer, cli_rx_command);
-	}
-    return 0;
-    }
-
-static uint8_t Sub_Callback(const char* cli_rx_command, char* cli_tx_out_buffer,
-	uint16_t max_buffer_len)
-    {
-
-    uint8_t is_command_valid = 1;
-    uint16_t param_len = 0;
-    uint8_t param_number = 0;
-    uint8_t param_count = 0;
-    char* param_ptr = NULL;
-
-    int32_t rslt = 0;
-    int32_t tmp = 0;
-
-    do
-	{
-
-	param_number++; //param number, starting from first
-
-	param_ptr = CLI_Get_Parameter(cli_rx_command, param_number, &param_len);
-
-	if (param_ptr != NULL)
-	    {
-	    param_count++;
-
-	    if (Parse_Integer(param_ptr, &tmp))
-		{
-		/*if first param*/
-		if (param_count == 1)
-		    {
-		    rslt = tmp;
-		    }
 		else
-		    {
-		    rslt -= tmp;
-		    }
-		}
-	    else
 		{
+			is_command_valid = 0;
+		}
+	}
+	else
+	{
 		is_command_valid = 0;
-		}
-	    }
-
-	}
-    while (param_ptr != NULL);
-
-    /*at least one parameter is expected*/
-    if (!param_count)
-	{
-	is_command_valid = 0;
 	}
 
-    if (is_command_valid)
+	if (is_command_valid)
 	{
-
-	sprintf(cli_tx_out_buffer, "\r\n%i\r\n", (int) rslt);
-
+		snprintf(out_buffer, out_max, "\r\n%li\r\n", rslt);
 	}
-    else
+	else
 	{
-	Sprint_Error_Helper(cli_tx_out_buffer, cli_rx_command);
+		Sprint_Error_Helper(argv[0], out_buffer, out_max);
 	}
 
-    return 0;
+	return 0;
+}
 
-    }
+static uint8_t Sub_Callback(uint8_t argc, const char *argv[], char *out_buffer,
+		uint16_t out_max)
+{
 
-static uint8_t Mul_Callback(const char* cli_rx_command, char* cli_tx_out_buffer,
-	uint16_t max_buffer_len)
-    {
+	uint8_t is_command_valid = 1;
+	int32_t rslt = 0;
+	int32_t tmp = 0;
 
-    uint8_t is_command_valid = 1;
-    uint16_t param_len = 0;
-    uint8_t param_number = 0;
-    uint8_t param_count = 0;
-    char* param_ptr = NULL;
-
-    int32_t rslt = 1;
-    int32_t tmp = 0;
-
-    do
+	if (argc > 2)
 	{
-
-	param_number++; //param number, starting from first
-
-	param_ptr = CLI_Get_Parameter(cli_rx_command, param_number, &param_len);
-
-	if (param_ptr != NULL)
-	    {
-
-	    param_count++;
-
-	    if (Parse_Integer(param_ptr, &tmp))
+		if (Parse_Integer(argv[1], &rslt))
 		{
-		rslt *= tmp;
+			for (uint8_t i = 2; i < argc; i++)
+			{
+				if (Parse_Integer(argv[i], &tmp))
+				{
+					rslt -= tmp;
+				}
+				else
+				{
+					is_command_valid = 0;
+				}
+			}
 		}
-	    else
-		{
-		is_command_valid = 0;
-		}
-	    }
-
-	}
-    while (param_ptr != NULL);
-
-    /*at least one parameter is expected*/
-    if (!param_count)
-	{
-	is_command_valid = 0;
-	}
-
-    if (is_command_valid)
-	{
-
-	sprintf(cli_tx_out_buffer, "\r\n%i\r\n", (int) rslt);
-
-	}
-    else
-	{
-	Sprint_Error_Helper(cli_tx_out_buffer, cli_rx_command);
-	}
-
-    return 0;
-
-    }
-
-static uint8_t Div_Callback(const char* cli_rx_command, char* cli_tx_out_buffer,
-	uint16_t max_buffer_len)
-    {
-
-    uint8_t is_command_valid = 1;
-    uint16_t param_len = 0;
-    uint8_t param_number = 0;
-    uint8_t param_count = 0;
-    char* param_ptr = NULL;
-
-    int32_t rslt = 1;
-    int32_t tmp = 0;
-
-    do
-	{
-
-	param_number++; //param number, starting from first
-
-	param_ptr = CLI_Get_Parameter(cli_rx_command, param_number, &param_len);
-
-	if (param_ptr != NULL)
-	    {
-	    param_count++;
-
-	    if (Parse_Integer(param_ptr, &tmp))
-		{
-		/*if first param*/
-		if (param_count == 1)
-		    {
-		    rslt = tmp;
-		    }
 		else
-		    {
-		    rslt /= tmp;
-		    }
-		}
-	    else
 		{
+			is_command_valid = 0;
+		}
+	}
+	else
+	{
 		is_command_valid = 0;
-		}
-	    }
-
-	}
-    while (param_ptr != NULL);
-
-    /*only two parameters are expected*/
-    if (param_count != 2)
-	{
-	is_command_valid = 0;
 	}
 
-    if (is_command_valid)
+	if (is_command_valid)
 	{
-
-	sprintf(cli_tx_out_buffer, "\r\n%i\r\n", (int) rslt);
-
+		snprintf(out_buffer, out_max, "\r\n%li\r\n", rslt);
 	}
-    else
+	else
 	{
-	Sprint_Error_Helper(cli_tx_out_buffer, cli_rx_command);
+		Sprint_Error_Helper(argv[0], out_buffer, out_max);
 	}
 
-    return 0;
+	return 0;
 
-    }
+}
 
-static uint8_t Pow_Callback(const char* cli_rx_command, char* cli_tx_out_buffer,
-	uint16_t max_buffer_len)
-    {
+static uint8_t Mul_Callback(uint8_t argc, const char *argv[], char *out_buffer,
+		uint16_t out_max)
+{
+	uint8_t is_command_valid = 1;
+	int32_t rslt = 0;
+	int32_t tmp = 0;
 
-    uint8_t is_command_valid = 1;
-    uint16_t param_len = 0;
-    uint8_t param_number = 0;
-    uint8_t param_count = 0;
-    char* param_ptr = NULL;
-
-    int32_t rslt = 1;
-    int32_t tmp = 0;
-
-    do
+	if (argc > 2)
 	{
-
-	param_number++; //param number, starting from first
-
-	param_ptr = CLI_Get_Parameter(cli_rx_command, param_number, &param_len);
-
-	if (param_ptr != NULL)
-	    {
-	    param_count++;
-
-	    if (Parse_Integer(param_ptr, &tmp))
+		if (Parse_Integer(argv[1], &rslt))
 		{
-		/*if first param*/
-		if (param_count == 1)
-		    {
-		    rslt = tmp;
-		    }
+			for (uint8_t i = 2; i < argc; i++)
+			{
+				if (Parse_Integer(argv[i], &tmp))
+				{
+					rslt *= tmp;
+				}
+				else
+				{
+					is_command_valid = 0;
+				}
+			}
+		}
 		else
-		    {
-		    rslt = pow(rslt, tmp);
-		    }
-		}
-	    else
 		{
+			is_command_valid = 0;
+		}
+	}
+	else
+	{
 		is_command_valid = 0;
-		}
-	    }
-
-	}
-    while (param_ptr != NULL);
-
-    /*only twh parameters are expected*/
-    if (param_count != 2)
-	{
-	is_command_valid = 0;
 	}
 
-    if (is_command_valid)
+	if (is_command_valid)
 	{
-
-	sprintf(cli_tx_out_buffer, "\r\n%i\r\n", (int) rslt);
-
+		snprintf(out_buffer, out_max, "\r\n%li\r\n", rslt);
 	}
-    else
+	else
 	{
-	Sprint_Error_Helper(cli_tx_out_buffer, cli_rx_command);
+		Sprint_Error_Helper(argv[0], out_buffer, out_max);
 	}
 
-    return 0;
+	return 0;
 
-    }
+}
 
-static uint8_t Sqrt_Callback(const char* cli_rx_command,
-	char* cli_tx_out_buffer, uint16_t max_buffer_len)
-    {
+static uint8_t Div_Callback(uint8_t argc, const char *argv[], char *out_buffer,
+		uint16_t out_max)
+{
 
-    uint8_t is_command_valid = 1;
-    uint16_t param_len = 0;
-    uint8_t param_number = 0;
-    uint8_t param_count = 0;
-    char* param_ptr = NULL;
+	uint8_t is_command_valid = 1;
+	int32_t rslt = 0;
+	int32_t tmp = 0;
 
-    int32_t rslt = 1;
-    int32_t tmp = 0;
-
-    do
+	if (argc > 2)
 	{
-
-	param_number++; //param number, starting from first
-
-	param_ptr = CLI_Get_Parameter(cli_rx_command, param_number, &param_len);
-
-	if (param_ptr != NULL)
-	    {
-	    param_count++;
-	    if (Parse_Integer(param_ptr, &tmp))
+		if (Parse_Integer(argv[1], &rslt))
 		{
+			for (uint8_t i = 2; i < argc; i++)
+			{
+				if (Parse_Integer(argv[i], &tmp))
+				{
+					if (tmp == 0)
+					{
+						snprintf(out_buffer, out_max,
+								"divide by zero error, %d argument is zero",
+								i - 1);
+						return 0;
+					}
+					rslt *= tmp;
+				}
+				else
+				{
+					is_command_valid = 0;
+				}
+			}
+		}
+		else
+		{
+			is_command_valid = 0;
+		}
+	}
+	else
+	{
+		is_command_valid = 0;
+	}
+
+	if (is_command_valid)
+	{
+		snprintf(out_buffer, out_max, "\r\n%li\r\n", rslt);
+	}
+	else
+	{
+		Sprint_Error_Helper(argv[0], out_buffer, out_max);
+	}
+
+	return 0;
+}
+
+static uint8_t Pow_Callback(uint8_t argc, const char *argv[], char *out_buffer,
+		uint16_t out_max)
+{
+
+	uint8_t is_command_valid = 1;
+	int32_t rslt = 0;
+	int32_t tmp = 0;
+
+	if (argc == 3)
+	{
+		if (Parse_Integer(argv[1], &rslt))
+		{
+			if (Parse_Integer(argv[2], &tmp))
+			{
+				rslt = pow(rslt, tmp);
+			}
+			else
+			{
+				is_command_valid = 0;
+			}
+		}
+	}
+	else
+	{
+		is_command_valid = 0;
+	}
+
+	if (is_command_valid && argc)
+	{
+		snprintf(out_buffer, out_max, "\r\n%li\r\n", rslt);
+	}
+	else
+	{
+		Sprint_Error_Helper(argv[0], out_buffer, out_max);
+	}
+
+	return 0;
+
+}
+
+static uint8_t Sqrt_Callback(uint8_t argc, const char *argv[], char *out_buffer,
+		uint16_t out_max)
+{
+
+	int32_t rslt = 0;
+	int32_t tmp = 0;
+
+	if (Parse_Integer(argv[1], &tmp) && argc > 1)
+	{
 		rslt = sqrt(tmp);
-		}
-	    else
-		{
-		is_command_valid = 0;
-		}
-	    }
-
+		snprintf(out_buffer, out_max, "\r\n%li\r\n", rslt);
 	}
-    while (param_ptr != NULL);
-
-    /*only one parameter is expected*/
-    if (param_count != 1)
+	else
 	{
-	is_command_valid = 0;
+		Sprint_Error_Helper(argv[0], out_buffer, out_max);
 	}
 
-    if (is_command_valid)
-	{
+	return 0;
+}
 
-	sprintf(cli_tx_out_buffer, "\r\n%i\r\n", (int) rslt);
-
-	}
-    else
-	{
-	Sprint_Error_Helper(cli_tx_out_buffer, cli_rx_command);
-	}
-
-    return 0;
-    }
 
 /************CLI callback Implementation starts***********************************/
 

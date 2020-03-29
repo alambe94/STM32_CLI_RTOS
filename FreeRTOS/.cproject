@@ -59,6 +59,7 @@
 									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/TraceRecorder/config"/>
 									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/TraceRecorder/include"/>
 									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/TraceRecorder/streamports/Jlink_RTT/include"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_CLI_FreeRTOS/cli}&quot;"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1207086478" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
@@ -95,6 +96,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Src"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Startup"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="cli"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

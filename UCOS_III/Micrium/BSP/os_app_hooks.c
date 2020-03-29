@@ -1,40 +1,42 @@
 /*
-************************************************************************************************************************
-*                                                      uC/OS-III
-*                                                 The Real-Time Kernel
+*********************************************************************************************************
+*                                               uC/OS-III
+*                                          The Real-Time Kernel
 *
-*                                  (c) Copyright 2009-2012; Micrium, Inc.; Weston, FL
-*                           All rights reserved.  Protected by international copyright laws.
+*                         (c) Copyright 2009-2018; Silicon Laboratories Inc.,
+*                                400 W. Cesar Chavez, Austin, TX 78701
 *
-*                                                  APPLICATION HOOKS
+*                   All rights reserved. Protected by international copyright laws.
 *
-* File    : OS_APP_HOOKS.C
-* By      : JJL
-* Version : V3.03.00
+*                  Your use of this software is subject to your acceptance of the terms
+*                  of a Silicon Labs Micrium software license, which can be obtained by
+*                  contacting info@micrium.com. If you do not agree to the terms of this
+*                  license, you may not use this software.
 *
-* LICENSING TERMS:
-* ---------------
-*           uC/OS-III is provided in source form for FREE short-term evaluation, for educational use or 
-*           for peaceful research.  If you plan or intend to use uC/OS-III in a commercial application/
-*           product then, you need to contact Micrium to properly license uC/OS-III for its use in your 
-*           application/product.   We provide ALL the source code for your convenience and to help you 
-*           experience uC/OS-III.  The fact that the source is provided does NOT mean that you can use 
-*           it commercially without paying a licensing fee.
+*                  Please help us continue to provide the Embedded community with the finest
+*                  software available. Your honesty is greatly appreciated.
 *
-*           Knowledge of the source code may NOT be used to develop a similar product.
+*                    You can find our product's documentation at: doc.micrium.com
 *
-*           Please help us continue to provide the embedded community with the finest software available.
-*           Your honesty is greatly appreciated.
-*
-*           You can contact us at www.micrium.com, or by phone at +1 (954) 217-2036.
-************************************************************************************************************************
+*                          For more information visit us at: www.micrium.com
+*********************************************************************************************************
 */
 
-#define  MICRIUM_SOURCE
-#include <os.h>
-#include <os_app_hooks.h>
+/*
+*********************************************************************************************************
+*
+*                                           APPLICATION HOOKS
+*
+* Filename : os_app_hooks.c
+* Version  : V3.07.03
+*********************************************************************************************************
+*/
 
-/*$PAGE*/
+#define   MICRIUM_SOURCE
+#include  <os.h>
+#include  "os_app_hooks.h"
+
+
 /*
 ************************************************************************************************************************
 *                                              SET ALL APPLICATION HOOKS
@@ -54,19 +56,28 @@ void  App_OS_SetAllHooks (void)
 
 
     CPU_CRITICAL_ENTER();
+    OS_AppIdleTaskHookPtr   = App_OS_IdleTaskHook;
+
+#if (OS_CFG_TASK_STK_REDZONE_EN == DEF_ENABLED)
+    OS_AppRedzoneHitHookPtr = App_OS_RedzoneHitHook;
+#endif
+
+    OS_AppStatTaskHookPtr   = App_OS_StatTaskHook;
+
     OS_AppTaskCreateHookPtr = App_OS_TaskCreateHook;
+
     OS_AppTaskDelHookPtr    = App_OS_TaskDelHook;
+
     OS_AppTaskReturnHookPtr = App_OS_TaskReturnHook;
 
-    OS_AppIdleTaskHookPtr   = App_OS_IdleTaskHook;
-    OS_AppStatTaskHookPtr   = App_OS_StatTaskHook;
     OS_AppTaskSwHookPtr     = App_OS_TaskSwHook;
+
     OS_AppTimeTickHookPtr   = App_OS_TimeTickHook;
     CPU_CRITICAL_EXIT();
 #endif
 }
 
-/*$PAGE*/
+
 /*
 ************************************************************************************************************************
 *                                             CLEAR ALL APPLICATION HOOKS
@@ -86,74 +97,27 @@ void  App_OS_ClrAllHooks (void)
 
 
     CPU_CRITICAL_ENTER();
+    OS_AppIdleTaskHookPtr   = (OS_APP_HOOK_VOID)0;
+
+#if (OS_CFG_TASK_STK_REDZONE_EN == DEF_ENABLED)
+    OS_AppRedzoneHitHookPtr = (OS_APP_HOOK_TCB)0;
+#endif
+
+    OS_AppStatTaskHookPtr   = (OS_APP_HOOK_VOID)0;
+
     OS_AppTaskCreateHookPtr = (OS_APP_HOOK_TCB)0;
+
     OS_AppTaskDelHookPtr    = (OS_APP_HOOK_TCB)0;
+
     OS_AppTaskReturnHookPtr = (OS_APP_HOOK_TCB)0;
 
-    OS_AppIdleTaskHookPtr   = (OS_APP_HOOK_VOID)0;
-    OS_AppStatTaskHookPtr   = (OS_APP_HOOK_VOID)0;
     OS_AppTaskSwHookPtr     = (OS_APP_HOOK_VOID)0;
+
     OS_AppTimeTickHookPtr   = (OS_APP_HOOK_VOID)0;
     CPU_CRITICAL_EXIT();
 #endif
 }
 
-/*$PAGE*/
-/*
-************************************************************************************************************************
-*                                            APPLICATION TASK CREATION HOOK
-*
-* Description: This function is called when a task is created.
-*
-* Arguments  : p_tcb   is a pointer to the task control block of the task being created.
-*
-* Note(s)    : none
-************************************************************************************************************************
-*/
-
-void  App_OS_TaskCreateHook (OS_TCB  *p_tcb)
-{
-    (void)&p_tcb;
-}
-
-/*$PAGE*/
-/*
-************************************************************************************************************************
-*                                            APPLICATION TASK DELETION HOOK
-*
-* Description: This function is called when a task is deleted.
-*
-* Arguments  : p_tcb   is a pointer to the task control block of the task being deleted.
-*
-* Note(s)    : none
-************************************************************************************************************************
-*/
-
-void  App_OS_TaskDelHook (OS_TCB  *p_tcb)
-{
-    (void)&p_tcb;
-}
-
-/*$PAGE*/
-/*
-************************************************************************************************************************
-*                                             APPLICATION TASK RETURN HOOK
-*
-* Description: This function is called if a task accidentally returns.  In other words, a task should either be an
-*              infinite loop or delete itself when done.
-*
-* Arguments  : p_tcb     is a pointer to the OS_TCB of the task that is returning.
-*
-* Note(s)    : none
-************************************************************************************************************************
-*/
-
-void  App_OS_TaskReturnHook (OS_TCB  *p_tcb)
-{
-    (void)&p_tcb;
-}
-
-/*$PAGE*/
 /*
 ************************************************************************************************************************
 *                                              APPLICATION IDLE TASK HOOK
@@ -172,25 +136,26 @@ void  App_OS_IdleTaskHook (void)
 
 }
 
-/*$PAGE*/
 /*
 ************************************************************************************************************************
-*                                          APPLICATION OS INITIALIZATION HOOK
+*                                             APPLICATION REDZONE HIT HOOK
 *
-* Description: This function is called by OSInit() at the beginning of OSInit().
+* Description: This function is called when a task's stack overflowed.
 *
-* Arguments  : none
+* Arguments  : p_tcb   is a pointer to the task control block of the offending task. NULL if ISR.
 *
-* Note(s)    : none
+* Note(s)    : None.
 ************************************************************************************************************************
 */
-
-void  App_OS_InitHook (void)
+#if (OS_CFG_TASK_STK_REDZONE_EN == DEF_ENABLED)
+void  App_OS_RedzoneHitHook (OS_TCB  *p_tcb)
 {
-
+    (void)&p_tcb;
+    CPU_SW_EXCEPTION(;);
 }
+#endif
 
-/*$PAGE*/
+
 /*
 ************************************************************************************************************************
 *                                           APPLICATION STATISTIC TASK HOOK
@@ -209,7 +174,62 @@ void  App_OS_StatTaskHook (void)
 
 }
 
-/*$PAGE*/
+
+/*
+************************************************************************************************************************
+*                                            APPLICATION TASK CREATION HOOK
+*
+* Description: This function is called when a task is created.
+*
+* Arguments  : p_tcb   is a pointer to the task control block of the task being created.
+*
+* Note(s)    : none
+************************************************************************************************************************
+*/
+
+void  App_OS_TaskCreateHook (OS_TCB  *p_tcb)
+{
+    (void)p_tcb;
+}
+
+
+/*
+************************************************************************************************************************
+*                                            APPLICATION TASK DELETION HOOK
+*
+* Description: This function is called when a task is deleted.
+*
+* Arguments  : p_tcb   is a pointer to the task control block of the task being deleted.
+*
+* Note(s)    : none
+************************************************************************************************************************
+*/
+
+void  App_OS_TaskDelHook (OS_TCB  *p_tcb)
+{
+    (void)p_tcb;
+}
+
+
+/*
+************************************************************************************************************************
+*                                             APPLICATION TASK RETURN HOOK
+*
+* Description: This function is called if a task accidentally returns.  In other words, a task should either be an
+*              infinite loop or delete itself when done.
+*
+* Arguments  : p_tcb     is a pointer to the OS_TCB of the task that is returning.
+*
+* Note(s)    : none
+************************************************************************************************************************
+*/
+
+void  App_OS_TaskReturnHook (OS_TCB  *p_tcb)
+{
+    (void)p_tcb;
+}
+
+
 /*
 ************************************************************************************************************************
 *                                             APPLICATION TASK SWITCH HOOK
@@ -231,7 +251,7 @@ void  App_OS_TaskSwHook (void)
 
 }
 
-/*$PAGE*/
+
 /*
 ************************************************************************************************************************
 *                                                APPLICATION TICK HOOK

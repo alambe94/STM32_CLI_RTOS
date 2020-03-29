@@ -1,35 +1,35 @@
 /*
-************************************************************************************************************************
-*                                                      uC/OS-III
-*                                                 The Real-Time Kernel
+*********************************************************************************************************
+*                                               uC/OS-III
+*                                          The Real-Time Kernel
 *
-*                                  (c) Copyright 2009-2015; Micrium, Inc.; Weston, FL
-*                           All rights reserved.  Protected by international copyright laws.
+*                         (c) Copyright 2009-2018; Silicon Laboratories Inc.,
+*                                400 W. Cesar Chavez, Austin, TX 78701
 *
-*                                       OS CONFIGURATION (APPLICATION SPECIFICS)
+*                   All rights reserved. Protected by international copyright laws.
 *
-* File    : OS_CFG_APP.H
-* By      : JJL
-* Version : V3.04.05
+*                  Your use of this software is subject to your acceptance of the terms
+*                  of a Silicon Labs Micrium software license, which can be obtained by
+*                  contacting info@micrium.com. If you do not agree to the terms of this
+*                  license, you may not use this software.
 *
-* LICENSING TERMS:
-* ---------------
-*           uC/OS-III is provided in source form for FREE short-term evaluation, for educational use or
-*           for peaceful research.  If you plan or intend to use uC/OS-III in a commercial application/
-*           product then, you need to contact Micrium to properly license uC/OS-III for its use in your
-*           application/product.   We provide ALL the source code for your convenience and to help you
-*           experience uC/OS-III.  The fact that the source is provided does NOT mean that you can use
-*           it commercially without paying a licensing fee.
+*                  Please help us continue to provide the Embedded community with the finest
+*                  software available. Your honesty is greatly appreciated.
 *
-*           Knowledge of the source code may NOT be used to develop a similar product.
+*                    You can find our product's documentation at: doc.micrium.com
 *
-*           Please help us continue to provide the embedded community with the finest software available.
-*           Your honesty is greatly appreciated.
+*                          For more information visit us at: www.micrium.com
+*********************************************************************************************************
+*/
+
+/*
+*********************************************************************************************************
 *
-*           You can find our product's user manual, API reference, release notes and
-*           more information at https://doc.micrium.com.
-*           You can contact us at www.micrium.com.
-************************************************************************************************************************
+*                               OS CONFIGURATION (APPLICATION SPECIFICS)
+*
+* Filename : os_cfg_app.h
+* Version  : V3.07.03
+*********************************************************************************************************
 */
 
 #ifndef OS_CFG_APP_H
@@ -40,39 +40,40 @@
 *                                                      CONSTANTS
 ************************************************************************************************************************
 */
+                                                                /* ------------------ MISCELLANEOUS ------------------- */
+#define  OS_CFG_ISR_STK_SIZE                         128u       /* Stack size of ISR stack (number of CPU_STK elements) */
 
-                                                            /* --------------------- MISCELLANEOUS ------------------ */
-#define  OS_CFG_MSG_POOL_SIZE            100u               /* Maximum number of messages                             */
+#define  OS_CFG_MSG_POOL_SIZE                         32u       /* Maximum number of messages                           */
 
-#define  OS_CFG_ISR_STK_SIZE             100u               /* Stack size of ISR stack (number of CPU_STK elements)   */
-
-#define  OS_CFG_TASK_STK_LIMIT_PCT_EMPTY  10u               /* Stack limit position in percentage to empty            */
-
-
-                                                            /* ---------------------- IDLE TASK --------------------- */
-#define  OS_CFG_IDLE_TASK_STK_SIZE       128u               /* Stack size (number of CPU_STK elements)                */
+#define  OS_CFG_TASK_STK_LIMIT_PCT_EMPTY              10u       /* Stack limit position in percentage to empty          */
 
 
-                                                            /* ------------------ ISR HANDLER TASK ------------------ */
-#define  OS_CFG_INT_Q_SIZE                10u               /* Size of ISR handler task queue                         */
-#define  OS_CFG_INT_Q_TASK_STK_SIZE      100u               /* Stack size (number of CPU_STK elements)                */
+                                                                /* -------------------- IDLE TASK --------------------- */
+#define  OS_CFG_IDLE_TASK_STK_SIZE                    64u       /* Stack size (number of CPU_STK elements)              */
 
 
-                                                            /* ------------------- STATISTIC TASK ------------------- */
-#define  OS_CFG_STAT_TASK_PRIO     (OS_CFG_PRIO_MAX - 3u)   /* Priority                                               */
-#define  OS_CFG_STAT_TASK_RATE_HZ         10u               /* Rate of execution (1 to 10 Hz)                         */
-#define  OS_CFG_STAT_TASK_STK_SIZE       100u               /* Stack size (number of CPU_STK elements)                */
+                                                                /* ------------------ STATISTIC TASK ------------------ */
+#define  OS_CFG_STAT_TASK_PRIO  ((OS_PRIO)(OS_CFG_PRIO_MAX-2u)) /* Priority                                             */
+#define  OS_CFG_STAT_TASK_RATE_HZ                     10u       /* Rate of execution (1 to 10 Hz)                       */
+#define  OS_CFG_STAT_TASK_STK_SIZE                   100u       /* Stack size (number of CPU_STK elements)              */
 
 
-                                                            /* ------------------------ TICKS ----------------------- */
-#define  OS_CFG_TICK_RATE_HZ            1000u               /* Tick rate in Hertz (10 to 1000 Hz)                     */
-#define  OS_CFG_TICK_TASK_PRIO             1u               /* Priority                                               */
-#define  OS_CFG_TICK_TASK_STK_SIZE       128u               /* Stack size (number of CPU_STK elements)                */
+                                                                /* ---------------------- TICKS ----------------------- */
+#define  OS_CFG_TICK_RATE_HZ                        1000u       /* Tick rate in Hertz (10 to 1000 Hz)                   */
 
 
-                                                            /* ----------------------- TIMERS ----------------------- */
-#define  OS_CFG_TMR_TASK_PRIO             11u               /* Priority of 'Timer Task'                               */
-#define  OS_CFG_TMR_TASK_RATE_HZ          10u               /* Rate for timers (10 Hz Typ.)                           */
-#define  OS_CFG_TMR_TASK_STK_SIZE        128u               /* Stack size (number of CPU_STK elements)                */
+                                                                /* --------------------- TIMERS ----------------------- */
+#define  OS_CFG_TMR_TASK_PRIO   ((OS_PRIO)(OS_CFG_PRIO_MAX-3u)) /* Priority of 'Timer Task'                             */
+#define  OS_CFG_TMR_TASK_STK_SIZE                    128u       /* Stack size (number of CPU_STK elements)              */
+
+#define  OS_CFG_TMR_TASK_RATE_HZ                      10u       /* DEPRECATED - Rate for timers (10 Hz Typ.)            */
+                                                                /* The timer task now calculates its timeouts based     */
+                                                                /* on the timers in the list. It no longer runs at a    */
+                                                                /* static frequency.                                    */
+                                                                /* This define is included for compatibility reasons.   */
+                                                                /* It will determine the period of a timer tick.        */
+                                                                /* We recommend setting it to OS_CFG_TICK_RATE_HZ       */
+                                                                /* for new projects.                                    */
+
 
 #endif

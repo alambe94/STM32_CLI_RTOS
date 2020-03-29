@@ -27,4 +27,11 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>cli</name>
+			<type>2</type>
+			<location>C:/Users/lambe/STM32CubeIDE/workspace_1.0.2/STM32_CLI_RTOS/cli</location>
+		</link>
+	</linkedResources>
 </projectDescription>

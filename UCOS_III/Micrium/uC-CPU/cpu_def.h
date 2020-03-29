@@ -3,21 +3,22 @@
 *                                                uC/CPU
 *                                    CPU CONFIGURATION & PORT LAYER
 *
-*                          (c) Copyright 2004-2015; Micrium, Inc.; Weston, FL
+*                         (c) Copyright 2004-2018; Silicon Laboratories Inc.,
+*                                400 W. Cesar Chavez, Austin, TX 78701
 *
-*               All rights reserved.  Protected by international copyright laws.
+*                   All rights reserved. Protected by international copyright laws.
 *
-*               uC/CPU is provided in source form to registered licensees ONLY.  It is 
-*               illegal to distribute this source code to any third party unless you receive 
-*               written permission by an authorized Micrium representative.  Knowledge of 
-*               the source code may NOT be used to develop a similar product.
+*                  Your use of this software is subject to your acceptance of the terms
+*                  of a Silicon Labs Micrium software license, which can be obtained by
+*                  contacting info@micrium.com. If you do not agree to the terms of this
+*                  license, you may not use this software.
 *
-*               Please help us continue to provide the Embedded community with the finest 
-*               software available.  Your honesty is greatly appreciated.
+*                  Please help us continue to provide the Embedded community with the finest
+*                  software available. Your honesty is greatly appreciated.
 *
-*               You can find our product's user manual, API reference, release notes and
-*               more information at https://doc.micrium.com.
-*               You can contact us at www.micrium.com.
+*                    You can find our product's documentation at: doc.micrium.com
+*
+*                          For more information visit us at: www.micrium.com
 *********************************************************************************************************
 */
 
@@ -26,9 +27,8 @@
 *
 *                                      CPU CONFIGURATION DEFINES
 *
-* Filename      : cpu_def.h
-* Version       : V1.30.02
-* Programmer(s) : ITJ
+* Filename : cpu_def.h
+* Version  : V1.31.04
 *********************************************************************************************************
 */
 
@@ -37,7 +37,7 @@
 *********************************************************************************************************
 *                                               MODULE
 *
-* Note(s) : (1) This CPU definition header file is protected from multiple pre-processor inclusion 
+* Note(s) : (1) This CPU definition header file is protected from multiple pre-processor inclusion
 *               through use of the CPU definition module present pre-processor macro definition.
 *********************************************************************************************************
 */
@@ -66,14 +66,14 @@
 *
 *                           where
 *                                   ver             denotes software version number scaled as an integer value
-*                                   x.yyzz          denotes software version number, where the unscaled integer 
-*                                                       portion denotes the major version number & the unscaled 
-*                                                       fractional portion denotes the (concatenated) minor 
+*                                   x.yyzz          denotes software version number, where the unscaled integer
+*                                                       portion denotes the major version number & the unscaled
+*                                                       fractional portion denotes the (concatenated) minor
 *                                                       version numbers
 *********************************************************************************************************
 */
 
-#define  CPU_CORE_VERSION                              13002u   /* See Note #1.                                         */
+#define  CPU_CORE_VERSION                              13104u   /* See Note #1.                                         */
 
 
 /*
@@ -115,9 +115,9 @@
 *
 * Note(s) : (1) Configure CPU_CFG_STK_GROWTH in 'cpu.h' with CPU's stack growth order :
 *
-*               (a) CPU_STK_GROWTH_LO_TO_HI     CPU stack pointer increments to the next higher  stack 
+*               (a) CPU_STK_GROWTH_LO_TO_HI     CPU stack pointer increments to the next higher  stack
 *                                                   memory address after data is pushed onto the stack
-*               (b) CPU_STK_GROWTH_HI_TO_LO     CPU stack pointer decrements to the next lower   stack 
+*               (b) CPU_STK_GROWTH_HI_TO_LO     CPU stack pointer decrements to the next lower   stack
 *                                                   memory address after data is pushed onto the stack
 *********************************************************************************************************
 */
@@ -177,11 +177,11 @@
 *                               <cpu>                       directory name for specific CPU
 *                               <compiler>                  directory name for specific compiler
 *
-*           (3) (a) To save/restore interrupt status, a local variable 'cpu_sr' of type 'CPU_SR' MAY need 
+*           (3) (a) To save/restore interrupt status, a local variable 'cpu_sr' of type 'CPU_SR' MAY need
 *                   to be declared (e.g. if 'CPU_CRITICAL_METHOD_STATUS_LOCAL' method is configured).
 *
-*                   (1) 'cpu_sr' local variable SHOULD be declared via the CPU_SR_ALLOC() macro which, 
-*                        if used, MUST be declared following ALL other local variables (see any 'cpu.h  
+*                   (1) 'cpu_sr' local variable SHOULD be declared via the CPU_SR_ALLOC() macro which,
+*                        if used, MUST be declared following ALL other local variables (see any 'cpu.h
 *                        CRITICAL SECTION CONFIGURATION  Note #3a1').
 *
 *                        Example :
@@ -196,7 +196,7 @@
 *                                   :
 *                           }
 *
-*               (b) Configure 'CPU_SR' data type with the appropriate-sized CPU data type large enough to 
+*               (b) Configure 'CPU_SR' data type with the appropriate-sized CPU data type large enough to
 *                   completely store the CPU's/compiler's status word.
 *********************************************************************************************************
 */

@@ -1,35 +1,34 @@
 /*
-***********************************************************************************************************************
-*                                                      uC/OS-III
-*                                                 The Real-Time Kernel
+*********************************************************************************************************
+*                                                uC/OS-III
+*                                          The Real-Time Kernel
 *
-*                                  (c) Copyright 2009-2015; Micrium, Inc.; Weston, FL
-*                           All rights reserved.  Protected by international copyright laws.
+*                         (c) Copyright 2009-2018; Silicon Laboratories Inc.,
+*                                400 W. Cesar Chavez, Austin, TX 78701
 *
-*                                                   TICK MANAGEMENT
+*                   All rights reserved. Protected by international copyright laws.
 *
-* File    : OS_TICK.C
-* By      : JJL
-* Version : V3.04.05
+*                  Your use of this software is subject to your acceptance of the terms
+*                  of a Silicon Labs Micrium software license, which can be obtained by
+*                  contacting info@micrium.com. If you do not agree to the terms of this
+*                  license, you may not use this software.
 *
-* LICENSING TERMS:
-* ---------------
-*           uC/OS-III is provided in source form for FREE short-term evaluation, for educational use or 
-*           for peaceful research.  If you plan or intend to use uC/OS-III in a commercial application/
-*           product then, you need to contact Micrium to properly license uC/OS-III for its use in your 
-*           application/product.   We provide ALL the source code for your convenience and to help you 
-*           experience uC/OS-III.  The fact that the source is provided does NOT mean that you can use 
-*           it commercially without paying a licensing fee.
+*                  Please help us continue to provide the Embedded community with the finest
+*                  software available. Your honesty is greatly appreciated.
 *
-*           Knowledge of the source code may NOT be used to develop a similar product.
+*                    You can find our product's documentation at: doc.micrium.com
 *
-*           Please help us continue to provide the embedded community with the finest software available.
-*           Your honesty is greatly appreciated.
+*                          For more information visit us at: www.micrium.com
+*********************************************************************************************************
+*/
+
+/*
+*********************************************************************************************************
+*                                            TICK MANAGEMENT
 *
-*           You can find our product's user manual, API reference, release notes and
-*           more information at https://doc.micrium.com.
-*           You can contact us at www.micrium.com.
-************************************************************************************************************************
+* File    : os_tick.c
+* Version : V3.07.03
+*********************************************************************************************************
 */
 
 #define  MICRIUM_SOURCE
@@ -39,22 +38,26 @@
 const  CPU_CHAR  *os_tick__c = "$Id: $";
 #endif
 
+#if (OS_CFG_TICK_EN == DEF_ENABLED)
 /*
 ************************************************************************************************************************
 *                                                 FUNCTION PROTOTYPES
 ************************************************************************************************************************
 */
 
-static  CPU_TS  OS_TickListUpdateDly     (void);
-static  CPU_TS  OS_TickListUpdateTimeout (void);
+static  void  OS_TickListUpdate (OS_TICK  ticks);
+
 
 /*
 ************************************************************************************************************************
-*                                                      TICK TASK
+*                                                      TICK INIT
 *
-* Description: This task is internal to uC/OS-III and is triggered by the tick interrupt.
+* Description: This function initializes the variables related to the tick handler.
+*              The function is internal to uC/OS-III.
 *
-* Arguments  : p_arg     is an argument passed to the task when the task is created (unused).
+* Arguments  : p_err          is a pointer to a variable that will contain an error code returned by this function.
+*              -----
+*                                 OS_ERR_NONE           the tick variables were initialized successfully
 *
 * Returns    : none
 *
@@ -62,53 +65,33 @@ static  CPU_TS  OS_TickListUpdateTimeout (void);
 ************************************************************************************************************************
 */
 
-void  OS_TickTask (void  *p_arg)
+void  OS_TickInit (OS_ERR  *p_err)
 {
-    OS_ERR  err;
-    CPU_TS  ts_delta;
-    CPU_TS  ts_delta_dly;
-    CPU_TS  ts_delta_timeout;
-    CPU_SR_ALLOC();
+    *p_err                = OS_ERR_NONE;
 
+    OSTickCtr             = 0u;                               /* Clear the tick counter                               */
 
-    (void)&p_arg;                                               /* Prevent compiler warning                             */
-
-    while (DEF_ON) {
-        (void)OSTaskSemPend((OS_TICK  )0,
-                            (OS_OPT   )OS_OPT_PEND_BLOCKING,
-                            (CPU_TS  *)0,
-                            (OS_ERR  *)&err);                   /* Wait for signal from tick interrupt                  */
-        if (err == OS_ERR_NONE) {
-            OS_CRITICAL_ENTER();
-            OSTickCtr++;                                        /* Keep track of the number of ticks                    */
-#if (defined(TRACE_CFG_EN) && (TRACE_CFG_EN > 0u))
-            TRACE_OS_TICK_INCREMENT(OSTickCtr);                 /* Record the event.                                    */
+#if (OS_CFG_DYN_TICK_EN == DEF_ENABLED)
+    OSTickCtrStep         = 0u;
 #endif
-            OS_CRITICAL_EXIT();
-            ts_delta_dly     = OS_TickListUpdateDly();
-            ts_delta_timeout = OS_TickListUpdateTimeout();
-            ts_delta         = ts_delta_dly + ts_delta_timeout; /* Compute total execution time of list updates         */
-            if (OSTickTaskTimeMax < ts_delta) {
-                OSTickTaskTimeMax = ts_delta;
-            }
-        }
-    }
+
+    OSTickList.TCB_Ptr    = (OS_TCB *)0;
+
+#if (OS_CFG_DBG_EN == DEF_ENABLED)
+    OSTickList.NbrEntries = 0u;
+    OSTickList.NbrUpdated = 0u;
+#endif
 }
 
 /*
 ************************************************************************************************************************
-*                                                 INITIALIZE TICK TASK
+*                                                      TICK UPDATE
 *
-* Description: This function is called by OSInit() to create the tick task.
+* Description: This function updates the list of task either delayed pending with timeout.
+*              The function is internal to uC/OS-III.
 *
-* Arguments  : p_err   is a pointer to a variable that will hold the value of an error code:
-*
-*                          OS_ERR_TICK_STK_INVALID   if the pointer to the tick task stack is a NULL pointer
-*                          OS_ERR_TICK_STK_SIZE      indicates that the specified stack size
-*                          OS_ERR_PRIO_INVALID       if the priority you specified in the configuration is invalid
-*                                                      (There could be only one task at the Idle Task priority)
-*                                                      (Maybe the priority you specified is higher than OS_CFG_PRIO_MAX-1
-*                          OS_ERR_??                 other error code returned by OSTaskCreate()
+* Arguments  : ticks          the number of ticks which have elapsed
+*              -----
 *
 * Returns    : none
 *
@@ -116,154 +99,183 @@ void  OS_TickTask (void  *p_arg)
 ************************************************************************************************************************
 */
 
-void  OS_TickTaskInit (OS_ERR  *p_err)
+void  OS_TickUpdate (OS_TICK  ticks)
 {
-#ifdef OS_SAFETY_CRITICAL
-    if (p_err == (OS_ERR *)0) {
-        OS_SAFETY_CRITICAL_EXCEPTION();
-        return;
+#if (OS_CFG_TS_EN == DEF_ENABLED)
+    CPU_TS  ts_start;
+#endif
+    CPU_SR_ALLOC();
+
+
+    CPU_CRITICAL_ENTER();
+
+    OSTickCtr += ticks;                                         /* Keep track of the number of ticks                    */
+
+    OS_TRACE_TICK_INCREMENT(OSTickCtr);
+
+#if (OS_CFG_TS_EN == DEF_ENABLED)
+    ts_start   = OS_TS_GET();
+    OS_TickListUpdate(ticks);
+    OSTickTime = OS_TS_GET() - ts_start;
+    if (OSTickTimeMax < OSTickTime) {
+        OSTickTimeMax = OSTickTime;
     }
+#else
+    OS_TickListUpdate(ticks);
 #endif
 
-    OSTickCtr                    = (OS_TICK)0u;                         /* Clear the tick counter                            */
+#if (OS_CFG_DYN_TICK_EN == DEF_ENABLED)
+    if (OSTickList.TCB_Ptr != (OS_TCB *)0) {
+        OSTickCtrStep = OSTickList.TCB_Ptr->TickRemain;
+    } else {
+        OSTickCtrStep = 0u;
+    }
 
-    OSTickListDly.TCB_Ptr        = (OS_TCB   *)0;
-    OSTickListTimeout.TCB_Ptr    = (OS_TCB   *)0;
-
-#if OS_CFG_DBG_EN > 0u
-    OSTickListDly.NbrEntries     = (OS_OBJ_QTY)0;
-    OSTickListDly.NbrUpdated     = (OS_OBJ_QTY)0;
-
-    OSTickListTimeout.NbrEntries = (OS_OBJ_QTY)0;
-    OSTickListTimeout.NbrUpdated = (OS_OBJ_QTY)0;
+    OS_DynTickSet(OSTickCtrStep);
 #endif
-
-                                                                        /* ---------------- CREATE THE TICK TASK ----------- */
-    if (OSCfg_TickTaskStkBasePtr == (CPU_STK *)0) {
-       *p_err = OS_ERR_TICK_STK_INVALID;
-        return;
-    }
-
-    if (OSCfg_TickTaskStkSize < OSCfg_StkSizeMin) {
-       *p_err = OS_ERR_TICK_STK_SIZE_INVALID;
-        return;
-    }
-
-    if (OSCfg_TickTaskPrio >= (OS_CFG_PRIO_MAX - 1u)) {                 /* Only one task at the 'Idle Task' priority         */
-       *p_err = OS_ERR_TICK_PRIO_INVALID;
-        return;
-    }
-
-    OSTaskCreate((OS_TCB     *)&OSTickTaskTCB,
-                 (CPU_CHAR   *)((void *)"uC/OS-III Tick Task"),
-                 (OS_TASK_PTR )OS_TickTask,
-                 (void       *)0,
-                 (OS_PRIO     )OSCfg_TickTaskPrio,
-                 (CPU_STK    *)OSCfg_TickTaskStkBasePtr,
-                 (CPU_STK_SIZE)OSCfg_TickTaskStkLimit,
-                 (CPU_STK_SIZE)OSCfg_TickTaskStkSize,
-                 (OS_MSG_QTY  )0u,
-                 (OS_TICK     )0u,
-                 (void       *)0,
-                 (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR | OS_OPT_TASK_NO_TLS),
-                 (OS_ERR     *)p_err);
+    CPU_CRITICAL_EXIT();
 }
 
 /*
 ************************************************************************************************************************
 *                                                      INSERT
 *
-* Description: This task is internal to uC/OS-III and allows the insertion of a task in a tick list. 
+* Description: This task is internal to uC/OS-III and allows the insertion of a task in a tick list.
 *
-* Arguments  : p_list      is a pointer to the desired list
+* Arguments  : p_tcb       is a pointer to the TCB to insert in the list
 *
-*              p_tcb       is a pointer to the TCB to insert in the list
+*              elapsed     is the number of elapsed ticks since the last tick interrupt
+*
+*              tick_base   is value of OSTickCtr from which time is offset
 *
 *              time        is the amount of time remaining (in ticks) for the task to become ready
 *
-* Returns    : none
+* Returns    : DEF_OK      if time is valid for the given tick base
 *
-* Note(s)    : This function is INTERNAL to uC/OS-III and your application should not call it.
+*              DEF_FAIL    if time is invalid (i.e. zero delay)
+*
+* Note(s)    : 1) This function is INTERNAL to uC/OS-III and your application should not call it.
+*
+*              2) This function supports both Periodic Tick Mode (PTM) and Dynamic Tick Mode (DTM).
+*
+*              3) PTM should always call this function with elapsed == 0u.
 ************************************************************************************************************************
 */
 
-void  OS_TickListInsert (OS_TICK_LIST  *p_list,
-                         OS_TCB        *p_tcb,
-                         OS_TICK        time)
+CPU_BOOLEAN  OS_TickListInsert (OS_TCB   *p_tcb,
+                                OS_TICK   elapsed,
+                                OS_TICK   tick_base,
+                                OS_TICK   time)
 {
-    OS_TCB  *p_tcb1;
-    OS_TCB  *p_tcb2;
-    OS_TICK  remain;
+    OS_TCB        *p_tcb1;
+    OS_TCB        *p_tcb2;
+    OS_TICK_LIST  *p_list;
+    OS_TICK        delta;
+    OS_TICK        remain;
 
 
-    if (p_list->TCB_Ptr == (OS_TCB *)0) {                               /* Is the list empty?                                */
-        p_tcb->TickRemain  = time;                                      /* Yes, Store time in TCB                            */
-        p_tcb->TickNextPtr = (OS_TCB *)0;
-        p_tcb->TickPrevPtr = (OS_TCB *)0;
-        p_tcb->TickListPtr = (OS_TICK_LIST *)p_list;                    /*      Link to this list                            */
-        p_list->TCB_Ptr    = p_tcb;                                     /*      Point to TCB of task to place in the list    */
-#if OS_CFG_DBG_EN > 0u
-        p_list->NbrEntries = 1u;                                        /*      List contains 1 entry                        */
-#endif
-    } else {
-        p_tcb1 = p_list->TCB_Ptr;
-        p_tcb2 = p_list->TCB_Ptr;                                       /* No,  Insert somewhere in the list in delta order  */
-        remain = time;
-        while (p_tcb2 != (OS_TCB *)0) {
-            if (remain <= p_tcb2->TickRemain) {
-                if (p_tcb2->TickPrevPtr == (OS_TCB *)0) {               /*      Insert before the first entry in the list?   */
-                    p_tcb->TickRemain   = remain;                       /*      Yes, Store remaining time                    */                                          
-                    p_tcb->TickPrevPtr  = (OS_TCB *)0;
-                    p_tcb->TickNextPtr  = p_tcb2;    
-                    p_tcb->TickListPtr  = (OS_TICK_LIST *)p_list;       /*           Link TCB to this list                   */
-                    p_tcb2->TickRemain -= remain;                       /*           Reduce time of next entry in the list   */
-                    p_tcb2->TickPrevPtr = p_tcb;
-                    p_list->TCB_Ptr     = p_tcb;                        /*           Add TCB to the list                     */
-#if OS_CFG_DBG_EN > 0u
-                    p_list->NbrEntries++;                               /*           List contains an extra entry            */
-#endif
-                } else {                                                /*      No,  Insert somewhere further in the list    */
-                    p_tcb1              = p_tcb2->TickPrevPtr;
-                    p_tcb->TickRemain   = remain;                       /*           Store remaining time                    */
-                    p_tcb->TickPrevPtr  = p_tcb1;
-                    p_tcb->TickNextPtr  = p_tcb2;    
-                    p_tcb->TickListPtr  = (OS_TICK_LIST *)p_list;       /*           TCB points to this list                 */
-                    p_tcb2->TickRemain -= remain;                       /*           Reduce time of next entry in the list   */
-                    p_tcb2->TickPrevPtr = p_tcb;
-                    p_tcb1->TickNextPtr = p_tcb;
-#if OS_CFG_DBG_EN > 0u
-                    p_list->NbrEntries++;                               /*           List contains an extra entry            */
-#endif
-                }
-                return;
-            } else {
-                remain -= p_tcb2->TickRemain;                           /*           Point to the next TCB in the list       */
-                p_tcb1  = p_tcb2;
-                p_tcb2  = p_tcb2->TickNextPtr;
-            }                 
-        }
-        p_tcb->TickRemain   = remain;                       
-        p_tcb->TickPrevPtr  = p_tcb1;
-        p_tcb->TickNextPtr  = (OS_TCB *)0;    
-        p_tcb->TickListPtr  = (OS_TICK_LIST *)p_list;                   /*           Link the list to the TCB                */
-        p_tcb1->TickNextPtr = p_tcb;
-#if OS_CFG_DBG_EN > 0u
-        p_list->NbrEntries++;                                           /*           List contains an extra entry            */
-#endif
+    delta = (time + tick_base) - (OSTickCtr + elapsed);         /* How many ticks until our delay expires?              */
+
+    if (delta == 0u) {
+        p_tcb->TickRemain = 0u;
+        return (DEF_FAIL);
     }
+
+    OS_TRACE_TASK_DLY(delta);
+
+    p_list = &OSTickList;
+    if (p_list->TCB_Ptr == (OS_TCB *)0) {                       /* Is the list empty?                                   */
+        p_tcb->TickRemain   = delta;                            /* Yes, Store time in TCB                               */
+        p_tcb->TickNextPtr  = (OS_TCB *)0;
+        p_tcb->TickPrevPtr  = (OS_TCB *)0;
+        p_list->TCB_Ptr     = p_tcb;                            /* Point to TCB of task to place in the list            */
+#if (OS_CFG_DYN_TICK_EN == DEF_ENABLED)
+        if (elapsed != 0u) {
+            OSTickCtr      += elapsed;                          /* Update OSTickCtr before we set a new tick step.      */
+            OS_TRACE_TICK_INCREMENT(OSTickCtr);
+        }
+
+        OSTickCtrStep       = delta;
+        OS_DynTickSet(OSTickCtrStep);
+#endif
+#if (OS_CFG_DBG_EN == DEF_ENABLED)
+        p_list->NbrEntries  = 1u;                               /* List contains 1 entry                                */
+#endif
+        return (DEF_OK);
+    }
+
+
+#if (OS_CFG_DBG_EN == DEF_ENABLED)
+    p_list->NbrEntries++;                                       /* Update debug counter to reflect the new entry.       */
+#endif
+
+    p_tcb2 = p_list->TCB_Ptr;
+    remain = p_tcb2->TickRemain - elapsed;                      /* How many ticks until the head's delay expires?       */
+
+    if ((delta               <   remain) &&                     /* If our entry is the new head of the tick list    ... */
+        (p_tcb2->TickPrevPtr == (OS_TCB *)0)) {
+        p_tcb->TickRemain    =  delta;                          /* ... the delta is equivalent to the full delay    ... */
+        p_tcb2->TickRemain   =  remain - delta;                 /* ... the previous head's delta is now relative to it. */
+
+        p_tcb->TickPrevPtr   = (OS_TCB *)0;
+        p_tcb->TickNextPtr   =  p_tcb2;
+        p_tcb2->TickPrevPtr  =  p_tcb;
+        p_list->TCB_Ptr      =  p_tcb;
+#if (OS_CFG_DYN_TICK_EN == DEF_ENABLED)
+        if (elapsed != 0u) {
+            OSTickCtr       +=  elapsed;                        /* Update OSTickCtr before we set a new tick step.      */
+            OS_TRACE_TICK_INCREMENT(OSTickCtr);
+        }
+                                                                /* In DTM, a new list head must update the tick     ... */
+        OSTickCtrStep        =  delta;                          /* ... timer to interrupt at the new delay value.       */
+        OS_DynTickSet(OSTickCtrStep);
+#endif
+
+        return (DEF_OK);
+    }
+
+                                                                /* Our entry comes after the current list head.         */
+    delta  -= remain;                                           /* Make delta relative to the head.                     */
+    p_tcb1  = p_tcb2;
+    p_tcb2  = p_tcb1->TickNextPtr;
+
+    while ((p_tcb2 !=        (OS_TCB *)0) &&                    /* Find the appropriate position in the delta list.     */
+           (delta  >= p_tcb2->TickRemain)) {
+        delta  -= p_tcb2->TickRemain;
+        p_tcb1  = p_tcb2;
+        p_tcb2  = p_tcb2->TickNextPtr;
+    }
+
+    if (p_tcb2 != (OS_TCB *)0) {                                /* Our entry is not the last element in the list.       */
+        p_tcb1               = p_tcb2->TickPrevPtr;
+        p_tcb->TickRemain    = delta;                           /* Store remaining time                                 */
+        p_tcb->TickPrevPtr   = p_tcb1;
+        p_tcb->TickNextPtr   = p_tcb2;
+        p_tcb2->TickRemain  -= delta;                           /* Reduce time of next entry in the list                */
+        p_tcb2->TickPrevPtr  = p_tcb;
+        p_tcb1->TickNextPtr  = p_tcb;
+
+    } else {                                                    /* Our entry belongs at the end of the list.            */
+        p_tcb->TickRemain    = delta;
+        p_tcb->TickPrevPtr   = p_tcb1;
+        p_tcb->TickNextPtr   = (OS_TCB *)0;
+        p_tcb1->TickNextPtr  = p_tcb;
+    }
+
+    return (DEF_OK);
 }
 
 /*
 ************************************************************************************************************************
-*                                            ADD TASK TO DELAYED TICK LIST
+*                                            ADD DELAYED TASK TO TICK LIST
 *
-* Description: This function is called to place a task in a list of task waiting for either time to expire 
+* Description: This function is called to place a task in a list of task waiting for time to expire
 *
 * Arguments  : p_tcb          is a pointer to the OS_TCB of the task to add to the tick list
 *              -----
 *
 *              time           represents either the 'match' value of OSTickCtr or a relative time from the current
-*                             value of OSTickCtr as specified by the 'opt' argument..
+*                             system time as specified by the 'opt' argument..
 *
 *                             relative when 'opt' is set to OS_OPT_TIME_DLY
 *                             relative when 'opt' is set to OS_OPT_TIME_TIMEOUT
@@ -280,7 +292,7 @@ void  OS_TickListInsert (OS_TICK_LIST  *p_list,
 *              p_err          is a pointer to a variable that will contain an error code returned by this function.
 *              -----
 *                                 OS_ERR_NONE           the call was successful and the time delay was scheduled.
-*                                 OS_ERR_TIME_ZERO_DLY  if delay is zero or already occurred.
+*                                 OS_ERR_TIME_ZERO_DLY  if the effective delay is zero
 *
 * Returns    : None
 *
@@ -295,48 +307,62 @@ void  OS_TickListInsertDly (OS_TCB   *p_tcb,
                             OS_OPT    opt,
                             OS_ERR   *p_err)
 {
-    OS_TICK   remain;
+    OS_TICK      elapsed;
+    OS_TICK      tick_base;
+    OS_TICK      base_offset;
+    CPU_BOOLEAN  valid_dly;
 
 
+#if (OS_CFG_DYN_TICK_EN == DEF_ENABLED)
+    elapsed  = OS_DynTickGet();
+#else
+    elapsed  = 0u;
+#endif
 
-    if (opt == OS_OPT_TIME_MATCH) {                                     /* MATCH to absolute OSTickCtr value mode            */
-        remain = time - OSTickCtr;
-        if ((remain > OS_TICK_TH_RDY) ||                                /* If delay already occurred, ...                    */
-            (remain == (OS_TICK)0u)) {
-            p_tcb->TickRemain = (OS_TICK)0u;
-           *p_err             =  OS_ERR_TIME_ZERO_DLY;                  /* ... do NOT delay.                                 */
+    if (opt == OS_OPT_TIME_MATCH) {                             /* MATCH to absolute tick ctr value mode                */
+        tick_base = 0u;                                         /* tick_base + time == time                             */
+
+    } else if (opt == OS_OPT_TIME_PERIODIC) {                   /* PERIODIC mode.                                       */
+        if (time == 0u) {
+           *p_err = OS_ERR_TIME_ZERO_DLY;                       /* Infinite frequency is invalid.                       */
             return;
         }
 
-    } else if (opt == OS_OPT_TIME_PERIODIC) {                           /* PERIODIC mode.                                    */
-        if ((OSTickCtr - p_tcb->TickCtrPrev) > time) {
-            remain             = time;                                  /* ... first time we load .TickCtrPrev               */
-            p_tcb->TickCtrPrev = OSTickCtr + time;
-        } else {
-            remain = time - (OSTickCtr - p_tcb->TickCtrPrev);
-            if ((remain > OS_TICK_TH_RDY) ||                            /* If delay time has already passed, ...             */
-                (remain == (OS_TICK)0u)) {
-                p_tcb->TickCtrPrev += time + time * ((OSTickCtr - p_tcb->TickCtrPrev) / time); /* Try to recover the period  */
-                p_tcb->TickRemain   = (OS_TICK)0u;
-               *p_err               =  OS_ERR_TIME_ZERO_DLY;            /* ... do NOT delay.                                 */
-                return;
+        tick_base = p_tcb->TickCtrPrev;
+
+#if (OS_CFG_DYN_TICK_EN == DEF_ENABLED)                         /* How far is our tick-base from the system time?       */
+        base_offset = OSTickCtr + elapsed - tick_base;
+#else
+        base_offset = OSTickCtr - tick_base;
+#endif
+
+        if (base_offset >= time) {                              /* If our task missed the last period, move         ... */
+            tick_base += time * (base_offset / time);           /* ... tick_base up to the next one.                    */
+            if ((base_offset % time) != 0u) {
+                tick_base += time;                              /* Account for rounding errors with integer division    */
             }
-            p_tcb->TickCtrPrev += time;
+
+            p_tcb->TickCtrPrev = tick_base;                     /* Adjust the periodic tick base                        */
         }
 
-    } else if (time > (OS_TICK)0u) {                                    /* RELATIVE time delay mode                          */
-        remain = time;
+        p_tcb->TickCtrPrev += time;                             /* Update for the next time we perform a periodic dly.  */
 
-    } else {                                                            /* Zero time delay; ...                              */
-        p_tcb->TickRemain = (OS_TICK)0u;
-       *p_err             =  OS_ERR_TIME_ZERO_DLY;                      /* ... do NOT delay.                                 */
-        return;
+    } else {                                                    /* RELATIVE time delay mode                             */
+#if (OS_CFG_DYN_TICK_EN == DEF_ENABLED)                         /* Our base is always the current system time.          */
+        tick_base = OSTickCtr + elapsed;
+#else
+        tick_base = OSTickCtr;
+#endif
     }
 
-    p_tcb->TaskState = OS_TASK_STATE_DLY;
-    OS_TickListInsert(&OSTickListDly, p_tcb, remain);
+    valid_dly = OS_TickListInsert(p_tcb, elapsed, tick_base, time);
 
-   *p_err = OS_ERR_NONE;
+    if (valid_dly == DEF_OK) {
+        p_tcb->TaskState = OS_TASK_STATE_DLY;
+       *p_err            = OS_ERR_NONE;
+    } else {
+       *p_err = OS_ERR_TIME_ZERO_DLY;
+    }
 }
 
 /*
@@ -358,57 +384,79 @@ void  OS_TickListInsertDly (OS_TCB   *p_tcb,
 
 void  OS_TickListRemove (OS_TCB  *p_tcb)
 {
-    OS_TICK_LIST  *p_list;
     OS_TCB        *p_tcb1;
     OS_TCB        *p_tcb2;
-
-
-    p_list = (OS_TICK_LIST *)p_tcb->TickListPtr;
-    p_tcb1  = p_tcb->TickPrevPtr;
-    p_tcb2  = p_tcb->TickNextPtr;
-    if (p_tcb1 == (OS_TCB *)0) {
-        if (p_tcb2 == (OS_TCB *)0) {                                    /* Remove ONLY entry in the list?                    */
-            p_list->TCB_Ptr    = (OS_TCB        *)0;
-#if OS_CFG_DBG_EN > 0u
-            p_list->NbrEntries = (OS_OBJ_QTY    )0u;
+    OS_TICK_LIST  *p_list;
+#if (OS_CFG_DYN_TICK_EN == DEF_ENABLED)
+    OS_TICK        elapsed;
 #endif
-            p_tcb->TickRemain   = (OS_TICK       )0u;
-            p_tcb->TickListPtr  = (OS_TICK_LIST *)0;
+
+#if (OS_CFG_DYN_TICK_EN == DEF_ENABLED)
+    elapsed = OS_DynTickGet();
+#endif
+
+    p_tcb1 = p_tcb->TickPrevPtr;
+    p_tcb2 = p_tcb->TickNextPtr;
+    p_list = &OSTickList;
+    if (p_tcb1 == (OS_TCB *)0) {
+        if (p_tcb2 == (OS_TCB *)0) {                            /* Remove the ONLY entry in the list?                   */
+            p_list->TCB_Ptr      = (OS_TCB *)0;
+#if (OS_CFG_DBG_EN == DEF_ENABLED)
+            p_list->NbrEntries   =           0u;
+#endif
+            p_tcb->TickRemain    =           0u;
+#if (OS_CFG_DYN_TICK_EN == DEF_ENABLED)
+            if (elapsed != 0u) {
+                OSTickCtr       += elapsed;                     /* Keep track of time.                                  */
+                OS_TRACE_TICK_INCREMENT(OSTickCtr);
+            }
+            OSTickCtrStep        =           0u;
+            OS_DynTickSet(OSTickCtrStep);
+#endif
         } else {
-            p_tcb2->TickPrevPtr = (OS_TCB       *)0;
-            p_tcb2->TickRemain += p_tcb->TickRemain;                    /* Add back the ticks to the delta                   */
-            p_list->TCB_Ptr    = p_tcb2;
-#if OS_CFG_DBG_EN > 0u
+            p_tcb2->TickPrevPtr  = (OS_TCB *)0;
+            p_tcb2->TickRemain  += p_tcb->TickRemain;           /* Add back the ticks to the delta                      */
+            p_list->TCB_Ptr      = p_tcb2;
+#if (OS_CFG_DBG_EN == DEF_ENABLED)
             p_list->NbrEntries--;
 #endif
-            p_tcb->TickNextPtr  = (OS_TCB       *)0;
-            p_tcb->TickRemain   = (OS_TICK       )0u;
-            p_tcb->TickListPtr  = (OS_TICK_LIST *)0;
+
+#if (OS_CFG_DYN_TICK_EN == DEF_ENABLED)
+            if (p_tcb2->TickRemain != p_tcb->TickRemain) {      /* Only set a new tick if tcb2 had a longer delay.      */
+                if (elapsed != 0u) {
+                    OSTickCtr          += elapsed;              /* Keep track of time.                                  */
+                    OS_TRACE_TICK_INCREMENT(OSTickCtr);
+                    p_tcb2->TickRemain -= elapsed;              /* We must account for any time which has passed.       */
+                }
+                OSTickCtrStep           = p_tcb2->TickRemain;
+                OS_DynTickSet(OSTickCtrStep);
+            }
+#endif
+            p_tcb->TickNextPtr          = (OS_TCB *)0;
+            p_tcb->TickRemain           =           0u;
         }
     } else {
-        p_tcb1->TickNextPtr = p_tcb2;    
+        p_tcb1->TickNextPtr = p_tcb2;
         if (p_tcb2 != (OS_TCB *)0) {
-            p_tcb2->TickPrevPtr = p_tcb1;
-            p_tcb2->TickRemain += p_tcb->TickRemain;                    /* Add back the ticks to the delta list              */
+            p_tcb2->TickPrevPtr  = p_tcb1;
+            p_tcb2->TickRemain  += p_tcb->TickRemain;            /* Add back the ticks to the delta list                 */
         }
-        p_tcb->TickPrevPtr  = (OS_TCB       *)0;
-#if OS_CFG_DBG_EN > 0u
+        p_tcb->TickPrevPtr       = (OS_TCB *)0;
+#if (OS_CFG_DBG_EN == DEF_ENABLED)
         p_list->NbrEntries--;
 #endif
-        p_tcb->TickNextPtr  = (OS_TCB       *)0;
-        p_tcb->TickRemain   = (OS_TICK       )0u;
-        p_tcb->TickListPtr  = (OS_TICK_LIST *)0;
+        p_tcb->TickNextPtr       = (OS_TCB *)0;
+        p_tcb->TickRemain        =           0u;
     }
 }
 
-
 /*
 ************************************************************************************************************************
-*                                           UPDATE THE LIST OF TASKS DELAYED
+*                                 UPDATE THE LIST OF TASKS DELAYED OR PENDING WITH TIMEOUT
 *
-* Description: This function updates the delta list which contains tasks that have been delayed.
+* Description: This function updates the delta list which contains tasks that are delayed or pending with a timeout.
 *
-* Arguments  : non
+* Arguments  : ticks          the number of ticks which have elapsed.
 *
 * Returns    : none
 *
@@ -416,168 +464,122 @@ void  OS_TickListRemove (OS_TCB  *p_tcb)
 ************************************************************************************************************************
 */
 
-static  CPU_TS  OS_TickListUpdateDly (void)
+static  void  OS_TickListUpdate (OS_TICK  ticks)
 {
-    OS_TCB       *p_tcb;
-    OS_TICK_LIST *p_list;
-    CPU_TS        ts_start;
-    CPU_TS        ts_delta_dly;
-#if OS_CFG_DBG_EN > 0u
-    OS_OBJ_QTY    nbr_updated;
+    OS_TCB        *p_tcb;
+    OS_TICK_LIST  *p_list;
+#if (OS_CFG_DBG_EN == DEF_ENABLED)
+    OS_OBJ_QTY     nbr_updated;
 #endif
-    CPU_SR_ALLOC();
+#if (OS_CFG_MUTEX_EN == DEF_ENABLED)
+    OS_TCB        *p_tcb_owner;
+    OS_PRIO        prio_new;
+#endif
 
-                                                              
-                                                                        
-    OS_CRITICAL_ENTER();
-    ts_start    = OS_TS_GET();
-#if OS_CFG_DBG_EN > 0u
-    nbr_updated = (OS_OBJ_QTY)0u;
+
+
+#if (OS_CFG_DBG_EN == DEF_ENABLED)
+    nbr_updated = 0u;
 #endif
-    p_list      = &OSTickListDly;
-    p_tcb       = p_list->TCB_Ptr;                                      
+    p_list      = &OSTickList;
+    p_tcb       = p_list->TCB_Ptr;
     if (p_tcb != (OS_TCB *)0) {
-        p_tcb->TickRemain--;
-        while (p_tcb->TickRemain == 0u) {
-#if OS_CFG_DBG_EN > 0u
-            nbr_updated++;											    /* Keep track of the number of TCBs updated          */
-#endif
-            if (p_tcb->TaskState == OS_TASK_STATE_DLY) {
-                p_tcb->TaskState = OS_TASK_STATE_RDY;
-                OS_RdyListInsert(p_tcb);                                /* Insert the task in the ready list                 */
-            } else if (p_tcb->TaskState == OS_TASK_STATE_DLY_SUSPENDED) {
-                p_tcb->TaskState = OS_TASK_STATE_SUSPENDED;
-            }
-
-            p_list->TCB_Ptr = p_tcb->TickNextPtr;
-            p_tcb           = p_list->TCB_Ptr;                          /* Get 'p_tcb' again for loop                        */
-            if (p_tcb == (OS_TCB *)0) {
-#if OS_CFG_DBG_EN > 0u
-                p_list->NbrEntries = (OS_OBJ_QTY)0u;
-#endif
-                break;
-            } else {
-#if OS_CFG_DBG_EN > 0u
-                p_list->NbrEntries--;
-#endif
-                p_tcb->TickPrevPtr = (OS_TCB *)0;
-            }
+        if (p_tcb->TickRemain <= ticks) {
+            ticks              = ticks - p_tcb->TickRemain;
+            p_tcb->TickRemain  = 0u;
+        } else {
+            p_tcb->TickRemain -= ticks;
         }
-    }
-#if OS_CFG_DBG_EN > 0u
-    p_list->NbrUpdated = nbr_updated;
-#endif
-    ts_delta_dly       = OS_TS_GET() - ts_start;                        /* Measure execution time of the update              */
-    OS_CRITICAL_EXIT();
 
-    return (ts_delta_dly);
-}
-
-
-/*
-************************************************************************************************************************
-*                                       UPDATE THE LIST OF TASKS PENDING WITH TIMEOUT
-*
-* Description: This function updales the delta list which contains tasks that are pending with a timeout.
-*
-* Arguments  : non
-*
-* Returns    : none
-*
-* Note(s)    : 1) This function is INTERNAL to uC/OS-III and your application MUST NOT call it.
-************************************************************************************************************************
-*/
-
-static  CPU_TS  OS_TickListUpdateTimeout (void)
-{
-    OS_TCB       *p_tcb;
-    OS_TICK_LIST *p_list;
-    CPU_TS        ts_start;
-    CPU_TS        ts_delta_timeout;
-#if OS_CFG_DBG_EN > 0u
-    OS_OBJ_QTY    nbr_updated;
-#endif
-#if OS_CFG_MUTEX_EN > 0u
-    OS_TCB       *p_tcb_owner;
-    OS_PRIO       prio_new;
-#endif
-    CPU_SR_ALLOC();
-
-                                                              
-                                                                        
-    OS_CRITICAL_ENTER();                                                /* ======= UPDATE TASKS WAITING WITH TIMEOUT ======= */
-    ts_start    = OS_TS_GET();
-#if OS_CFG_DBG_EN > 0u
-    nbr_updated = (OS_OBJ_QTY)0u;
-#endif
-    p_list      = &OSTickListTimeout;
-    p_tcb       = p_list->TCB_Ptr;                                  
-    if (p_tcb != (OS_TCB *)0) {
-        p_tcb->TickRemain--;
         while (p_tcb->TickRemain == 0u) {
-#if OS_CFG_DBG_EN > 0u
+#if (OS_CFG_DBG_EN == DEF_ENABLED)
             nbr_updated++;
 #endif
 
-#if OS_CFG_MUTEX_EN > 0u
-            p_tcb_owner = (OS_TCB *)0;
-            if (p_tcb->PendOn == OS_TASK_PEND_ON_MUTEX) {
-                p_tcb_owner = ((OS_MUTEX *)p_tcb->PendDataTblPtr->PendObjPtr)->OwnerTCBPtr;
-            }
+            switch (p_tcb->TaskState) {
+                case OS_TASK_STATE_DLY:
+                     p_tcb->TaskState = OS_TASK_STATE_RDY;
+                     OS_RdyListInsert(p_tcb);                            /* Insert the task in the ready list                    */
+                     break;
+
+                case OS_TASK_STATE_DLY_SUSPENDED:
+                     p_tcb->TaskState = OS_TASK_STATE_SUSPENDED;
+                     break;
+
+                default:
+#if (OS_CFG_MUTEX_EN == DEF_ENABLED)
+                     p_tcb_owner = (OS_TCB *)0;
+                     if (p_tcb->PendOn == OS_TASK_PEND_ON_MUTEX) {
+                         p_tcb_owner = (OS_TCB *)((OS_MUTEX *)((void *)p_tcb->PendObjPtr))->OwnerTCBPtr;
+                     }
 #endif
 
-#if (OS_MSG_EN > 0u)
-            p_tcb->MsgPtr  = (void      *)0;
-            p_tcb->MsgSize = (OS_MSG_SIZE)0u;
+#if (OS_MSG_EN == DEF_ENABLED)
+                     p_tcb->MsgPtr  = (void *)0;
+                     p_tcb->MsgSize = 0u;
 #endif
-            p_tcb->TS      = OS_TS_GET();
-            OS_PendListRemove(p_tcb);                                   /* Remove from wait list                             */
-            if (p_tcb->TaskState == OS_TASK_STATE_PEND_TIMEOUT) {
-                OS_RdyListInsert(p_tcb);                                /* Insert the task in the ready list                 */
-                p_tcb->TaskState  = OS_TASK_STATE_RDY;
-            } else if (p_tcb->TaskState == OS_TASK_STATE_PEND_TIMEOUT_SUSPENDED) {
-
-                p_tcb->TaskState  = OS_TASK_STATE_SUSPENDED;
-            }
-            p_tcb->PendStatus = OS_STATUS_PEND_TIMEOUT;                 /* Indicate pend timed out                           */
-            p_tcb->PendOn     = OS_TASK_PEND_ON_NOTHING;                /* Indicate no longer pending                        */
-
-#if OS_CFG_MUTEX_EN > 0u
-            if(p_tcb_owner != (OS_TCB *)0) {
-                if ((p_tcb_owner->Prio != p_tcb_owner->BasePrio) &&
-                    (p_tcb_owner->Prio == p_tcb->Prio)) {               /* Has the owner inherited a priority?               */
-                    prio_new = OS_MutexGrpPrioFindHighest(p_tcb_owner);
-                    prio_new = prio_new > p_tcb_owner->BasePrio ? p_tcb_owner->BasePrio : prio_new;
-                    if(prio_new != p_tcb_owner->Prio) {
-                        OS_TaskChangePrio(p_tcb_owner, prio_new);
-            #if (defined(TRACE_CFG_EN) && (TRACE_CFG_EN > 0u))
-                                      TRACE_OS_MUTEX_TASK_PRIO_DISINHERIT(p_tcb_owner, p_tcb_owner->Prio)
-            #endif
-                    }
-                }
-            }
+#if (OS_CFG_TS_EN == DEF_ENABLED)
+                     p_tcb->TS      = OS_TS_GET();
 #endif
+                     OS_PendListRemove(p_tcb);                           /* Remove task from pend list                           */
+
+                     switch (p_tcb->TaskState) {
+                         case OS_TASK_STATE_PEND_TIMEOUT:
+                              OS_RdyListInsert(p_tcb);                   /* Insert the task in the ready list                    */
+                              p_tcb->TaskState  = OS_TASK_STATE_RDY;
+                              break;
+
+                         case OS_TASK_STATE_PEND_TIMEOUT_SUSPENDED:
+                              p_tcb->TaskState  = OS_TASK_STATE_SUSPENDED;
+                              break;
+
+                         default:
+                              break;
+                     }
+                     p_tcb->PendStatus = OS_STATUS_PEND_TIMEOUT;         /* Indicate pend timed out                              */
+                     p_tcb->PendOn     = OS_TASK_PEND_ON_NOTHING;        /* Indicate no longer pending                           */
+
+#if (OS_CFG_MUTEX_EN == DEF_ENABLED)
+                     if (p_tcb_owner != (OS_TCB *)0) {
+                         if ((p_tcb_owner->Prio != p_tcb_owner->BasePrio) &&
+                             (p_tcb_owner->Prio == p_tcb->Prio)) {       /* Has the owner inherited a priority?                  */
+                             prio_new = OS_MutexGrpPrioFindHighest(p_tcb_owner);
+                             prio_new = (prio_new > p_tcb_owner->BasePrio) ? p_tcb_owner->BasePrio : prio_new;
+                             if (prio_new != p_tcb_owner->Prio) {
+                                 OS_TaskChangePrio(p_tcb_owner, prio_new);
+                                 OS_TRACE_MUTEX_TASK_PRIO_DISINHERIT(p_tcb_owner, p_tcb_owner->Prio);
+                             }
+                         }
+                     }
+#endif
+                     break;
+            }
 
             p_list->TCB_Ptr = p_tcb->TickNextPtr;
-            p_tcb           = p_list->TCB_Ptr;                          /* Get 'p_tcb' again for loop                        */
+            p_tcb           = p_list->TCB_Ptr;                           /* Get 'p_tcb' again for loop                           */
             if (p_tcb == (OS_TCB *)0) {
-#if OS_CFG_DBG_EN > 0u
-                p_list->NbrEntries = (OS_OBJ_QTY)0u;
+#if (OS_CFG_DBG_EN == DEF_ENABLED)
+                p_list->NbrEntries = 0u;
 #endif
                 break;
             } else {
-#if OS_CFG_DBG_EN > 0u
+#if (OS_CFG_DBG_EN == DEF_ENABLED)
                 p_list->NbrEntries--;
 #endif
                 p_tcb->TickPrevPtr = (OS_TCB *)0;
+                if (p_tcb->TickRemain <= ticks) {
+                    ticks              = ticks - p_tcb->TickRemain;
+                    p_tcb->TickRemain  = 0u;
+                } else {
+                    p_tcb->TickRemain -= ticks;
+                }
             }
         }
     }
-#if OS_CFG_DBG_EN > 0u
+#if (OS_CFG_DBG_EN == DEF_ENABLED)
     p_list->NbrUpdated = nbr_updated;
 #endif
-    ts_delta_timeout   = OS_TS_GET() - ts_start;                        /* Measure execution time of the update              */
-    OS_CRITICAL_EXIT();                                                 /* ------------------------------------------------- */
-
-    return (ts_delta_timeout);
 }
+
+#endif                                                                   /* #if OS_CFG_TICK_EN                                   */
+
