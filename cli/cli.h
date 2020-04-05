@@ -28,7 +28,6 @@
 /**
  * @file  cli.h
  * @brief using static array instead of linked list
- * @author medprime (www.medprimetech.com)
  * @version 0.0.0
  **/
 
