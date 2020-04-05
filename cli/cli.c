@@ -102,8 +102,8 @@ uint8_t CLI_Add_Cammand(CLI_Command_t *command_def)
  * @param cli_in_buffer input string to be processed
  * @param cli_out_buffer generated output will be written to this buffer
  * @param cli_out_max maximum number of char that can be written to cli_out_buffer
- * @see CLI_Init for example
- * @note adjust MAX_COMMANDS accordingly
+ * @retval return 0 if cmd process completed. return 1 if there is more output to be generated
+ * @see cli_uart_interface.c
  **/
 uint8_t CLI_Process_Cammand(const char *cli_in_buffer, char *cli_out_buffer,
 	uint16_t cli_out_max)
