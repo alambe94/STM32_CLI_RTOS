@@ -266,15 +266,12 @@ void HAL_UART_TxHalfCpltCallback(UART_HandleTypeDef *huart)
 
 void CLI_UART_RX_ISR()
     {
-
     uint8_t interrupt_source =  __HAL_UART_GET_FLAG(&huart2, UART_FLAG_IDLE);
 
     if (interrupt_source)
 	{
-
 	__HAL_UART_CLEAR_IDLEFLAG(CLI_UART);
 
 	 CLI_UART_Task_Wakeup();
-
 	}
     }

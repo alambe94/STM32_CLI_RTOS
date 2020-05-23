@@ -52,7 +52,7 @@
 									<listOptionValue builtIn="false" value="../Segger/embOS/Config"/>
 									<listOptionValue builtIn="false" value="../Segger/embOS/Include"/>
 									<listOptionValue builtIn="false" value="../Segger/embOS/SEGGER"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_CLI_UCOS_III/cli}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_CLI_embOS/cli}&quot;"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.637778693" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
@@ -209,4 +209,5 @@
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 	</storageModule>
+	<storageModule moduleId="refreshScope"/>
 </cproject>

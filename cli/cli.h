@@ -28,6 +28,7 @@
 /**
  * @file  cli.h
  * @brief using static array instead of linked list
+ * @author medprime (www.medprimetech.com)
  * @version 0.0.0
  **/
 
@@ -38,19 +39,19 @@
 
 typedef struct
 {
-	const char *CLI_Command;
-	const char *CLI_Command_Description;
-	uint16_t CLI_Command_Length;
-	uint8_t (*CLI_Callback)(uint8_t argc,
-							const char *argv[],
-							char *cli_out_buffer,
-							uint16_t cli_out_max);
+    const char *CLI_Command;
+    const char *CLI_Command_Description;
+    uint16_t CLI_Command_Length;
+    uint8_t (*CLI_Callback)(uint8_t argc,
+                            const char *argv[],
+                            char *cli_out_buffer,
+                            uint16_t cli_out_max);
 } CLI_Command_t;
 
 void CLI_Init();
 uint8_t CLI_Add_Cammand(CLI_Command_t *command_def);
-uint8_t CLI_Process_Cammand(const char *cli_in_buffer, char *cli_tx_out_buffer, uint16_t max_buffer_len);
-void CLI_Parse_Arguments(const char *cli_in_buffer, uint8_t *argc, const char *argv[]);
+uint8_t CLI_Process_Cammand(char *cli_in_buffer, char *cli_tx_out_buffer, uint16_t max_buffer_len);
+void CLI_Parse_Arguments(char *cli_in_buffer, uint8_t *argc, const char *argv[]);
 uint8_t CLI_Get_Argument_Length(const char *arg);
 
 #endif /* _CLI_H_ */
