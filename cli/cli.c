@@ -121,7 +121,7 @@ uint8_t CLI_Add_Cammand(CLI_Command_t *command_def)
  * @retval return 0 if command process completed. return 1 if there are more outputs to be generated
  * @see cli_uart_interface.c
  **/
-uint8_t CLI_Process_Cammand(char *cli_in_buffer,
+uint8_t CLI_Process_Cammand(const char *cli_in_buffer,
                             char *cli_out_buffer,
                             uint16_t cli_out_max)
 {
@@ -183,7 +183,7 @@ uint8_t CLI_Process_Cammand(char *cli_in_buffer,
  * @param argc: count of argument found in input string
  * @param argv[]:pointers to arguments found in input string
  **/
-void CLI_Parse_Arguments(char *cli_in_buffer,
+void CLI_Parse_Arguments(const char *cli_in_buffer,
                          uint8_t *argc,
                          const char *argv[])
 {
@@ -201,7 +201,7 @@ void CLI_Parse_Arguments(char *cli_in_buffer,
         while ((*cli_in_buffer) == ' ')
         {
             /* convert ' ' to NULL */
-            *cli_in_buffer = 0x00;
+            //*cli_in_buffer = 0x00;
             cli_in_buffer++;
         }
 

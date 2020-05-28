@@ -184,7 +184,7 @@ CLI_Command_t xTaskStats =
     {
         .CLI_Command = "task-stats",
         .CLI_Command_Description =
-            "\r\n task-stats: Displays a table showing the state of each FreeRTOS task\r\n",
+            "task-stats: Displays a table showing the state of each FreeRTOS task",
         .CLI_Callback = Task_Stats_Callback,
 };
 
@@ -195,7 +195,7 @@ CLI_Command_t xRunTimeStats =
     {
         .CLI_Command = "run-time-stats",
         .CLI_Command_Description =
-            "\r\n run-time-stats: Displays a table showing how much processing time each FreeRTOS task has used\r\n",
+            "run-time-stats: Displays a table showing how much processing time each FreeRTOS task has used.",
         .CLI_Callback = Run_Time_Stats_Callabck,
 };
 #endif /* configGENERATE_RUN_TIME_STATS */
@@ -206,7 +206,7 @@ CLI_Command_t xQueryHeap =
     {
         .CLI_Command = "query-heap",
         .CLI_Command_Description =
-            "\r\n query-heap: Displays the free heap space, and minimum ever free heap space.\r\n",
+            "query-heap: Displays the free heap space, and minimum ever free heap space.",
         .CLI_Callback = Get_Heap_Callback,
 };
 #endif /* configQUERY_HEAP_COMMAND */
@@ -218,7 +218,7 @@ CLI_Command_t xStartStopTrace =
     {
         .CLI_Command = "trace",
         .CLI_Command_Description =
-            "\r\n trace [start | stop]: Starts or stops a trace recording for viewing in FreeRTOS+Trace\r\n",
+            "trace [start | stop]: Starts or stops a trace recording for viewing in FreeRTOS+Trace",
         .CLI_Callback = Start_Stop_Trace_Callback,
 };
 #endif /* configINCLUDE_TRACE_RELATED_CLI_COMMANDS */

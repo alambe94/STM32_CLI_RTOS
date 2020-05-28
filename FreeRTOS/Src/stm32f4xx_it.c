@@ -50,8 +50,7 @@ volatile uint32_t Stat_Time_Counter;
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
 extern void CLI_UART_RX_ISR();
-extern void UART6_RX_ISR();
-
+extern void CLI_UART_DMA_TX_Done();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -263,6 +262,20 @@ void EXTI15_10_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+  if (huart == &huart2)
+  {
+    CLI_UART_DMA_TX_Done();
+  }
+}
 
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+}
+
+void HAL_UART_TxHalfCpltCallback(UART_HandleTypeDef *huart)
+{
+}
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
