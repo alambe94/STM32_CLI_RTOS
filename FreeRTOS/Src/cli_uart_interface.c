@@ -229,7 +229,7 @@ void CLI_UART_Thread_Add()
                                              &CLI_UART_Task_TCB);
 
     CLI_Init();
-    CLI_Add_Cammand(&Echo_Defination);
+    CLI_Add_Command(&Echo_Defination);
     CLI_Add_All_Commands();
 }
 
@@ -363,7 +363,7 @@ static void CLI_UART_Task(void *argument)
                     /* reset output buffer for strlen to work properly just in case */
                     memset(CLI_Output_Buffer, 0x00, OUTPUT_BUFFER_SIZE);
 
-                    call_again = CLI_Process_Cammand(CLI_CMD_Buffer,
+                    call_again = CLI_Process_Command(CLI_CMD_Buffer,
                                                      CLI_Output_Buffer,
                                                      OUTPUT_BUFFER_SIZE);
 

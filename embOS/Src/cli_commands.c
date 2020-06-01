@@ -101,42 +101,42 @@ static uint8_t Sqrt_Callback(uint8_t argc, const char *argv[], char *out_buffer,
 
 /************CLI Commands Definitions starts***********************************/
 
-CLI_Command_t Add_Defination =
+CLI_Command_t Add_Definition =
     {
         .CLI_Command = "add",
         .CLI_Command_Description = "addition",
         .CLI_Callback = Add_Callback,
 };
 
-CLI_Command_t Sub_Defination =
+CLI_Command_t Sub_Definition =
     {
         .CLI_Command = "sub",
         .CLI_Command_Description = "subtraction",
         .CLI_Callback = Sub_Callback,
 };
 
-CLI_Command_t Mul_Defination =
+CLI_Command_t Mul_Definition =
     {
         .CLI_Command = "mul",
         .CLI_Command_Description = "multiplication",
         .CLI_Callback = Mul_Callback,
 };
 
-CLI_Command_t Div_Defination =
+CLI_Command_t Div_Definition =
     {
         .CLI_Command = "div",
         .CLI_Command_Description = "division",
         .CLI_Callback = Div_Callback,
 };
 
-CLI_Command_t Pow_Defination =
+CLI_Command_t Pow_Definition =
     {
         .CLI_Command = "pow",
         .CLI_Command_Description = "raise power",
         .CLI_Callback = Pow_Callback,
 };
 
-CLI_Command_t Sqrt_Defination =
+CLI_Command_t Sqrt_Definition =
     {
         .CLI_Command = "sqrt",
         .CLI_Command_Description = "square root",
@@ -400,12 +400,12 @@ static uint8_t Sqrt_Callback(uint8_t argc, const char *argv[], char *out_buffer,
  */
 void CLI_Add_All_Commands()
 {
-    CLI_Add_Cammand(&Add_Defination);
-    CLI_Add_Cammand(&Sub_Defination);
-    CLI_Add_Cammand(&Mul_Defination);
-    CLI_Add_Cammand(&Div_Defination);
-    CLI_Add_Cammand(&Pow_Defination);
-    CLI_Add_Cammand(&Sqrt_Defination);
+    CLI_Add_Command(&Add_Definition);
+    CLI_Add_Command(&Sub_Definition);
+    CLI_Add_Command(&Mul_Definition);
+    CLI_Add_Command(&Div_Definition);
+    CLI_Add_Command(&Pow_Definition);
+    CLI_Add_Command(&Sqrt_Definition);
 
     OS_TASK_CREATE(&UART_Task_TCB, "UART_Print_Task", 50, UART_Print_Task, UART_Task_STK);
 }
