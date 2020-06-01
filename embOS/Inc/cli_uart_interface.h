@@ -1,11 +1,4 @@
 /*
- * cli_uart_interface.h
- *
- *  Created on: 06-Mar-2019
- *      Author: medprime
- */
-
-/*
  * FreeRTOS+CLI V1.0.4
  * Copyright (C) 2017 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
  *
@@ -38,8 +31,8 @@
 #include "stm32f4xx_hal.h"
 
 void CLI_UART_Thread_Add();
-void CLI_UART_Send_Char(const char data);
-void CLI_UART_Send_String(const char* data);
+void CLI_UART_Send_Char(char data);
+void CLI_UART_Send_String(char* data);
 void CLI_UART_Send_String_DMA(const char* data);
 void CLI_UART_Send_Int(int32_t num);
 

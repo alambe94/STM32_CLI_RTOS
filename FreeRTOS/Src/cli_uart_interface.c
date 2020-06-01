@@ -304,6 +304,7 @@ static void CLI_UART_Task(void *argument)
 
     Ring_Buffer_Init(&CLI_Ring_Buffer_Handle,
                      CLI_Ring_Buffer,
+		     1,
                      CLI_RING_BUFFER_SIZE);
 
     HAL_UART_Receive_DMA(CLI_UART,
@@ -437,7 +438,7 @@ void CLI_UART_RX_ISR()
     {
         __HAL_UART_CLEAR_IDLEFLAG(CLI_UART);
 
-        /*data is written to buffer via uart DMA in background*/
+        /* data is written to buffer via uart DMA in background*/
         /* need to update Write_Index manually */
         UPDATE_RING_BUFFER();
 

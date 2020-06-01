@@ -1,6 +1,7 @@
 /**
- *  Change log
+ *  V1.3
  *
+ *  Change log
  *  V1.1:
  *  1. added full_flag to check for full and empty buffer.
  *  1. added Ring_Buffer_Is_Empty function.
@@ -8,22 +9,68 @@
  *  3. modified Ring_Buffer_Put_Char and Ring_Buffer_Get_Char functions to use Full_Flag.
  *  4. Ring_Buffer_Peek_Char bug fixed.
  *
+ *  V1.2:
+ *  1. Ring_Buffer_Search_Char now also return the position at witch char is found.
+ *  2. ring buffer for generic data type (othe than uint8_t).
+ *
+ *  V1.3:
+ *  1. ring buffer for generic data type and uint8_t merged.
+ *  2. wrapper around generic data type for uint8_t ring buffer.
  */
 
 #include "ring_buffer.h"
+#include "memory.h"
 
-void Ring_Buffer_Init(Ring_Buffer_t *handle, uint8_t *buffer, uint16_t size)
+void Ring_Buffer_Init(Ring_Buffer_t *handle, uint8_t *buffer, uint8_t element_size, uint32_t max_elements)
 {
-    handle->Buffer = buffer;
+    handle->Storage = buffer;
+    handle->Element_Size = element_size;
+    handle->MAX_Elements = max_elements;
     handle->Read_Index = 0;
     handle->Write_Index = 0;
-    handle->Size = size;
     handle->Full_Flag = 0;
 }
 
-uint8_t Ring_Buffer_Put_Char(Ring_Buffer_t *handle, uint8_t data)
+void Ring_Buffer_Flush(Ring_Buffer_t *handle)
+{
+    handle->Read_Index = handle->Write_Index;
+    handle->Full_Flag = 0;
+}
+
+uint32_t Ring_Buffer_Get_Count(Ring_Buffer_t *handle)
+{
+    uint32_t count = 0;
+
+    if (Ring_Buffer_Is_Full(handle))
+    {
+        count = handle->MAX_Elements;
+    }
+    else if (handle->Write_Index >= handle->Read_Index)
+    {
+        count = handle->Write_Index - handle->Read_Index;
+    }
+    else
+    {
+        count = handle->MAX_Elements - (handle->Read_Index - handle->Write_Index);
+    }
+
+    return count;
+}
+
+uint8_t Ring_Buffer_Is_Full(Ring_Buffer_t *handle)
+{
+    return handle->Full_Flag;
+}
+
+uint8_t Ring_Buffer_Is_Empty(Ring_Buffer_t *handle)
+{
+    return (handle->Read_Index == handle->Write_Index && handle->Full_Flag == 0);
+}
+
+uint8_t Ring_Buffer_Put(Ring_Buffer_t *handle, void *data)
 {
     uint8_t xreturn = 0;
+    uint8_t *ptr = (uint8_t *)data;
 
     if (Ring_Buffer_Is_Full(handle))
     {
@@ -33,11 +80,14 @@ uint8_t Ring_Buffer_Put_Char(Ring_Buffer_t *handle, uint8_t data)
     {
         xreturn = 1;
 
-        handle->Buffer[handle->Write_Index] = data;
+        for (uint8_t i = 0; i < handle->Element_Size; i++)
+        {
+            handle->Storage[handle->Write_Index * handle->Element_Size + i] = *ptr++;
+        }
 
         handle->Write_Index++;
 
-        if (handle->Write_Index == handle->Size)
+        if (handle->Write_Index == handle->MAX_Elements)
         {
             handle->Write_Index = 0;
         }
@@ -51,9 +101,10 @@ uint8_t Ring_Buffer_Put_Char(Ring_Buffer_t *handle, uint8_t data)
     return xreturn;
 }
 
-uint8_t Ring_Buffer_Get_Char(Ring_Buffer_t *handle, uint8_t *data)
+uint8_t Ring_Buffer_Get(Ring_Buffer_t *handle, void *data)
 {
     uint8_t xreturn = 0;
+    uint8_t *ptr = (uint8_t *)data;
 
     if (Ring_Buffer_Is_Empty(handle))
     {
@@ -63,13 +114,16 @@ uint8_t Ring_Buffer_Get_Char(Ring_Buffer_t *handle, uint8_t *data)
     {
         xreturn = 1;
 
-        *data = handle->Buffer[handle->Read_Index];
+        for (uint8_t i = 0; i < handle->Element_Size; i++)
+        {
+            *ptr++ = handle->Storage[handle->Read_Index * handle->Element_Size + i];
+        }
 
         handle->Read_Index++;
 
         handle->Full_Flag = 0;
 
-        if (handle->Read_Index == handle->Size)
+        if (handle->Read_Index == handle->MAX_Elements)
         {
             handle->Read_Index = 0;
         }
@@ -78,48 +132,62 @@ uint8_t Ring_Buffer_Get_Char(Ring_Buffer_t *handle, uint8_t *data)
     return xreturn;
 }
 
-uint8_t Ring_Buffer_Peek_Char(Ring_Buffer_t *handle, uint8_t *data, uint16_t position)
+uint8_t Ring_Buffer_Peek(Ring_Buffer_t *handle, void *data, uint32_t position)
 {
     uint8_t xreturn = 0;
+    uint8_t *ptr = (uint8_t *)data;
 
     if (position < Ring_Buffer_Get_Count(handle))
     {
         xreturn = 1;
 
-        if (position + handle->Read_Index < handle->Size)
+        if (position + handle->Read_Index < handle->MAX_Elements)
         {
             position = handle->Read_Index + position;
         }
         else
         {
-            position = (position + handle->Read_Index) - handle->Size;
+            position = (position + handle->Read_Index) - handle->MAX_Elements;
         }
 
-        *data = handle->Buffer[position];
-    }
-    else
-    {
-        *data = 0;
+        for (uint8_t i = 0; i < handle->Element_Size; i++)
+        {
+            *ptr++ = handle->Storage[position * handle->Element_Size + i];
+        }
     }
 
     return xreturn;
 }
 
-uint8_t Ring_Buffer_Search_Char(Ring_Buffer_t *handle, uint8_t data)
+uint8_t Ring_Buffer_Search(Ring_Buffer_t *handle, void *data, uint32_t *position)
 {
-    uint8_t xreturn = 0;
-    uint16_t temp = handle->Read_Index;
+    uint8_t xreturn = 1;
+    uint8_t *ptr = (uint8_t *)data;
+    uint32_t temp = handle->Read_Index;
+    uint32_t count = Ring_Buffer_Get_Count(handle);
 
-    while (temp != handle->Write_Index)
+    while (count--)
     {
+        xreturn = 1;
 
-        if (data == handle->Buffer[temp++])
+        for (uint8_t i = 0; i < handle->Element_Size; i++)
         {
-            xreturn = 1;
+            if (ptr[i] != handle->Storage[temp * handle->Element_Size + i])
+            {
+                xreturn = 0;
+                break;
+            }
+        }
+
+        if (xreturn)
+        {
+            *position = temp;
             break;
         }
 
-        if (temp == handle->Size)
+        temp++;
+
+        if (temp == handle->MAX_Elements)
         {
             temp = 0;
         }
@@ -128,27 +196,22 @@ uint8_t Ring_Buffer_Search_Char(Ring_Buffer_t *handle, uint8_t data)
     return xreturn;
 }
 
-uint8_t Ring_Buffer_Is_Full(Ring_Buffer_t *handle)
+uint8_t Ring_Buffer_Put_Char(Ring_Buffer_t *handle, uint8_t data)
 {
-    return handle->Full_Flag;
+    return Ring_Buffer_Put(handle, &data);
 }
 
-uint8_t Ring_Buffer_Is_Empty(Ring_Buffer_t *handle)
+uint8_t Ring_Buffer_Get_Char(Ring_Buffer_t *handle, uint8_t *data)
 {
-    return (handle->Read_Index == handle->Write_Index && handle->Full_Flag == 0);
+    return Ring_Buffer_Get(handle, data);
 }
 
-void Ring_Buffer_Flush(Ring_Buffer_t *handle)
+uint8_t Ring_Buffer_Peek_Char(Ring_Buffer_t *handle, uint8_t *data, uint32_t position)
 {
-    handle->Read_Index = handle->Write_Index;
-    handle->Full_Flag = 0;
+    return Ring_Buffer_Peek(handle, data, position);
 }
 
-uint16_t Ring_Buffer_Get_Count(Ring_Buffer_t *handle)
+uint8_t Ring_Buffer_Search_Char(Ring_Buffer_t *handle, uint8_t data, uint32_t *position)
 {
-    if (handle->Write_Index >= handle->Read_Index)
-    {
-        return (handle->Write_Index - handle->Read_Index);
-    }
-    return (handle->Size - (handle->Read_Index - handle->Write_Index));
+    return Ring_Buffer_Search(handle, &data, position);
 }

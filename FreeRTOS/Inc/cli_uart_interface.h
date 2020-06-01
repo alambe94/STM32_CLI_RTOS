@@ -1,11 +1,4 @@
 /*
- * cli_uart_interface.h
- *
- *  Created on: 06-Mar-2019
- *      Author: medprime
- */
-
-/*
  * FreeRTOS+CLI V1.0.4
  * Copyright (C) 2017 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
  *
